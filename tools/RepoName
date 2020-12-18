@@ -19,7 +19,7 @@ else
         mkdir -p ansible
         cd ansible
 	git clone $url/$repository_name
-	declare -a Files=(`find scripts/ansible/ -type f -not -path '*/\.*'`)
+	declare -a Files=(`find ansible/ -type f -not -path '*/\.*'`)
 	 # For each set of Debrand run through all files and change the Name.
 	for f in "${Files[@]}" 
 	do
