@@ -1,46 +1,126 @@
 #!/bin/bash
+dir=`pwd`
+version='0.0.1'
+
+# Print Usage and Help. 
+show_help()
+{
+echo "
+        This script is provided to download OpenSCAP Enterprise Linux Ansible Repositories and change them to function with Rocky Linux.
+        Contact information: https://github.com/rocky-linux/openscap/
+
+        Usage: bash ./RepoName [-u URL] [-r Repo Name] [-a All Repos] [-V Version] [-o OS Repo Version]
+        If no repository is given it will assume you want all repositoris from Enterprise Linux 8.
+
+        -V Version      Print the version of this script.
+        -a              Do all Repositories for given URL.
+        -r              Name of the repository to Download
+        -u              URL of the repos you want to download and rebrand.
+        -o              OS repo version default is Enterprise Linux 8
+        -h              Print this Message
+
+        Examples: 
+            Get ansible-role-rhel8-stig repository and change the branding.
+            ./RepoName -u https://github.com/RedHatOfficial/ -r ansible-role-rhel8-stig
+
+            Get all rhel8 repositories and change the branding.
+            ./RepoName -u https://github.com/RedHatOfficial/ -a
+"
+}
+
+# Print Version
+show_version()
+{
+echo "RepoName version: $version"
+}
+one_repo()
+{
+        if [[ -z "$url" ]];
+        then
+                show_help
+        else
+                # Create directory and git repos.
+                mkdir -p ansible
+                cd ansible
+                git clone $url/$repository_name
+                declare -a Files=(`find $dir/ansible/ -type f -not -path '*/\.*'`)
+                 # For each set of Debrand run through all files and change the Name.
+                for f in "${Files[@]}"
+                do
+                        for d in "${Debrand[@]}"
+                        do
+                        # Uncomment for Debugging
+                        #echo sed -i $d $f
+                                sed -i $d $f
+                        done
+                done
+                new_repostitory_name=`echo $repository_name | sed 's/rhel8/rocky/g'`
+                mv $repository_name $new_repostitory_name
+        fi
+        check_repos
+}
+all_repos()
+{
+	echo "Not built yet."
+}
+check_repo()
+{
+        #Check if branding stil exists.
+        redhat=(`grep -rci 'redhat' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
+        centos=(`grep -rci 'centos' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
+        rhel8=(`grep -rci 'rhel8' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
+        declare -i sumredhat
+        declare -i sumcentos
+        declare -i sumrhel8
+        IFS=+ sumredhat="${redhat[*]}"
+        IFS=+ sumcentos="${centos[*]}"
+        IFS=+ sumrhel8="${rhel8[*]}"
+        printf "Mentions of RedHat found: $sumredhat\nMentions of CentOS found: $sumcentos\nMentions of rhel8 found: $sumrhel8\n"
+}
+
+
 # Get arguements Repo and Url.
-while getopts r:u: flag
-do
-    case "${flag}" in
-        r) repository_name=${OPTARG};;
-        u) url=${OPTARG};;
-    esac
+while getopts ":u:rahV" FLAG; do
+  case "$FLAG" in
+        u) # Set option "u" [Version]
+                url=$OPTARG
+                ;;
+        r) # Set option "r" [Repository Name]
+                repository_name=${OPTARG}
+                ;;
+        a) # Set option "a" [All Repositories]
+                all='all'
+                ;;
+        h) # Set option "h" [Help Message]
+                show_help
+                exit
+                ;;
+	V) # Print version of this script.
+		show_version
+		exit
+		;;
+        \?)
+                echo "Invalid option: -$OPTARG. Use -H flag for help."
+                exit
+                ;;
+  esac
 done
+
 # Uncomment for debugging Verify Arguements
 #echo "$url $repository_name $help"
 declare -a Debrand=("s/rhel8/rocky8/g" "s/redhat/rocky/g" "s/CentOS/Rocky/g" "s/RedHat/Rocky/g")
-# If URL or Repository Name not Provided echo usage.
-if [[ -z "$repository_name" ]] || [[ -z "$url" ]] || [[ ! -z "$help" ]];
-then
-	echo "USAGE: $0 -r RepoName (ansible-role-rhel8-stig) -u URL (https://github.com/RedHatOfficial/)\nThis will create a subfolder with the new repository under the parent folder ansible. In the directory where the script is run.";
-else 
-	# Create directory and git repos.
-        mkdir -p ansible
-        cd ansible
-	git clone $url/$repository_name
-	declare -a Files=(`find scripts/ansible/ -type f -not -path '*/\.*'`)
-	 # For each set of Debrand run through all files and change the Name.
-	for f in "${Files[@]}" 
-	do
-		for d in "${Debrand[@]}"
-		do
-# Uncomment for Debugging
-#			echo sed -i $d $f
-			sed -i $d $f
-		done
-	done
-        new_repostitory_name=`echo $repository_name | sed 's/rhel8/rocky/g'`
-        mv $repository_name $new_repostitory_name
+# If URL not provided echo usage.
+if [[ $# -eq 0 ]]; then
+	echo 'u empty or no arguments'
+        show_help
+elif [[ $repository_name -gt '' ]]; then
+	echo 'Single repo argument received'
+        one_repo
+elif [[ $all == 'all' ]]; then
+	echo 'All repo arguement received'
+   	all_repos
+else
+	echo "You should not get here $repository_name"
+	show_help
 fi
-#Check if branding stil exists.
-redhat=(`grep -rci 'redhat' ansible | grep -v .git | cut -d: -f2-`)
-centos=(`grep -rci 'centos' ansible | grep -v .git | cut -d: -f2-`)
-rhel8=(`grep -rci 'rhel8' ansible | grep -v .git | cut -d: -f2-`)
-declare -i sumredhat
-declare -i sumcentos
-declare -i sumrhel8
-IFS=+ sumredhat="${redhat[*]}"
-IFS=+ sumcentos="${centos[*]}"
-IFS=+ sumrhel8="${rhel8[*]}"
-printf "Mentions of RedHat found: $sumredhat\nMentions of CentOS found: $sumcentos\nMentions of rhel8 found: $sumrhel8\n"
+
