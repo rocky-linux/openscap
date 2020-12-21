@@ -40,6 +40,7 @@ download_repo()
 # Create directory and git repos.
         url=$1
         repository_name=$2;
+	declare -a Debrand=("s/rhel8/rocky8/g" "s/redhat/rocky/g" "s/CentOS/Rocky/g" "s/RedHat/Rocky/g" "s/Red\sHat/Rocky/g" "s/red\shat/rocky/g");
 	echo "$url $repository_name"
 	git clone $url/$repository_name;
 	declare -a Files=(`find $dir/ansible/ -type f -not -path '*/\.*'`)
@@ -63,9 +64,9 @@ one_repo()
         then
                 show_help
 	fi
+	echo "Passed in -r this will download the specified repository $repo"
 	download_repo "$url" "$repo"
         check_repo
-	exit;
 }
 # Get all repositories from provided source.
 all_repos()
@@ -74,33 +75,37 @@ all_repos()
 		show_help;
 		exit;
 	fi
-	echo "This Sectrion is not completed yet."
+	echo "Passed in -a this will download and clean all repos with rhel8 in the name."
 	repos=(`curl -sL $url | grep 'href' | grep 'rhel8' | grep item | sed 's/.*\/RedHatOfficial\///g' | sed 's/".*//g'| tr '\n' ' '`); 
 	for r in ${repos[@]}; do
 		echo "Downloading and rebranding $r"
 	        download_repo "$url" "$r"
 	done;
 	check_repo
-	exit;
 }
 
 # Verify repositories are cleaned.
 check_repo()
 {
 	if [[ -d "$dir/ansible/" ]]; then
+		cd $dir/ansible
 	        #Check if branding stil exists.
-	        redhat=(`grep -rci 'redhat' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
-        	centos=(`grep -rci 'centos' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
-	        rhel8=(`grep -rci 'rhel8' $dir/ansible/ | grep -v .git | cut -d: -f2-`)
+	        redhat=(`grep -rci 'redhat' | grep -v .git | cut -d: -f2-`)
+        	centos=(`grep -rci 'centos' | grep -v .git | cut -d: -f2-`)
+	        rhel8=(`grep -rci 'rhel8' | grep -v .git | cut -d: -f2-`)
+		red_hat=(`grep -rci 'red hat' | grep -v .git | cut -d: -f2-`)
 	        declare -i sumredhat
 	        declare -i sumcentos
 	        declare -i sumrhel8
 	        IFS=+ sumredhat="${redhat[*]}"
+		IFS=+ sumred_hat="${red_hat[*]}"
 	        IFS=+ sumcentos="${centos[*]}"
 	        IFS=+ sumrhel8="${rhel8[*]}"
 		# Run through the list of copyrighted names and grep out any names still remaining.
 		if [[ $sumredhat -gt 0 ]]; then
 			echo "Mentions of RedHat still found: $sumredhat\n";
+		elif [[ $sumred_hat -gt 0 ]]; then
+                        echo "Mentions of Red Hat still found: $sumred_hat\n";
 		elif [[ $sumcentos -gt 0 ]]; then 
 			echo "Mentions of CentOS still found found: $sumcentos\n";
 		elif [[ $sumrhel8 -gt 0 ]]; then
@@ -138,7 +143,6 @@ while getopts ":u:r:ahv" FLAG; do
 done
 # Uncomment for debugging Verify Arguements
 #echo "$url $repository_name $help"
-declare -a Debrand=("s/rhel8/rocky8/g" "s/redhat/rocky/g" "s/CentOS/Rocky/g" "s/RedHat/Rocky/g");
 # If URL not provided echo usage.
 if [[ $# -eq 0 ]]; then
         show_help
