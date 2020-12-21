@@ -59,21 +59,21 @@ download_repo()
 }
 one_repo()
 {
-	url=$1;
-	repository_name=$2;
         if [[ -z "$url" ]];
         then
                 show_help
-        else
-		download_repo "$url" "$repository_name"
-                # Create directory and git repos.
-        fi
+	fi
+	download_repo "$url" "$repo"
         check_repo
+	exit;
 }
 # Get all repositories from provided source.
 all_repos()
 {
-	url="$1"
+	if [[ -z $url ]]; then
+		show_help;
+		exit;
+	fi
 	echo "This Sectrion is not completed yet."
 	repos=(`curl -sL $url | grep 'href' | grep 'rhel8' | grep item | sed 's/.*\/RedHatOfficial\///g' | sed 's/".*//g'| tr '\n' ' '`); 
 	for r in ${repos[@]}; do
@@ -81,6 +81,7 @@ all_repos()
 	        download_repo "$url" "$r"
 	done;
 	check_repo
+	exit;
 }
 
 # Verify repositories are cleaned.
@@ -112,53 +113,36 @@ check_repo()
 	fi
 }
 
+# Create and move to ansible subdirectory
+mkdir -p ansible
+cd ansible
+
 # Get arguements Repo and Url.
-while getopts ":u:rahv" FLAG; do
-  case "$FLAG" in
-        u) # Set option "u" [URL]
-                u=${OPTARG}
-                ;;
-        r) # Set option "r" [Repository_Name]
-                r=${OPTARG}
-		#singlerepo='yes'
-                ;;
-        a) # Set option "a" [All_Repositories]
-                all='all'
-                ;;
-        h) # Set option "h" [Help_Message]
-                show_help
-                exit
-                ;;
-	v) # Print version of this script.
-		show_version
-		exit
-		;;
-        \?)
-                echo "Invalid option: -$OPTARG. Use -h flag for help."
-                exit
+while getopts ":u:r:ahv" FLAG; do
+  case $FLAG in
+        u ) # Set option "u" [URL]
+                url=$OPTARG;;
+        r ) # Set option "r" [Repository_Name]
+		repo=$OPTARG; one_repo;;
+        a ) # Set option "a" [All_Repositories]
+                all_repos;;
+        h ) # Set option "h" [Help_Message]
+                show_help;;
+	v ) # Print version of this script.
+		show_version;;
+        \? )
+                echo "Invalid option: -$OPTARG. Use -h flag for help.";
+                exit;
                 ;;
   esac
 done
-
 # Uncomment for debugging Verify Arguements
 #echo "$url $repository_name $help"
 declare -a Debrand=("s/rhel8/rocky8/g" "s/redhat/rocky/g" "s/CentOS/Rocky/g" "s/RedHat/Rocky/g");
-# Create and move to ansible subdirectory
-mkdir ansible
-cd ansible
 # If URL not provided echo usage.
 if [[ $# -eq 0 ]]; then
-	echo 'u empty or no arguments'
         show_help
-elif [[ $singlerepo == 'yes' ]]; then
-	echo 'Single repo argument received'
-	echo "Repository Name: $r URL: $u"
-	exit;
-        one_repo "$u" "$r"
-elif [[ $all == 'all' ]]; then
-	echo 'All repo arguement received'
-	echo "URL: $url"
-   	all_repos "$url"
+
 fi
 
 # Verify all repos no longer contain copyrights and print out count.
