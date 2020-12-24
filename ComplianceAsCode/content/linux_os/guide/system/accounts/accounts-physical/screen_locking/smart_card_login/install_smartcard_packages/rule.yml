@@ -1,0 +1,43 @@
+documentation_complete: true
+
+prodtype: fedora,ol7,rhel7
+
+title: 'Install Smart Card Packages For Multifactor Authentication'
+
+description: |-
+    Configure the operating system to implement multifactor authentication by
+    installing the required package with the following command:
+    {{{ describe_package_install(package="pam_pkcs11") }}}
+
+rationale: |-
+    Using an authentication device, such as a CAC or token that is separate from
+    the information system, ensures that even if the information system is
+    compromised, that compromise will not affect credentials stored on the
+    authentication device.
+    <br /><br />
+    Multifactor solutions that require devices separate from
+    information systems gaining access include, for example, hardware tokens
+    providing time-based or challenge-response authenticators and smart cards such
+    as the U.S. Government Personal Identity Verification card and the DoD Common
+    Access Card.
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-80519-2
+
+references:
+    stigid@ol7: OL07-00-041001
+    disa: CCI-000765,CCI-001948,CCI-001953,CCI-001954
+    nist: CM-6(a)
+    srg: SRG-OS-000105-GPOS-00052,SRG-OS-000375-GPOS-00160,SRG-OS-000376-GPOS-00161,SRG-OS-000377-GPOS-00162
+    stigid@rhel7: RHEL-07-041001
+
+ocil_clause: 'smartcard software is not installed'
+
+ocil: '{{{ ocil_package(package="pam_pkcs11") }}}'
+
+template:
+    name: package_installed
+    vars:
+        pkgname: pam_pkcs11

@@ -1,0 +1,8 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'OpenShift Kube API Server'
+
+description: |-
+    This section contains recommendations for kube-apiserver configuration.

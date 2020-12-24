@@ -1,0 +1,12 @@
+# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ol,multi_platform_rocky
+# reboot = false
+# strategy = disable
+# complexity = low
+# disruption = low
+
+- name: Disable Ctrl-Alt-Del Reboot Activation
+  systemd:
+    name: ctrl-alt-del.target
+    masked: yes
+    state: stopped
+

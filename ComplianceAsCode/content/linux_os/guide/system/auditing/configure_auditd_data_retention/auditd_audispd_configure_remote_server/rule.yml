@@ -1,0 +1,52 @@
+documentation_complete: true
+
+prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rocky8,rhv4,wrlinux1019
+
+title: 'Configure audispd Plugin To Send Logs To Remote Server'
+
+description: |-
+    Configure the audispd plugin to off-load audit records onto a different
+    system or media from the system being audited.
+    Set the <tt>remote_server</tt> option in <pre>
+{{%- if product in ["rhel8", "fedora", "ol8", "rhv4"] -%}}
+    /etc/audit/audisp-remote.conf
+{{%- else -%}}
+    /etc/audisp/audisp-remote.conf
+{{%- endif -%}}
+    </pre>
+    with an IP address or hostname of the system that the audispd plugin should
+    send audit records to. For example
+    <pre>remote_server = <i>{{{ xccdf_value("var_audispd_remote_server") }}}</i></pre>
+
+rationale: |-
+    Information stored in one location is vulnerable to accidental or incidental
+    deletion or alteration.Off-loading is a common process in information systems
+    with limited audit storage capacity.
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-80541-6
+    cce@rhel8: CCE-80925-1
+
+references:
+    stigid@ol7: OL07-00-030300
+    disa: CCI-001851
+    srg: SRG-OS-000342-GPOS-00133,SRG-OS-000479-GPOS-00224
+    vmmsrg: SRG-OS-000051-VMM-000230,SRG-OS-000058-VMM-000270,SRG-OS-000059-VMM-000280,SRG-OS-000479-VMM-001990,SRG-OS-000479-VMM-001990
+    stigid@rhel7: RHEL-07-030300
+    ospp: FAU_GEN.1.1.c
+
+ocil_clause: 'audispd is not sending logs to a remote system'
+
+ocil: |-
+    To verify the audispd plugin off-loads audit records onto a different system or
+    media from the system being audited, run the following command:
+{{% if product in ["rhel8", "fedora", "ol8", "rhv4"] %}}
+    <pre>$ sudo grep -i remote_server /etc/audit/audisp-remote.conf</pre>
+{{% else %}}
+    <pre>$ sudo grep -i remote_server /etc/audisp/audisp-remote.conf</pre>
+{{% endif %}}
+    The output should return something similar to
+    <pre>remote_server = <i>{{{ xccdf_value("var_audispd_remote_server") }}}</i></pre>
+

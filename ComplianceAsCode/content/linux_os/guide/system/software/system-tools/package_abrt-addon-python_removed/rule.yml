@@ -1,0 +1,28 @@
+documentation_complete: true
+
+prodtype: fedora,ol7,ol8,rhel7,rhel8,rocky8
+
+title: 'Uninstall abrt-addon-python Package'
+
+description: |-
+    {{{ describe_package_remove(package="abrt-addon-python") }}}
+
+rationale: |-
+    <tt>abrt-addon-python</tt> contains python hook and python analyzer
+    plugin for handling uncaught exceptions in python programs.
+
+severity: low
+
+identifiers:
+    cce@rhel7: CCE-82924-2
+    cce@rhel8: CCE-82923-4
+
+references:
+    srg: SRG-OS-000095-GPOS-00049
+
+{{{ complete_ocil_entry_package(package="abrt-addon-python") }}}
+
+template:
+    name: package_removed
+    vars:
+        pkgname: abrt-addon-python

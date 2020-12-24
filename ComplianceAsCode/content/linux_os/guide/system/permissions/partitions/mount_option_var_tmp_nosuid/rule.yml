@@ -1,0 +1,40 @@
+documentation_complete: true
+
+prodtype: ol7,ol8,rhel7,rhel8,rocky8,rhcos4,sle15,ubuntu1804
+
+title: 'Add nosuid Option to /var/tmp'
+
+description: |-
+    The <tt>nosuid</tt> mount option can be used to prevent
+    execution of setuid programs in <tt>/var/tmp</tt>. The SUID and SGID permissions
+    should not be required in these world-writable directories.
+    {{{ describe_mount(option="nosuid", part="/var/tmp") }}}
+
+rationale: |-
+    The presence of SUID and SGID executables should be tightly controlled. Users
+    should not be able to execute SUID or SGID binaries from temporary storage partitions.
+
+{{{ complete_ocil_entry_mount_option("/var/tmp", "nosuid") }}}
+
+severity: unknown
+
+identifiers:
+    cce@rhel7: CCE-82153-8
+    cce@rhel8: CCE-82154-6
+    cce@rhcos4: CCE-82736-0
+
+references:
+    cis@rhel8: 1.1.9
+    cis@ubuntu1804: 1.1.8
+    anssi: BP28(R12)
+    srg: SRG-OS-000368-GPOS-00154
+    cis@sle15: 1.1.10
+
+platform: machine
+
+template:
+    name: mount_option
+    vars:
+        mountpoint: /var/tmp
+        mountoption: nosuid
+        mount_has_to_exist: 'yes'

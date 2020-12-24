@@ -1,0 +1,28 @@
+documentation_complete: true
+
+prodtype: fedora,ol7,ol8,rhel7,rhel8,rocky8
+
+title: 'Uninstall iprutils Package'
+
+description: |-
+    {{{ describe_package_remove(package="iprutils") }}}
+
+rationale: |-
+    <tt>iprutils</tt> provides a suite of utlilities to manage and configure SCSI devices
+    supported by the ipr SCSI storage device driver.
+
+severity: low
+
+identifiers:
+    cce@rhel7: CCE-82947-3
+    cce@rhel8: CCE-82946-5
+
+references:
+    srg: SRG-OS-000095-GPOS-00049
+
+{{{ complete_ocil_entry_package(package="iprutils") }}}
+
+template:
+    name: package_removed
+    vars:
+        pkgname: iprutils

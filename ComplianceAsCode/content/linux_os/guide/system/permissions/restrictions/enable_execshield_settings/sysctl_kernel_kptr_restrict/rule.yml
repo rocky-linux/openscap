@@ -1,0 +1,35 @@
+documentation_complete: true
+
+title: 'Restrict Exposed Kernel Pointer Addresses Access'
+
+description: '{{{ describe_sysctl_option_value(sysctl="kernel.kptr_restrict", value="1") }}}'
+
+rationale: |-
+    Exposing kernel pointers (through procfs or <tt>seq_printf()</tt>) exposes
+    kernel writeable structures that can contain functions pointers. If a write vulnereability occurs
+    in the kernel allowing a write access to any of this structure, the kernel can be compromise. This
+    option disallow any program withtout the CAP_SYSLOG capability from getting the kernel pointers addresses,
+    replacing them with 0.
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-80659-6
+    cce@rhel8: CCE-80915-2
+    cce@rhcos4: CCE-82498-7
+
+references:
+    anssi: BP28(R23)
+    nist: SC-30,SC-30(2),SC-30(5),CM-6(a)
+    srg: SRG-OS-000132-GPOS-00067
+
+{{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.kptr_restrict", value="1") }}}
+
+platform: machine
+
+template:
+    name: sysctl
+    vars:
+        sysctlvar: kernel.kptr_restrict
+        sysctlval: '1'
+        datatype: int

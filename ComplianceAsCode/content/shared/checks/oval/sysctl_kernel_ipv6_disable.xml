@@ -1,0 +1,27 @@
+<def-group>
+  <definition class="compliance" id="sysctl_kernel_ipv6_disable" version="2">
+    <metadata>
+      <title>Kernel Runtime Parameter IPv6 Check</title>
+      <affected family="unix">
+	<platform>multi_platform_debian</platform>
+	<platform>multi_platform_fedora</platform>
+	<platform>multi_platform_opensuse</platform>
+	<platform>multi_platform_ol</platform>
+	<platform>multi_platform_rhcos</platform>
+	<platform>multi_platform_rhel</platform>
+	<platform>multi_platform_rhv</platform>
+	<platform>multi_platform_sle</platform>
+	<platform>multi_platform_ubuntu</platform>
+	<platform>multi_platform_wrlinux</platform>
+      </affected>
+      <description>Disables IPv6 for all network interfaces.</description>
+    </metadata>
+    <criteria comment="IPv6 disabled or net.ipv6.conf.all.disable_ipv6 set correctly" operator="OR">
+      <criteria operator="AND">
+        <extend_definition comment="net.ipv6.conf.all.disable_ipv6 configuration setting check" definition_ref="sysctl_static_net_ipv6_conf_all_disable_ipv6" />
+        <extend_definition comment="net.ipv6.conf.all.disable_ipv6 runtime setting check" definition_ref="sysctl_runtime_net_ipv6_conf_all_disable_ipv6" />
+      </criteria>
+    </criteria>
+  </definition>
+
+</def-group>

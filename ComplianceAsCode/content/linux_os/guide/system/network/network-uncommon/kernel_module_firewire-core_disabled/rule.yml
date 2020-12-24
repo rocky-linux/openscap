@@ -1,0 +1,32 @@
+documentation_complete: true
+
+prodtype: fedora,rhcos4,ol8,rhel7,rhel8,rocky8
+
+title: 'Disable IEEE 1394 (FireWire) Support'
+
+description: |-
+    The IEEE 1394 (FireWire) is a serial bus standard for
+    high-speed real-time communication.
+    {{{ describe_module_disable(module="firewire-core") }}}
+
+rationale: |-
+    Disabling FireWire protects the system against exploitation of any
+    flaws in its implementation.
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-82160-3
+    cce@rhel8: CCE-82005-0
+    cce@rhcos4: CCE-82517-4
+
+references:
+    ospp: FMT_SMF_EXT.1
+    srg: SRG-OS-000095-GPOS-00049
+
+{{{ complete_ocil_entry_module_disable(module="firewire-core") }}}
+
+template:
+    name: kernel_module_disabled
+    vars:
+        kernmodule: firewire-core

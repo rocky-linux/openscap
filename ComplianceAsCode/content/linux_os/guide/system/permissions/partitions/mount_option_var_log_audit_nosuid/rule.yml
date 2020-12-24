@@ -1,0 +1,38 @@
+documentation_complete: true
+
+prodtype: fedora,ol7,ol8,rhel7,rhel8,rocky8,rhcos4
+
+title: 'Add nosuid Option to /var/log/audit'
+
+description: |-
+    The <tt>nosuid</tt> mount option can be used to prevent
+    execution of setuid programs in <tt>/var/log/audit</tt>. The SUID and SGID permissions
+    should not be required in directories containing audit log files.
+    {{{ describe_mount(option="nosuid", part="/var/log/audit") }}}
+
+rationale: |-
+    The presence of SUID and SGID executables should be tightly controlled. Users
+    should not be able to execute SUID or SGID binaries from partitions
+    designated for audit log files.
+
+{{{ complete_ocil_entry_mount_option("/var/log/audit", "nosuid") }}}
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-82148-8
+    cce@rhel8: CCE-82921-8
+
+references:
+    nist: CM-7(a),CM-7(b),CM-6(a),AC-6,AC-6(1),MP-7
+    nist-csf: PR.IP-1,PR.PT-2,PR.PT-3
+    srg: SRG-OS-000368-GPOS-00154
+
+platform: machine
+
+template:
+    name: mount_option
+    vars:
+        mountpoint: /var/log/audit
+        mountoption: nosuid
+        mount_has_to_exist: 'yes'

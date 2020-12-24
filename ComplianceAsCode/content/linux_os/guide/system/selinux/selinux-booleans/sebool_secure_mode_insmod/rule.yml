@@ -1,0 +1,28 @@
+documentation_complete: true
+
+prodtype: rhel7,rhel8,rocky8,rhv4
+
+title: 'Disable the secure_mode_insmod SELinux Boolean'
+
+description: |-
+    By default, the SELinux boolean <tt>secure_mode_insmod</tt> is disabled.
+    If this setting is enabled, it should be disabled.
+    {{{ describe_sebool_disable(sebool="secure_mode_insmod") }}}
+
+rationale: ""
+
+references:
+    anssi: BP28(R67)
+
+severity: medium
+
+identifiers:
+    cce@rhel7: CCE-82308-8
+    cce@rhel8: CCE-83310-3
+
+{{{ complete_ocil_entry_sebool_disabled(sebool="secure_mode_insmod") }}}
+
+template:
+    name: sebool
+    vars:
+        seboolid: secure_mode_insmod

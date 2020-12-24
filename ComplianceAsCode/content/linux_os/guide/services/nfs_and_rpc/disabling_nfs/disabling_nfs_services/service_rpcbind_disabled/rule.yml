@@ -1,0 +1,34 @@
+documentation_complete: true
+
+prodtype: rhel7,rhel8,rocky8,sle15
+
+title: 'Disable rpcbind Service'
+
+description: |-
+    The rpcbind utility maps RPC services to the ports on which they listen.
+    RPC processes notify rpcbind when they start, registering the ports they
+    are listening on and the RPC program numbers they expect to serve. The
+    rpcbind service redirects the client to the proper port number so it can
+    communicate with the requested service. If the system does not require RPC
+    (such as for NFS servers) then this service should be disabled.
+    {{{ describe_service_disable(service="rpcbind") }}}
+
+rationale: |-
+    If the system does not require rpc based services, it is recommended that
+    rpcbind be disabled to reduce the attack surface.
+
+severity: low
+
+identifiers:
+    cce@rhel7: CCE-80230-6
+    cce@rhel8: CCE-82858-2
+
+references:
+    cis@rhel8: 2.2.13
+    cis@sle15: 2.2.7
+
+template:
+    name: service_disabled
+    vars:
+        servicename: rpcbind
+        packagename: nfs-utils

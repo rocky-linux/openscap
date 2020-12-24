@@ -1,0 +1,27 @@
+documentation_complete: true
+
+prodtype: fedora,ol7,ol8,rhel7,rhel8,rocky8
+
+title: 'Uninstall abrt-plugin-sosreport Package'
+
+description: |-
+    {{{ describe_package_remove(package="abrt-plugin-sosreport") }}}
+
+rationale: |-
+    <tt>abrt-plugin-sosreport</tt> provides a plugin to include an sosreport in an ABRT report.
+
+severity: low
+
+identifiers:
+    cce@rhel7: CCE-82911-9
+    cce@rhel8: CCE-82910-1
+
+references:
+    srg: SRG-OS-000095-GPOS-00049
+
+{{{ complete_ocil_entry_package(package="abrt-plugin-sosreport") }}}
+
+template:
+    name: package_removed
+    vars:
+        pkgname: abrt-plugin-sosreport

@@ -1,0 +1,49 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'Ensure that anonymous requests to the API Server are authorized'
+
+description: |-
+    By default, anonymous access to the OpenShift API is enabled, but at
+    the same time, all requests must be authorized. If no authentication
+    mechanism is used, the request is assigned the <tt>system:anonymous</tt>
+    virtual user and the <tt>system:unauthenticated</tt> virtual group.
+    This allows the authorization layer to determin which requests, if any,
+    is an anonymous user authorized to make.
+
+    To verify the authorization rules for anonymous requests run the following:
+    <pre>$ oc describe clusterrolebindings</pre>
+    and inspect the bidnings of the <tt>system:anonymous</tt>
+    virtual user and the <tt>system:unauthenticated</tt> virtual group.
+
+    To test that an anonymous request is authorized to access the <tt>readyz</tt>
+    endpoint, run:
+    <pre>$ oc get --as="system:anonymous" --raw='/readyz?verbose'</pre>
+    In contrast, a request to list all projects should not be authorized:
+    <pre>$ oc get --as="system:anonymous" projects</pre>
+
+rationale: |-
+    When enabled, requests that are not rejected by other configured
+    authentication methods are treated as anonymous requests. These requests
+    are then served by the API server. If you are using RBAC authorization,
+    it is generally considered reasonable to allow anonymous access to the
+    API Server for health checks and discovery purposes, and hence this
+    recommendation is not scored. However, you should consider whether
+    anonymous discovery is an acceptable risk for your purposes.
+
+severity: medium
+
+references:
+    cis: 1.2.1
+
+ocil_clause: 'anonymous requests are not authorized'
+
+ocil: |-
+    Run the following command to view the authorization rules for anonymous requests:
+    <pre>$ oc describe clusterrolebindings</pre>
+    To test that an anonymous request is authorized to access the <tt>readyz</tt>
+    endpoint, run:
+    <pre>$ oc get --as="system:anonymous" --raw='/readyz?verbose'</pre>
+    In contrast, a request to list all projects should not be authorized:
+    <pre>$ oc get --as="system:anonymous" projects</pre>

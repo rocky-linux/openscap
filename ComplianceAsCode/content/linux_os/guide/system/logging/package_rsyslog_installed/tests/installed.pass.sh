@@ -1,0 +1,3 @@
+#!/bin/bash
+# packages = rsyslog
+

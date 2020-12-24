@@ -1,0 +1,53 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'Configure the Encryption Provider'
+
+description: |-
+    To encrypt the etcd key-value store, set the encryption type <tt>aescbc</tt> in the
+    <tt>apiserver</tt> object which configures the API server itself.
+    <pre>
+    spec:
+      encryption:
+        type: aescbc
+    </pre>
+
+rationale: |-
+    etcd is a highly available key-value store used by OpenShift deployments
+    for persistent storage of all REST API objects. These objects are
+    sensitive in nature and should be encrypted at rest to avoid any
+    disclosures.
+
+identifiers:
+  cce@ocp4: CCE-83585-0
+
+
+severity: medium
+
+references:
+    cis: 1.2.33
+
+
+ocil_clause: '<tt>aescbc</tt> is not set as the encryption type for etcd.'
+
+ocil: |-
+    Run the following command:
+    <pre>$ oc get apiserver cluster -ojson | jq -r '.spec.encryption.type'</pre>
+    The output should return <tt>aescdc</tt> as the encryption type.
+
+warnings:
+- general: |-
+    {{{ openshift_cluster_setting("/apis/config.openshift.io/v1/apiservers/cluster") | indent(4) }}}
+
+template:
+  name: yamlfile_value
+  vars:
+    ocp_data: "true"
+    entity_check: "at least one"
+    filepath: '/apis/config.openshift.io/v1/apiservers/cluster'
+    yamlpath: '.spec.encryption.type'
+    values:
+    - value: 'aescbc'
+      type: "string"
+      operation: "pattern match"

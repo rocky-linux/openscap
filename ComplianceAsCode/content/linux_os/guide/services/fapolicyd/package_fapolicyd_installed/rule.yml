@@ -1,0 +1,31 @@
+documentation_complete: true
+
+prodtype: fedora,rhcos4,ol8,rhel8,rocky8
+
+title: 'Install fapolicyd Package'
+
+description: |-
+    {{{ describe_package_install(package="fapolicyd") }}}
+
+rationale: |-
+    <tt>fapolicyd</tt> (File Access Policy Daemon)
+    implements application whitelisting to decide file access rights.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-82191-8
+    cce@rhcos4: CCE-82533-1
+
+references:
+    nist: CM-6(a),SI-4(22)
+    srg: SRG-OS-000370-GPOS-00155
+
+ocil_clause: 'the package is not installed'
+
+ocil: '{{{ ocil_package(package="fapolicyd") }}}'
+
+template:
+    name: package_installed
+    vars:
+        pkgname: fapolicyd

@@ -1,0 +1,24 @@
+documentation_complete: true
+
+prodtype: rhel7,rhel8,rocky8
+
+title: 'Uninstall dovecot Package'
+
+description: |-
+    {{{ describe_package_remove(package="dovecot") }}}
+
+rationale: |-
+    If there is no need to make the Dovecot software available,
+    removing it provides a safeguard against its activation.
+
+severity: unknown
+
+identifiers:
+    cce@rhel7: CCE-80295-9
+
+{{{ complete_ocil_entry_package(package="dovecot") }}}
+
+template:
+    name: package_removed
+    vars:
+        pkgname: dovecot

@@ -1,0 +1,27 @@
+documentation_complete: true
+
+prodtype: ol7,ol8,rhel7,rhel8,rocky8
+
+title: 'Uninstall squid Package'
+
+description: '{{{ describe_package_remove(package="squid") }}}'
+
+rationale: |-
+    If there is no need to make the proxy server software available,
+    removing it provides a safeguard against its activation.
+
+severity: unknown
+
+identifiers:
+    cce@rhel7: CCE-80286-8
+    cce@rhel8: CCE-82189-2
+
+{{{ complete_ocil_entry_package(package="squid") }}}
+
+references:
+    cis@rhel8: 2.2.6
+
+template:
+    name: package_removed
+    vars:
+        pkgname: squid

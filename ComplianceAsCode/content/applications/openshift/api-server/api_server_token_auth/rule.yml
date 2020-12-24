@@ -1,0 +1,58 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'Disable Token-based Authentication'
+
+description: |-
+    To ensure OpenShift does not accept token-based authentication,
+    follow the OpenShift documentation and configure alternate mechanisms for
+    authentication. Then, edit the API Server pod specification file
+    Edit the <tt>openshift-kube-apiserver</tt> configmap
+    and remove the <tt>token-auth-file</tt> parameter:
+    <pre>
+    "apiServerArguments":{
+      ...
+      "token-auth-file":[
+        "/path/to/any/file"
+      ],
+      ...
+    </pre>
+
+rationale: |-
+    The token-based authentication utilizes static tokens to authenticate
+    requests to the API Server. The tokens are stored in clear-text in a file
+    on the API Server, and cannot be revoked or rotated without restarting the
+    API Server.
+
+identifiers:
+  cce@ocp4: CCE-83481-2
+
+
+severity: high
+
+references:
+    cis: 1.2.3
+
+ocil_clause: '<tt>token-auth-file</tt> argument is configured'
+
+ocil: |-
+    Run the following command:
+    <pre>$ oc get configmap config -n openshift-kube-apiserver -ojson | jq -r '.data["config.yaml"]' | jq '.apiServerArguments' | grep "token-auth-file"</pre>
+    The output should be empty as OpenShift does not support token-based authentication at all.
+
+warnings:
+    - general: |-
+        {{{ openshift_cluster_setting("/api/v1/namespaces/openshift-kube-apiserver/configmaps/config") | indent(8) }}}
+
+template:
+    name: yamlfile_value
+    vars:
+        ocp_data: "true"
+        filepath: '/api/v1/namespaces/openshift-kube-apiserver/configmaps/config'
+        yamlpath: '.data["config.yaml"]'
+        entity_check: "none satisfy"
+        values:
+            - value: 'token-auth-file'
+              type: "string"
+              operation: "pattern match"

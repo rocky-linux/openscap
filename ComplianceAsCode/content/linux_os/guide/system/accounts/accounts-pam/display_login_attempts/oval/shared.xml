@@ -1,0 +1,22 @@
+<def-group>
+  <definition class="compliance" id="display_login_attempts" version="1">
+    {{{ oval_metadata("Configure the system to notify users of last login/access using pam_lastlog.") }}}
+    <criteria>
+      <criterion comment="Conditions for pam_lastlog are satisfied" test_ref="test_display_login_attempts" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test check="all" comment="Check the pam_lastlog configuration" id="test_display_login_attempts" version="1">
+    <ind:object object_ref="obj_display_login_attempts" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_display_login_attempts" version="1">
+    <!-- Read whole /etc/pam.d/postlogin as single line so we can verify form
+         of both pam_lastlog.so rows and their order -->
+    <ind:behaviors singleline="true" />
+    <ind:filepath>/etc/pam.d/postlogin</ind:filepath>
+    <ind:pattern operation="pattern match">[\n][\s]*session[\s]+\[default=1\][\s]+pam_lastlog.so[\s\w\d\=]+showfailed[\s\w\d\=]*\n[\s]*session[\s]+optional[\s]+pam_lastlog.so[\s\w\d\=]+showfailed[\s\w\d\=]*[\n]</ind:pattern>
+    <ind:instance datatype="int" operation="equals">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+</def-group>

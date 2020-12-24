@@ -1,0 +1,33 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'Manage Image Provenance Using ImagePolicyWebhook'
+
+description: |-
+    OpenShift administrators can control which images can be imported, tagged, and run in a cluster.
+    There are two facilities for this purpose: (1) Allowed Registries, allowing administrators to
+    restrict image origins to known external registries; and (2) ImagePolicy Admission plug-in which lets
+    administrators specify specific images which are allowed to run on the OpenShift cluster.
+
+    Configure an Image policy per the Image Policy chapter in the OpenShift documentation:
+    {{{ weblink(link="https://docs.openshift.com/container-platform/4.4/openshift_images/image-configuration.html") }}}
+
+rationale: |-
+    Image Policy ensures that only approved container images are allowed to be ran on the OpenShift platform.
+
+severity: medium
+
+ocil_clause: 'an image policy is not configured'
+
+ocil: |-
+    To ensure that an image policy is configured, review the output
+    returned from the following command:
+    <pre>$ oc get image.config.openshift.io/cluster -o yaml</pre>
+
+
+#identifiers:
+#    cce@ocp4:
+
+references:
+    cis@ocp4: 5.5.1
