@@ -1,8 +1,0 @@
-documentation_complete: true
-
-prodtype: ocp4
-
-title: 'OpenShift - Master Node Settings'
-
-description: |-
-    Contains evaluations for the master node configuration settings.

@@ -1,6 +1,0 @@
-supported_languages:
-  - anaconda
-  - ansible
-  - bash
-  - oval
-  - puppet

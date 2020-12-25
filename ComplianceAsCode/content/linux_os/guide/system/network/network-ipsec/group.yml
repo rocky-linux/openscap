@@ -1,7 +1,0 @@
-documentation_complete: true
-
-title: 'IPSec Support'
-
-description: |-
-    Support for Internet Protocol Security (IPsec)
-    is provided with Libreswan.
