@@ -10,20 +10,19 @@ pkg_manager: "yum"
 
 init_system: "systemd"
 
-# The fingerprints below are retrieved from https://access.redhat.com/security/team/key
-pkg_release: "PKG_RELASE"
-pkg_version: "PKG_VERSION"
-aux_pkg_release: "AUX_PKG_RELEASE"
-aux_pkg_version: "AUX_PKG_VERSION"
+pkg_release: "60287f36"
+pkg_version: "6d745a60"
+#aux_pkg_release: "AUX_PKG_RELEASE"
+#aux_pkg_version: "AUX_PKG_VERSION"
 
-release_key_fingerprint: "RELEASE_KEY_FINGERPRINT"
-auxiliary_key_fingerprint: "AUXILIARY_KEY_FINGERPRINT"
+#release_key_fingerprint: "RELEASE_KEY_FINGERPRINT"
+#auxiliary_key_fingerprint: "AUXILIARY_KEY_FINGERPRINT"
 oval_feed_url: "https://www.redhat.com/security/data/oval/com.redhat.rhsa-RHEL8.xml"
 
 cpes_root: "../shared/applicability"
 cpes:
   - rhel8:
-      name: "cpe:/o:rocky:rocky_linux:8"
+      name: "cpe:/o:rocky:rocky:8"
       title: "Rocky Linux 8"
       check_id: installed_OS_is_rocky8
 
