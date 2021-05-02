@@ -248,7 +248,7 @@ selections:
     - security_patches_up_to_date
 
     ## 1.10 Ensure system-wide crypto policy is not legacy (Scored)
-    #- var_system_crypto_policy
+    - var_system_crypto_policy=future
     - configure_crypto_policy
 
     ## 1.11 Ensure system-wide crytpo policy is FUTURE or FIPS (Scored)
@@ -716,8 +716,7 @@ selections:
     ### 4.2.3 Ensure permissions on all logfiles are configured (Scored)
     # NEEDS RULE - https://github.com/ComplianceAsCode/content/issues/5523
 
-    ## 4.3 Ensure logrotate is conifgured (Not Scored)
-    - ensure_logrotate_activated
+    ## 4.3 Ensure logrotate is configured (Not Scored)
 
     # 5 Access, Authentication and Authorization
 
@@ -827,7 +826,8 @@ selections:
     - sshd_set_idle_timeout
 
     # ClientAliveCountMax 0
-    - sshd_set_keepalive
+    - var_sshd_set_keepalive=0
+    - sshd_set_keepalive_0
 
     ### 5.2.14 Ensure SSH LoginGraceTime is set to one minute
     ###        or less (Scored)

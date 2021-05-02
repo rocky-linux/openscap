@@ -1,6 +1,6 @@
 diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
---- content.org/CMakeLists.txt	2021-03-06 09:29:32.134073187 +0900
-+++ content/CMakeLists.txt	2021-03-06 09:54:06.334683953 +0900
+--- content.org/CMakeLists.txt	2021-05-03 07:27:49.961754374 +0900
++++ content/CMakeLists.txt	2021-05-03 07:29:29.739430343 +0900
 @@ -88,6 +88,7 @@
  option(SSG_PRODUCT_VSEL "If enabled, the McAfee VSEL SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
  option(SSG_PRODUCT_WRLINUX8 "If enabled, the WRLinux8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
@@ -29,8 +29,8 @@ diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
  # ZIP only contains source datastreams and kickstarts, people who
  # want sources to build from should get the tarball instead.
 diff -Nru content.org/build_product content/build_product
---- content.org/build_product	2021-03-06 09:29:32.186073518 +0900
-+++ content/build_product	2021-03-06 09:54:27.971360812 +0900
+--- content.org/build_product	2021-05-03 07:27:50.029755540 +0900
++++ content/build_product	2021-05-03 07:29:29.739430343 +0900
 @@ -295,6 +295,7 @@
  	VSEL
  	WRLINUX8
@@ -39,9 +39,31 @@ diff -Nru content.org/build_product content/build_product
  )
  
  DEFAULT_OVAL_MAJOR_VERSION=5
+diff -Nru content.org/shared/checks/oval/install_mcafee_hbss.xml content/shared/checks/oval/install_mcafee_hbss.xml
+--- content.org/shared/checks/oval/install_mcafee_hbss.xml	2021-05-03 07:27:50.321760545 +0900
++++ content/shared/checks/oval/install_mcafee_hbss.xml	2021-05-03 07:29:57.423884084 +0900
+@@ -14,6 +14,7 @@
+ 	<platform>multi_platform_sle</platform>
+ 	<platform>multi_platform_ubuntu</platform>
+ 	<platform>multi_platform_wrlinux</platform>
++	<platform>multi_platform_rocky</platform>
+       </affected>
+       <description>McAfee Host-Based Intrusion Detection Software (HBSS) software
+       should be installed.</description>
+diff -Nru content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml content/shared/checks/oval/sysctl_kernel_ipv6_disable.xml
+--- content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-05-03 07:27:50.325760613 +0900
++++ content/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-05-03 07:30:19.808247714 +0900
+@@ -14,6 +14,7 @@
+ 	<platform>multi_platform_sle</platform>
+ 	<platform>multi_platform_ubuntu</platform>
+ 	<platform>multi_platform_wrlinux</platform>
++	<platform>multi_platform_rocky</platform>
+       </affected>
+       <description>Disables IPv6 for all network interfaces.</description>
+     </metadata>
 diff -Nru content.org/ssg/constants.py content/ssg/constants.py
---- content.org/ssg/constants.py	2021-03-06 09:29:32.374074715 +0900
-+++ content/ssg/constants.py	2021-03-06 09:56:39.017711174 +0900
+--- content.org/ssg/constants.py	2021-05-03 07:27:50.369761368 +0900
++++ content/ssg/constants.py	2021-05-03 07:29:29.739430343 +0900
 @@ -24,7 +24,8 @@
      'sle12', 'sle15',
      'ubuntu1604', 'ubuntu1804', 'ubuntu2004',

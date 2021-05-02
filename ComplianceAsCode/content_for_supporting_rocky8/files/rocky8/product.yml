@@ -22,7 +22,7 @@ oval_feed_url: "https://www.redhat.com/security/data/oval/com.redhat.rhsa-RHEL8.
 cpes_root: "../shared/applicability"
 cpes:
   - rhel8:
-      name: "cpe:/o:rocky:rocky_linux:8"
+      name: "cpe:/o:rocky:rocky:8"
       title: "Rocky Linux 8"
       check_id: installed_OS_is_rocky8
 
