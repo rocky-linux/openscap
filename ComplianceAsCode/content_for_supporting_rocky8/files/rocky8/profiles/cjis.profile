@@ -133,7 +133,6 @@ selections:
     - aide_periodic_cron_checking
     - rpm_verify_permissions
     - rpm_verify_hashes
-    - ensure_redhat_gpgkey_installed
     - ensure_gpgcheck_globally_activated
     - ensure_gpgcheck_never_disabled
     - security_patches_up_to_date
