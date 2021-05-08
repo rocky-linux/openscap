@@ -33,7 +33,6 @@ selections:
     - partition_for_var_log_audit
     - selinux_state
     - selinux_policytype
-    - ensure_redhat_gpgkey_installed
     - security_patches_up_to_date
     - ensure_gpgcheck_globally_activated
     - ensure_gpgcheck_never_disabled

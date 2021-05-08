@@ -8,7 +8,6 @@ description: |-
     all of these checks should pass.
 
 selections:
-    - ensure_redhat_gpgkey_installed
     - ensure_gpgcheck_globally_activated
     - rpm_verify_permissions
     - rpm_verify_hashes

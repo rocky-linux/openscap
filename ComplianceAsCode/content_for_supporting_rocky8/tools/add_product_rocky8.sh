@@ -9,4 +9,7 @@ patch -p1 < ./content_for_supporting_rocky8/files/diff_content_for_supporting_ro
 
 ### add rocky8 to several XML definition files.
 find ./linux_os -type f -exec sed -i '/prodtype:/s/rhel8/rhel8,rocky8/g' {} \;
-find ./linux_os -type f -exec sed -i '/platform/s/multi_platform_ol/multi_platform_ol,multi_platform_rocky/g' {} \;
+find ./tests -type f -exec sed -i '/prodtype:/s/rhel8/rhel8,rocky8/g' {} \;
+find ./linux_os -type f -exec sed -i '/platform/s/multi_platform_rhel/multi_platform_rhel,multi_platform_rocky/g' {} \;
+find ./shared -type f -exec sed -i '/platform/s/multi_platform_rhel/multi_platform_rhel,multi_platform_rocky/g' {} \;
+find ./shared -type f -exec sed -i '/platform/s/Red Hat Enterprise Linux 8/Red Hat Enterprise Linux 8,multi_platform_rocky/g' {} \;
