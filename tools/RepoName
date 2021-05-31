@@ -1,0 +1,159 @@
+#!/bin/bash
+dir=`pwd`
+version='0.0.2'
+
+# Print Usage and Help. 
+show_help()
+{
+echo "
+
+RepoName ($version)
+	
+        This script is provided to download OpenSCAP Enterprise Linux Ansible Repositories and change them to function with Rocky Linux.
+        Contact information: https://github.com/rocky-linux/openscap/
+
+        Usage: $0 [-u URL] [-r Repo Name] [-a All Repos] [-V Version] [-o OS Repo Version]
+        If no repository is given it will assume you want all repositoris from Enterprise Linux 8.
+
+        -v Version      Print the version of this script.
+        -a              Do all Repositories for given URL.
+        -r              Name of the repository to Download
+        -u              URL of the repos you want to download and rebrand.
+        -o              OS repo version default is Enterprise Linux 8
+        -h              Print this Message
+
+        Examples: 
+            Get ansible-role-rhel8-stig repository and change the branding.
+            $0 -u https://github.com/RedHatOfficial/ -r ansible-role-rhel8-stig
+
+            Get all rhel8 repositories and change the branding.
+            $0 -u https://github.com/RedHatOfficial/ -a
+"
+}
+
+# Print Version
+show_version()
+{
+echo "RepoName version: $version";
+}
+
+#Download repository from url provided.
+download_repo()
+{
+# Create directory and git repos.
+        url=$1
+        repository_name=$2;
+
+	declare -a Debrand=("s/rhel8/rocky8/g" "s/redhat/rocky/g" "s/CentOS/Rocky/g" "s/RedHat/Rocky/g" "s/Red\sHat/Rocky/g" "s/red\shat/rocky/g");
+	echo "$url $repository_name"
+	git clone $url/$repository_name;
+	declare -a Files=(`find $dir/ansible/ -type f -not -path '*/\.*'`)
+       	# For each set of Debrand run through all files and change the Name.
+	for f in "${Files[@]}"
+        do
+        	for d in "${Debrand[@]}"
+                do
+                # Uncomment for Debugging
+                #echo sed -i $d $f
+                	sed -i $d $f
+		done
+	done
+        new_repostitory_name=`echo $repository_name | sed 's/rhel8/rocky/g'`
+        mv $repository_name $new_repostitory_name
+
+}
+one_repo()
+{
+        if [[ -z "$url" ]];
+        then
+                show_help
+	fi
+	echo "Passed in -r this will download the specified repository $repo"
+	download_repo "$url" "$repo"
+        check_repo
+}
+# Get all repositories from provided source.
+all_repos()
+{
+	if [[ -z $url ]]; then
+		show_help;
+		exit;
+	fi
+	echo "Passed in -a this will download and clean all repos with rhel8 in the name."
+	repos=(`curl -sL $url | grep 'href' | grep 'rhel8' | grep item | sed 's/.*\/RedHatOfficial\///g' | sed 's/".*//g'| tr '\n' ' '`); 
+	for r in ${repos[@]}; do
+		echo "Downloading and rebranding $r"
+	        download_repo "$url" "$r"
+	done;
+	check_repo
+}
+
+# Verify repositories are cleaned.
+check_repo()
+{
+	if [[ -d "$dir/ansible/" ]]; then
+		cd $dir/ansible
+	        #Check if branding stil exists.
+	        redhat=(`grep -rci 'redhat' | grep -v .git | cut -d: -f2-`)
+        	centos=(`grep -rci 'centos' | grep -v .git | cut -d: -f2-`)
+	        rhel8=(`grep -rci 'rhel8' | grep -v .git | cut -d: -f2-`)
+		red_hat=(`grep -rci 'red hat' | grep -v .git | cut -d: -f2-`)
+	        declare -i sumredhat
+	        declare -i sumcentos
+	        declare -i sumrhel8
+	        IFS=+ sumredhat="${redhat[*]}"
+		IFS=+ sumred_hat="${red_hat[*]}"
+	        IFS=+ sumcentos="${centos[*]}"
+	        IFS=+ sumrhel8="${rhel8[*]}"
+		# Run through the list of copyrighted names and grep out any names still remaining.
+		if [[ $sumredhat -gt 0 ]]; then
+			echo "Mentions of RedHat still found: $sumredhat\n";
+		elif [[ $sumred_hat -gt 0 ]]; then
+                        echo "Mentions of Red Hat still found: $sumred_hat\n";
+		elif [[ $sumcentos -gt 0 ]]; then 
+			echo "Mentions of CentOS still found found: $sumcentos\n";
+		elif [[ $sumrhel8 -gt 0 ]]; then
+			echo "Mentions of rhel8 still found: $sumrhel8\n";
+		else
+			echo
+			echo "It appears the repo has been cleaned and all copyrights removed. This should be peer reviewed before making these repositories public.";
+			echo
+		fi
+	else
+		echo "./ansible director not found something went wrong. Please report bug https://github.com/RedHatOfficial/";
+	fi
+}
+
+# Create and move to ansible subdirectory
+mkdir -p ansible
+cd ansible
+
+# Get arguements Repo and Url.
+while getopts ":u:r:ahv" FLAG; do
+  case $FLAG in
+        u ) # Set option "u" [URL]
+                url=$OPTARG;;
+        r ) # Set option "r" [Repository_Name]
+		repo=$OPTARG; one_repo;;
+        a ) # Set option "a" [All_Repositories]
+                all_repos;;
+        h ) # Set option "h" [Help_Message]
+                show_help;;
+	v ) # Print version of this script.
+		show_version;;
+        \? )
+                echo "Invalid option: -$OPTARG. Use -h flag for help.";
+                exit;
+                ;;
+  esac
+done
+# Uncomment for debugging Verify Arguements
+#echo "$url $repository_name $help"
+# If URL not provided echo usage.
+if [[ $# -eq 0 ]]; then
+        show_help
+
+fi
+
+# Verify all repos no longer contain copyrights and print out count.
+exit;
