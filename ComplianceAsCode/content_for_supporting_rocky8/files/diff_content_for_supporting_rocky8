@@ -1,7 +1,7 @@
 diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
 --- content.org/CMakeLists.txt	2021-05-03 07:27:49.961754374 +0900
 +++ content/CMakeLists.txt	2021-05-03 07:29:29.739430343 +0900
-@@ -88,6 +88,7 @@
+@@ -92,6 +92,7 @@
  option(SSG_PRODUCT_VSEL "If enabled, the McAfee VSEL SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
  option(SSG_PRODUCT_WRLINUX8 "If enabled, the WRLinux8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
  option(SSG_PRODUCT_WRLINUX1019 "If enabled, the WRLinux1019 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
@@ -9,7 +9,7 @@ diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
  
  option(SSG_CENTOS_DERIVATIVES_ENABLED "If enabled, CentOS derivative content will be built from the RHEL content" TRUE)
  option(SSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED "If enabled, Scientific Linux derivative content will be built from the RHEL content" TRUE)
-@@ -277,6 +278,7 @@
+@@ -285,6 +286,7 @@
  message(STATUS "McAfee VSEL: ${SSG_PRODUCT_VSEL}")
  message(STATUS "WRLinux 8: ${SSG_PRODUCT_WRLINUX8}")
  message(STATUS "WRLinux 1019: ${SSG_PRODUCT_WRLINUX1019}")
@@ -17,21 +17,22 @@ diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
  
  
  
-@@ -399,6 +401,10 @@
+@@ -407,6 +409,10 @@
  if (SSG_PRODUCT_WRLINUX1019)
-     add_subdirectory("wrlinux1019")
+     add_subdirectory("products/wrlinux1019" "wrlinux1019")
  endif()
 +if (SSG_PRODUCT_ROCKY8)
-+    add_subdirectory("rocky8")
++    add_subdirectory("products/rocky8" "rocky8")
 +endif()
 +
  
  # ZIP only contains source datastreams and kickstarts, people who
  # want sources to build from should get the tarball instead.
+
 diff -Nru content.org/build_product content/build_product
 --- content.org/build_product	2021-05-03 07:27:50.029755540 +0900
 +++ content/build_product	2021-05-03 07:29:29.739430343 +0900
-@@ -295,6 +295,7 @@
+@@ -309,6 +309,7 @@
  	VSEL
  	WRLINUX8
  	WRLINUX1019
@@ -74,7 +75,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
  ]
  
  JINJA_MACROS_BASE_DEFINITIONS = os.path.join(os.path.dirname(os.path.dirname(
-@@ -180,6 +181,7 @@
+@@ -181,6 +182,7 @@
      "Ubuntu 20.04": "ubuntu2004",
      "WRLinux 8": "wrlinux8",
      "WRLinux 1019": "wrlinux1019",
@@ -82,7 +83,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
  }
  
  
-@@ -194,7 +196,7 @@
+@@ -195,7 +197,7 @@
  }
  
  MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhosp", "rhv", "debian", "ubuntu",
@@ -91,7 +92,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
  
  MULTI_PLATFORM_MAPPING = {
      "multi_platform_debian": ["debian9", "debian10"],
-@@ -210,6 +212,7 @@
+@@ -211,6 +213,7 @@
      "multi_platform_sle": ["sle12", "sle15"],
      "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
      "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
@@ -99,7 +100,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
  }
  
  RHEL_CENTOS_CPE_MAPPING = {
-@@ -375,6 +378,7 @@
+@@ -376,6 +379,7 @@
      'ol': 'Oracle Linux',
      'ocp': 'Red Hat OpenShift Container Platform',
      'rhcos': 'Red Hat Enterprise Linux CoreOS',

@@ -128,10 +128,10 @@ selections:
     - package_sudo_installed
 
     ### 1.3.2 Ensure sudo commands use pty (Scored)
-    # NEEDS RULE - https://github.com/ComplianceAsCode/content/issues/5220
+    - sudo_add_use_pty
 
     ### 1.3.3 Ensure sudo log file exists (Scored)
-    # NEEDS RULE - https://github.com/ComplianceAsCode/content/issues/5221
+    - sudo_custom_logfile
 
     ## 1.4 Filesystem Integrity Checking
 

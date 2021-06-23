@@ -1,7 +1,7 @@
 documentation_complete: true
 
 metadata:
-    version: V1R1
+    version: V1R2
     SMEs:
         - carlosmmatos
 
@@ -11,7 +11,7 @@ title: 'DISA STIG for Red Hat Enterprise Linux 8'
 
 description: |-
     This profile contains configuration checks that align to the
-    DISA STIG for Red Hat Enterprise Linux 8 V1R1.
+    DISA STIG for Red Hat Enterprise Linux 8 V1R2.
 
     In addition to being applicable to Red Hat Enterprise Linux 8, DISA recognizes this
     configuration baseline as applicable to the operating system tier of
@@ -36,7 +36,8 @@ selections:
     - var_password_pam_minclass=4
     - var_accounts_minimum_age_login_defs=1
     - var_accounts_max_concurrent_login_sessions=10
-    - var_password_pam_unix_remember=5
+    - var_password_pam_remember=5
+    - var_password_pam_remember_control_flag=required
     - var_selinux_state=enforcing
     - var_selinux_policy_name=targeted
     - var_accounts_password_minlen_login_defs=15
@@ -76,7 +77,7 @@ selections:
     - enable_dracut_fips_module
 
     ### Rules:
-    # RHEL-08-010070
+    # RHEL-08-010000
     - installed_OS_is_vendor_supported
 
     # RHEL-08-010010
@@ -99,6 +100,7 @@ selections:
     - banner_etc_issue
 
     # RHEL-08-010070
+    - rsyslog_remote_access_monitoring
 
     # RHEL-08-010090
 
@@ -108,6 +110,7 @@ selections:
     - set_password_hashing_algorithm_logindefs
 
     # RHEL-08-010120
+    - accounts_password_all_shadowed_sha512
 
     # RHEL-08-010130
     - accounts_password_pam_unix_rounds_system_auth
@@ -183,8 +186,10 @@ selections:
     - configure_openssl_crypto_policy
 
     # RHEL-08-010294
+    - configure_openssl_tls_crypto_policy
 
     # RHEL-08-010295
+    - configure_gnutls_tls_crypto_policy
 
     # RHEL-08-010300
     - file_permissions_binary_dirs
@@ -232,6 +237,9 @@ selections:
 
     # RHEL-08-010381
     - sudo_remove_no_authenticate
+
+    # RHEL-08-010382
+    - sudo_restrict_privilege_elevation_to_authorized
 
     # RHEL-08-010383
     - sudoers_validate_passwd
@@ -513,7 +521,8 @@ selections:
     - accounts_password_set_max_life_existing
 
     # RHEL-08-020220
-    - accounts_password_pam_unix_remember
+    - accounts_password_pam_pwhistory_remember_system_auth
+    - accounts_password_pam_pwhistory_remember_password_auth
 
     # RHEL-08-020230
     - accounts_password_pam_minlen
@@ -565,6 +574,7 @@ selections:
     - accounts_umask_etc_bashrc
 
     # RHEL-08-030000
+    - audit_rules_suid_privilege_function
 
     # RHEL-08-030010
     - rsyslog_cron_logging
@@ -793,6 +803,7 @@ selections:
     # RHEL-08-030650
 
     # RHEL-08-030660
+    - auditd_audispd_configure_sufficiently_large_partition
 
     # RHEL-08-030670
     - package_rsyslog_installed
@@ -945,6 +956,7 @@ selections:
     # RHEL-08-040140
     - package_usbguard_installed
     - service_usbguard_enabled
+    - usbguard_generate_policy
 
     # RHEL-08-040150
 

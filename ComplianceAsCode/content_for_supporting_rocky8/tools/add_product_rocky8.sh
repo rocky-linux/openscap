@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### copy rocky8 directory under new directory
-cp -pr ./content_for_supporting_rocky8/files/rocky8 .
+cp -pr ./content_for_supporting_rocky8/files/rocky8 ./products/
 cp -pr ./content_for_supporting_rocky8/files/installed_OS_is_rocky8.xml ./shared/checks/oval/
 
 ### patch to several files for supporting rocky8
