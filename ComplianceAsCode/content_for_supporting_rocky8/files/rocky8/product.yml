@@ -2,7 +2,7 @@ product: rocky8
 full_name: Rocky Linux 8
 type: platform
 
-benchmark_root: "../linux_os/guide"
+benchmark_root: "../../linux_os/guide"
 
 profiles_root: "./profiles"
 
@@ -19,7 +19,7 @@ rocky_major_version: "8"
 
 oval_feed_url: "https://www.redhat.com/security/data/oval/com.redhat.rhsa-RHEL8.xml"
 
-cpes_root: "../shared/applicability"
+cpes_root: "../../shared/applicability"
 cpes:
   - rocky8:
       name: "cpe:/o:rocky:rocky:8"

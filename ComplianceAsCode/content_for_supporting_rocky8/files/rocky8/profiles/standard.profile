@@ -1,10 +1,10 @@
 documentation_complete: true
 
-title: 'Standard System Security Profile for Rocky Linux 8'
+title: 'Standard System Security Profile for Red Hat Enterprise Linux 8'
 
 description: |-
     This profile contains rules to ensure standard security baseline
-    of a Rocky Linux 8 system. Regardless of your system's workload
+    of a Red Hat Enterprise Linux 8 system. Regardless of your system's workload
     all of these checks should pass.
 
 selections:
