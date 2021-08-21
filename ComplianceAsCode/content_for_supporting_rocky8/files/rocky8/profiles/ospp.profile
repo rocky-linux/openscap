@@ -113,6 +113,7 @@ selections:
     - accounts_umask_etc_csh_cshrc
 
     ### Software update
+#    - ensure_redhat_gpgkey_installed
     - ensure_gpgcheck_globally_activated
     - ensure_gpgcheck_local_packages
     - ensure_gpgcheck_never_disabled

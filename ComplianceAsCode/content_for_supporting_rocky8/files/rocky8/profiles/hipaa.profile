@@ -86,6 +86,7 @@ selections:
     - sysctl_kernel_randomize_va_space
     - rpm_verify_hashes
     - rpm_verify_permissions
+#    - ensure_redhat_gpgkey_installed
     - ensure_gpgcheck_globally_activated
     - ensure_gpgcheck_never_disabled
     - ensure_gpgcheck_local_packages

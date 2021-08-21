@@ -19,6 +19,8 @@ rocky_major_version: "8"
 
 oval_feed_url: "https://www.redhat.com/security/data/oval/com.redhat.rhsa-RHEL8.xml"
 
+grub2_uefi_boot_path: "/boot/efi/EFI/redhat"
+
 cpes_root: "../../shared/applicability"
 cpes:
   - rocky8:
