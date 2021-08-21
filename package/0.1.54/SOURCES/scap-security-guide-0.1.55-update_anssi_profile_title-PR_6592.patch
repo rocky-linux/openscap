@@ -1,0 +1,688 @@
+From e3dd773f905114c1d16ac3283611218a685f1722 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 3 Feb 2021 09:17:15 +0100
+Subject: [PATCH 1/5] Remove extends key from ANSSI intermediary profile
+
+This is not necessary as the ANSSI controls file handles this.
+---
+ rhel8/profiles/anssi_bp28_intermediary.profile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/rhel8/profiles/anssi_bp28_intermediary.profile b/rhel8/profiles/anssi_bp28_intermediary.profile
+index 64a9b542a0..4d0029af1d 100644
+--- a/rhel8/profiles/anssi_bp28_intermediary.profile
++++ b/rhel8/profiles/anssi_bp28_intermediary.profile
+@@ -7,7 +7,6 @@ description:
+     Agence nationale de la sécurité des systèmes d''information. Based on
+     https://www.ssi.gouv.fr/.
+ 
+-extends: anssi_bp28_minimal
+ 
+ selections:
+   - anssi:all:intermediary
+
+From 48845dbde69e69a043fc90622f21dc73d6a72018 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 3 Feb 2021 09:21:47 +0100
+Subject: [PATCH 2/5] Update title and descriptions of ANSSI profiles
+
+---
+ controls/anssi.yml                             |  2 +-
+ rhel7/profiles/anssi_nt28_enhanced.profile     | 12 +++++++++---
+ rhel7/profiles/anssi_nt28_high.profile         | 12 +++++++++---
+ rhel7/profiles/anssi_nt28_intermediary.profile | 14 ++++++++++----
+ rhel7/profiles/anssi_nt28_minimal.profile      | 14 ++++++++++----
+ rhel8/profiles/anssi_bp28_enhanced.profile     | 12 ++++++++----
+ rhel8/profiles/anssi_bp28_high.profile         | 14 +++++++++-----
+ rhel8/profiles/anssi_bp28_intermediary.profile | 11 +++++++----
+ rhel8/profiles/anssi_bp28_minimal.profile      | 12 ++++++++----
+ 9 files changed, 71 insertions(+), 32 deletions(-)
+
+diff --git a/controls/anssi.yml b/controls/anssi.yml
+index 2173d23f9d..54c05245b7 100644
+--- a/controls/anssi.yml
++++ b/controls/anssi.yml
+@@ -1,5 +1,5 @@
+ policy: 'ANSSI-BP-028'
+-title: 'ANSSI-BP-028'
++title: 'Configuration Recommendations of a GNU/Linux System'
+ id: anssi
+ version: '1.2'
+ source: https://www.ssi.gouv.fr/uploads/2019/03/linux_configuration-en-v1.2.pdf
+diff --git a/rhel7/profiles/anssi_nt28_enhanced.profile b/rhel7/profiles/anssi_nt28_enhanced.profile
+index 5893d12dbd..49fa8593fe 100644
+--- a/rhel7/profiles/anssi_nt28_enhanced.profile
++++ b/rhel7/profiles/anssi_nt28_enhanced.profile
+@@ -1,9 +1,15 @@
+ documentation_complete: true
+ 
+-title: 'DRAFT - ANSSI DAT-BP28 (enhanced)'
++title: 'ANSSI BP-028 (enhanced)'
+ 
+-description: 'Draft profile for ANSSI compliance at the enhanced level. ANSSI stands for Agence nationale de la sécurité des
+-    systèmes d''information. Based on https://www.ssi.gouv.fr/.'
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the enhanced hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+     - anssi:all:enhanced
+diff --git a/rhel7/profiles/anssi_nt28_high.profile b/rhel7/profiles/anssi_nt28_high.profile
+index 52ae1dd6d2..2853f20607 100644
+--- a/rhel7/profiles/anssi_nt28_high.profile
++++ b/rhel7/profiles/anssi_nt28_high.profile
+@@ -1,9 +1,15 @@
+ documentation_complete: true
+ 
+-title: 'DRAFT - ANSSI DAT-BP28 (high)'
++title: 'DRAFT - ANSSI BP-028 (high)'
+ 
+-description: 'Draft profile for ANSSI compliance at the high level. ANSSI stands for Agence nationale de la sécurité des systèmes
+-    d''information. Based on https://www.ssi.gouv.fr/.'
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the high hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+     - anssi:all:high
+diff --git a/rhel7/profiles/anssi_nt28_intermediary.profile b/rhel7/profiles/anssi_nt28_intermediary.profile
+index e18225247b..55f985a7a9 100644
+--- a/rhel7/profiles/anssi_nt28_intermediary.profile
++++ b/rhel7/profiles/anssi_nt28_intermediary.profile
+@@ -1,10 +1,16 @@
+ # Don't forget to enable build of tables in rhel7CMakeLists.txt when setting to true
+ documentation_complete: true
+ 
+-title: 'DRAFT - ANSSI DAT-BP28 (intermediary)'
++title: 'ANSSI BP-028 (intermediary)'
+ 
+-description: 'Draft profile for ANSSI compliance at the intermediary level. ANSSI stands for Agence nationale de la sécurité
+-    des systèmes d''information. Based on https://www.ssi.gouv.fr/.'
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the intermediary hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+-  - anssi:all:intermediary
++    - anssi:all:intermediary
+diff --git a/rhel7/profiles/anssi_nt28_minimal.profile b/rhel7/profiles/anssi_nt28_minimal.profile
+index 214f37d14b..7786a26b45 100644
+--- a/rhel7/profiles/anssi_nt28_minimal.profile
++++ b/rhel7/profiles/anssi_nt28_minimal.profile
+@@ -1,9 +1,15 @@
+ documentation_complete: true
+ 
+-title: 'DRAFT - ANSSI DAT-BP28 (minimal)'
++title: 'ANSSI BP-028 (minimal)'
+ 
+-description: 'Draft profile for ANSSI compliance at the minimal level. ANSSI stands for Agence nationale de la sécurité des
+-    systèmes d''information. Based on https://www.ssi.gouv.fr/.'
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the minimal hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+-  - anssi:all:minimal
++    - anssi:all:minimal
+diff --git a/rhel8/profiles/anssi_bp28_enhanced.profile b/rhel8/profiles/anssi_bp28_enhanced.profile
+index 4c39852b65..49fa8593fe 100644
+--- a/rhel8/profiles/anssi_bp28_enhanced.profile
++++ b/rhel8/profiles/anssi_bp28_enhanced.profile
+@@ -2,10 +2,14 @@ documentation_complete: true
+ 
+ title: 'ANSSI BP-028 (enhanced)'
+ 
+-description: 
+-    ANSSI BP-028 compliance at the enhanced level. ANSSI stands for
+-    Agence nationale de la sécurité des systèmes d'information. Based on
+-    https://www.ssi.gouv.fr/.
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the enhanced hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+     - anssi:all:enhanced
+diff --git a/rhel8/profiles/anssi_bp28_high.profile b/rhel8/profiles/anssi_bp28_high.profile
+index 6b0489e0f1..2853f20607 100644
+--- a/rhel8/profiles/anssi_bp28_high.profile
++++ b/rhel8/profiles/anssi_bp28_high.profile
+@@ -1,11 +1,15 @@
+ documentation_complete: false
+ 
+-title: 'ANSSI BP-028 (high)'
++title: 'DRAFT - ANSSI BP-028 (high)'
+ 
+-description: 
+-    ANSSI BP-028 compliance at the high level. ANSSI stands for
+-    Agence nationale de la sécurité des systèmes d'information. Based on
+-    https://www.ssi.gouv.fr/.
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the high hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+     - anssi:all:high
+diff --git a/rhel8/profiles/anssi_bp28_intermediary.profile b/rhel8/profiles/anssi_bp28_intermediary.profile
+index 4d0029af1d..50ab1ba0b8 100644
+--- a/rhel8/profiles/anssi_bp28_intermediary.profile
++++ b/rhel8/profiles/anssi_bp28_intermediary.profile
+@@ -2,11 +2,14 @@ documentation_complete: true
+ 
+ title: 'ANSSI BP-028 (intermediary)'
+ 
+-description: 
+-    ANSSI BP-028 compliance at the intermediary level. ANSSI stands for
+-    Agence nationale de la sécurité des systèmes d''information. Based on
+-    https://www.ssi.gouv.fr/.
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the intermediary hardening level.
+ 
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+   - anssi:all:intermediary
+diff --git a/rhel8/profiles/anssi_bp28_minimal.profile b/rhel8/profiles/anssi_bp28_minimal.profile
+index d8f076c3e7..d477d34787 100644
+--- a/rhel8/profiles/anssi_bp28_minimal.profile
++++ b/rhel8/profiles/anssi_bp28_minimal.profile
+@@ -2,10 +2,14 @@ documentation_complete: true
+ 
+ title: 'ANSSI BP-028 (minimal)'
+ 
+-description: 
+-    ANSSI BP-028 compliance at the minimal level. ANSSI stands for
+-    Agence nationale de la sécurité des systèmes d'information. Based on
+-    https://www.ssi.gouv.fr/.
++description: |-
++    This profile contains configurations that align to ANSSI BP-28 at the minimal hardening level.
++
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++
++    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+   - anssi:all:minimal
+
+From 5ea9fe70c78df6c4278aec71b9ab000a9884cea7 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 3 Feb 2021 12:23:14 +0100
+Subject: [PATCH 3/5] Add missing hyphen in ANSSI profiles descriptions
+
+---
+ rhel7/profiles/anssi_nt28_enhanced.profile     | 8 ++++----
+ rhel7/profiles/anssi_nt28_high.profile         | 8 ++++----
+ rhel7/profiles/anssi_nt28_intermediary.profile | 8 ++++----
+ rhel7/profiles/anssi_nt28_minimal.profile      | 8 ++++----
+ rhel8/profiles/anssi_bp28_enhanced.profile     | 8 ++++----
+ rhel8/profiles/anssi_bp28_high.profile         | 8 ++++----
+ rhel8/profiles/anssi_bp28_intermediary.profile | 8 ++++----
+ rhel8/profiles/anssi_bp28_minimal.profile      | 8 ++++----
+ 8 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/rhel7/profiles/anssi_nt28_enhanced.profile b/rhel7/profiles/anssi_nt28_enhanced.profile
+index 49fa8593fe..411f0c03aa 100644
+--- a/rhel7/profiles/anssi_nt28_enhanced.profile
++++ b/rhel7/profiles/anssi_nt28_enhanced.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (enhanced)'
++title: 'ANSSI-BP-028 (enhanced)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the enhanced hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the enhanced hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel7/profiles/anssi_nt28_high.profile b/rhel7/profiles/anssi_nt28_high.profile
+index 2853f20607..d9147b2dd0 100644
+--- a/rhel7/profiles/anssi_nt28_high.profile
++++ b/rhel7/profiles/anssi_nt28_high.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'DRAFT - ANSSI BP-028 (high)'
++title: 'DRAFT - ANSSI-BP-028 (high)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the high hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the high hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel7/profiles/anssi_nt28_intermediary.profile b/rhel7/profiles/anssi_nt28_intermediary.profile
+index 55f985a7a9..6e39a978e5 100644
+--- a/rhel7/profiles/anssi_nt28_intermediary.profile
++++ b/rhel7/profiles/anssi_nt28_intermediary.profile
+@@ -1,15 +1,15 @@
+ # Don't forget to enable build of tables in rhel7CMakeLists.txt when setting to true
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (intermediary)'
++title: 'ANSSI-BP-028 (intermediary)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the intermediary hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the intermediary hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel7/profiles/anssi_nt28_minimal.profile b/rhel7/profiles/anssi_nt28_minimal.profile
+index 7786a26b45..f0a77bccd7 100644
+--- a/rhel7/profiles/anssi_nt28_minimal.profile
++++ b/rhel7/profiles/anssi_nt28_minimal.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (minimal)'
++title: 'ANSSI-BP-028 (minimal)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the minimal hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the minimal hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel8/profiles/anssi_bp28_enhanced.profile b/rhel8/profiles/anssi_bp28_enhanced.profile
+index 49fa8593fe..411f0c03aa 100644
+--- a/rhel8/profiles/anssi_bp28_enhanced.profile
++++ b/rhel8/profiles/anssi_bp28_enhanced.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (enhanced)'
++title: 'ANSSI-BP-028 (enhanced)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the enhanced hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the enhanced hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel8/profiles/anssi_bp28_high.profile b/rhel8/profiles/anssi_bp28_high.profile
+index 2853f20607..d9147b2dd0 100644
+--- a/rhel8/profiles/anssi_bp28_high.profile
++++ b/rhel8/profiles/anssi_bp28_high.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: false
+ 
+-title: 'DRAFT - ANSSI BP-028 (high)'
++title: 'DRAFT - ANSSI-BP-028 (high)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the high hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the high hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel8/profiles/anssi_bp28_intermediary.profile b/rhel8/profiles/anssi_bp28_intermediary.profile
+index 50ab1ba0b8..6dcd2b8ef2 100644
+--- a/rhel8/profiles/anssi_bp28_intermediary.profile
++++ b/rhel8/profiles/anssi_bp28_intermediary.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (intermediary)'
++title: 'ANSSI-BP-028 (intermediary)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the intermediary hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the intermediary hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+diff --git a/rhel8/profiles/anssi_bp28_minimal.profile b/rhel8/profiles/anssi_bp28_minimal.profile
+index d477d34787..54e8cbd5a6 100644
+--- a/rhel8/profiles/anssi_bp28_minimal.profile
++++ b/rhel8/profiles/anssi_bp28_minimal.profile
+@@ -1,14 +1,14 @@
+ documentation_complete: true
+ 
+-title: 'ANSSI BP-028 (minimal)'
++title: 'ANSSI-BP-028 (minimal)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI BP-28 at the minimal hardening level.
++    This profile contains configurations that align to ANSSI-BP-28 at the minimal hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+-    ANSSI BP-028 is a configuration recommendation for GNU/Linux systems.
++    ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+-    A copy of the ANSSI BP-028 can be found at the ANSSI website:
++    A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+     https://www.ssi.gouv.fr/administration/guide/recommandations-de-securite-relatives-a-un-systeme-gnulinux/
+ 
+ selections:
+
+From c111061d6f1b9c134cc4cff1b712c44f271bcf42 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 5 Feb 2021 11:11:57 +0100
+Subject: [PATCH 4/5] Fix ANSSI document number for consistency
+
+---
+ rhel7/profiles/anssi_nt28_enhanced.profile     | 2 +-
+ rhel7/profiles/anssi_nt28_high.profile         | 2 +-
+ rhel7/profiles/anssi_nt28_intermediary.profile | 2 +-
+ rhel7/profiles/anssi_nt28_minimal.profile      | 2 +-
+ rhel8/profiles/anssi_bp28_enhanced.profile     | 2 +-
+ rhel8/profiles/anssi_bp28_high.profile         | 2 +-
+ rhel8/profiles/anssi_bp28_intermediary.profile | 2 +-
+ rhel8/profiles/anssi_bp28_minimal.profile      | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/rhel7/profiles/anssi_nt28_enhanced.profile b/rhel7/profiles/anssi_nt28_enhanced.profile
+index 411f0c03aa..846ace9002 100644
+--- a/rhel7/profiles/anssi_nt28_enhanced.profile
++++ b/rhel7/profiles/anssi_nt28_enhanced.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (enhanced)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the enhanced hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the enhanced hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel7/profiles/anssi_nt28_high.profile b/rhel7/profiles/anssi_nt28_high.profile
+index d9147b2dd0..e4db830291 100644
+--- a/rhel7/profiles/anssi_nt28_high.profile
++++ b/rhel7/profiles/anssi_nt28_high.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'DRAFT - ANSSI-BP-028 (high)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the high hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the high hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel7/profiles/anssi_nt28_intermediary.profile b/rhel7/profiles/anssi_nt28_intermediary.profile
+index 6e39a978e5..4454976862 100644
+--- a/rhel7/profiles/anssi_nt28_intermediary.profile
++++ b/rhel7/profiles/anssi_nt28_intermediary.profile
+@@ -4,7 +4,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (intermediary)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the intermediary hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the intermediary hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel7/profiles/anssi_nt28_minimal.profile b/rhel7/profiles/anssi_nt28_minimal.profile
+index f0a77bccd7..cc2cbd8359 100644
+--- a/rhel7/profiles/anssi_nt28_minimal.profile
++++ b/rhel7/profiles/anssi_nt28_minimal.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (minimal)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the minimal hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the minimal hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel8/profiles/anssi_bp28_enhanced.profile b/rhel8/profiles/anssi_bp28_enhanced.profile
+index 411f0c03aa..846ace9002 100644
+--- a/rhel8/profiles/anssi_bp28_enhanced.profile
++++ b/rhel8/profiles/anssi_bp28_enhanced.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (enhanced)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the enhanced hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the enhanced hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel8/profiles/anssi_bp28_high.profile b/rhel8/profiles/anssi_bp28_high.profile
+index d9147b2dd0..e4db830291 100644
+--- a/rhel8/profiles/anssi_bp28_high.profile
++++ b/rhel8/profiles/anssi_bp28_high.profile
+@@ -3,7 +3,7 @@ documentation_complete: false
+ title: 'DRAFT - ANSSI-BP-028 (high)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the high hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the high hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel8/profiles/anssi_bp28_intermediary.profile b/rhel8/profiles/anssi_bp28_intermediary.profile
+index 6dcd2b8ef2..a9e0442257 100644
+--- a/rhel8/profiles/anssi_bp28_intermediary.profile
++++ b/rhel8/profiles/anssi_bp28_intermediary.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (intermediary)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the intermediary hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the intermediary hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+diff --git a/rhel8/profiles/anssi_bp28_minimal.profile b/rhel8/profiles/anssi_bp28_minimal.profile
+index 54e8cbd5a6..090b571bb6 100644
+--- a/rhel8/profiles/anssi_bp28_minimal.profile
++++ b/rhel8/profiles/anssi_bp28_minimal.profile
+@@ -3,7 +3,7 @@ documentation_complete: true
+ title: 'ANSSI-BP-028 (minimal)'
+ 
+ description: |-
+-    This profile contains configurations that align to ANSSI-BP-28 at the minimal hardening level.
++    This profile contains configurations that align to ANSSI-BP-028 at the minimal hardening level.
+ 
+     ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+
+From c4b11df5dabe389129f3cbc8a5bd9444fce09850 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 5 Feb 2021 16:05:07 +0100
+Subject: [PATCH 5/5] Fix single quote in ANSSI name
+
+Previously the description was enclosed in single quotes, requiring a
+single quote to be escaped.
+Now the description is not enclosed in single quotes and there is no
+need to escape it.
+---
+ rhel7/profiles/anssi_nt28_enhanced.profile     | 2 +-
+ rhel7/profiles/anssi_nt28_high.profile         | 2 +-
+ rhel7/profiles/anssi_nt28_intermediary.profile | 2 +-
+ rhel7/profiles/anssi_nt28_minimal.profile      | 2 +-
+ rhel8/profiles/anssi_bp28_enhanced.profile     | 2 +-
+ rhel8/profiles/anssi_bp28_high.profile         | 2 +-
+ rhel8/profiles/anssi_bp28_intermediary.profile | 2 +-
+ rhel8/profiles/anssi_bp28_minimal.profile      | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/rhel7/profiles/anssi_nt28_enhanced.profile b/rhel7/profiles/anssi_nt28_enhanced.profile
+index 846ace9002..bbc11353f3 100644
+--- a/rhel7/profiles/anssi_nt28_enhanced.profile
++++ b/rhel7/profiles/anssi_nt28_enhanced.profile
+@@ -5,7 +5,7 @@ title: 'ANSSI-BP-028 (enhanced)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the enhanced hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel7/profiles/anssi_nt28_high.profile b/rhel7/profiles/anssi_nt28_high.profile
+index e4db830291..22efad9c09 100644
+--- a/rhel7/profiles/anssi_nt28_high.profile
++++ b/rhel7/profiles/anssi_nt28_high.profile
+@@ -5,7 +5,7 @@ title: 'DRAFT - ANSSI-BP-028 (high)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the high hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel7/profiles/anssi_nt28_intermediary.profile b/rhel7/profiles/anssi_nt28_intermediary.profile
+index 4454976862..0c43ab8d73 100644
+--- a/rhel7/profiles/anssi_nt28_intermediary.profile
++++ b/rhel7/profiles/anssi_nt28_intermediary.profile
+@@ -6,7 +6,7 @@ title: 'ANSSI-BP-028 (intermediary)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the intermediary hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel7/profiles/anssi_nt28_minimal.profile b/rhel7/profiles/anssi_nt28_minimal.profile
+index cc2cbd8359..480333747c 100644
+--- a/rhel7/profiles/anssi_nt28_minimal.profile
++++ b/rhel7/profiles/anssi_nt28_minimal.profile
+@@ -5,7 +5,7 @@ title: 'ANSSI-BP-028 (minimal)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the minimal hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel8/profiles/anssi_bp28_enhanced.profile b/rhel8/profiles/anssi_bp28_enhanced.profile
+index 846ace9002..bbc11353f3 100644
+--- a/rhel8/profiles/anssi_bp28_enhanced.profile
++++ b/rhel8/profiles/anssi_bp28_enhanced.profile
+@@ -5,7 +5,7 @@ title: 'ANSSI-BP-028 (enhanced)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the enhanced hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel8/profiles/anssi_bp28_high.profile b/rhel8/profiles/anssi_bp28_high.profile
+index e4db830291..22efad9c09 100644
+--- a/rhel8/profiles/anssi_bp28_high.profile
++++ b/rhel8/profiles/anssi_bp28_high.profile
+@@ -5,7 +5,7 @@ title: 'DRAFT - ANSSI-BP-028 (high)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the high hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel8/profiles/anssi_bp28_intermediary.profile b/rhel8/profiles/anssi_bp28_intermediary.profile
+index a9e0442257..a592031673 100644
+--- a/rhel8/profiles/anssi_bp28_intermediary.profile
++++ b/rhel8/profiles/anssi_bp28_intermediary.profile
+@@ -5,7 +5,7 @@ title: 'ANSSI-BP-028 (intermediary)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the intermediary hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:
+diff --git a/rhel8/profiles/anssi_bp28_minimal.profile b/rhel8/profiles/anssi_bp28_minimal.profile
+index 090b571bb6..cef8394114 100644
+--- a/rhel8/profiles/anssi_bp28_minimal.profile
++++ b/rhel8/profiles/anssi_bp28_minimal.profile
+@@ -5,7 +5,7 @@ title: 'ANSSI-BP-028 (minimal)'
+ description: |-
+     This profile contains configurations that align to ANSSI-BP-028 at the minimal hardening level.
+ 
+-    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d''information.
++    ANSSI is the French National Information Security Agency, and stands for Agence nationale de la sécurité des systèmes d'information.
+     ANSSI-BP-028 is a configuration recommendation for GNU/Linux systems.
+ 
+     A copy of the ANSSI-BP-028 can be found at the ANSSI website:

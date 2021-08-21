@@ -1,0 +1,47 @@
+From 76aede9cea67f4ea37eaa05ad74bf80273638de2 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 28 Oct 2020 18:52:13 +0100
+Subject: [PATCH] Select rules for ANSSI R37
+
+These rules are better fit for R37 than R38.
+R37 is about binaries designed to be used with setuid or setgid bits.
+R38 is about reducing number of binaries with setuid root.
+---
+ controls/anssi.yml | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/controls/anssi.yml b/controls/anssi.yml
+index 26bc7f4694..4648b98dff 100644
+--- a/controls/anssi.yml
++++ b/controls/anssi.yml
+@@ -590,8 +590,17 @@ controls:
+ 
+   - id: R37
+     level: minimal
+-    title: Executables with setuid and/or setgid bits
+-    # rules: TBD
++    title: Executables with setuid and setgid bits
++    notes: >-
++      Only programs specifically designed to be used with setuid or setgid bits can have these privilege bits set.
++      This requirement considers apropriate for setuid and setgid bits the binaries that are installed from
++      recognized and authorized repositories (covered in R15).
++      The remediation resets the sticky bit to intended value by vendor/developer, any finding after remediation
++      should be reviewed.
++    automated: yes
++    rules:
++    - file_permissions_unauthorized_suid
++    - file_permissions_unauthorized_sgid
+ 
+   - id: R38
+     level: enhanced
+@@ -600,9 +609,7 @@ controls:
+       Setuid executables should be as small as possible. When it is expected
+       that only the administrators of the machine execute them, the setuid bit
+       must be removed and prefer them commands like su or sudo, which can be monitored
+-    rules:
+-    - file_permissions_unauthorized_suid
+-    - file_permissions_unauthorized_sgid
++    # rules: TBD
+ 
+   - id: R39
+     level: intermediary

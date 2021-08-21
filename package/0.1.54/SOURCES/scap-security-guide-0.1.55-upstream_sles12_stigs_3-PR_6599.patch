@@ -1,0 +1,1711 @@
+From a050df59825379e7793b5f31c40fc1936585a4a6 Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Wed, 3 Feb 2021 16:17:14 -0800
+Subject: [PATCH] Enable checks and remediations for the following SLES-12
+ STIGs:
+
+ - SLES-12-010890 'file_permissions_var_log_messages'
+ - SLES-12-010910 'pam_disable_automatic_configuration'
+ - SLES-12-020020 'auditd_audispd_configure_sufficiently_large_partition'
+ - SLES-12-020100 'auditd_audispd_network_failure_action'
+ - SLES-12-020110 'auditd_audispd_disk_full_action'
+ - SLES-12-020120 'permissions_local_var_log_audit'
+ - SLES-12-020130 'permissions_local_audit_binaries'
+ - SLES-12-020199 'audit_rules_enable_syscall_auditing'
+ - SLES-12-020200 'audit_rules_usergroup_modification_passwd'
+ - SLES-12-020210 'audit_rules_usergroup_modification_group'
+ - SLES-12-020220 'audit_rules_usergroup_modification_shadow'
+ - SLES-12-020230 'audit_rules_usergroup_modification_opasswd'
+ - SLES-12-020250 'audit_rules_privileged_commands_su'
+ - SLES-12-020260 'audit_rules_privileged_commands_sudo'
+ - SLES-12-020290 'audit_rules_privileged_commands_mount'
+ - SLES-12-020300 'audit_rules_privileged_commands_umount'
+ - SLES-12-020370 'audit_rules_dac_modification_setxattr'
+ - SLES-12-020380 'audit_rules_dac_modification_fsetxattr'
+ - SLES-12-020390 'audit_rules_dac_modification_removexattr'
+ - SLES-12-020400 'audit_rules_dac_modification_lremovexattr'
+ - SLES-12-020410 'audit_rules_dac_modification_fremovexattr'
+ - SLES-12-020430 'audit_rules_dac_modification_fchown'
+ - SLES-12-020440 'audit_rules_dac_modification_lchown'
+ - SLES-12-020450 'audit_rules_dac_modification_fchownat'
+ - SLES-12-020460 'audit_rules_dac_modification_chown'
+ - SLES-12-020470 'audit_rules_dac_modification_fchmod'
+ - SLES-12-020480 'audit_rules_dac_modification_fchmodat'
+ - SLES-12-020490 'audit_rules_unsuccessful_file_modification_open'
+ - SLES-12-020710 'audit_rules_privileged_commands_crontab'
+ - SLES-12-020720 'audit_rules_privileged_commands_pam_timestamp_check'
+ - SLES-12-020730 'audit_rules_kernel_module_loading_delete'
+ - SLES-12-020740 'audit_rules_kernel_module_loading_finit'
+ - SLES-12-020750 'audit_rules_kernel_module_loading_init'
+ - SLES-12-030300 'chronyd_or_ntpd_set_maxpoll'
+
+Corrections:
+
+ - The STIG ID for audit_rules_dac_modification_chmod was incorrect.
+   It should've been SLES-12-020460 instead of SLES-12-020600.
+ - The STIG ID for sshd_do_not_permit_user_env was incorrect.
+   It should've been SLES-12-030151 instead of SLES-12-030150.
+---
+ .../ansible/shared.yml                        | 49 +++++++++++++
+ .../ntp/chronyd_or_ntpd_set_maxpoll/rule.yml  |  5 +-
+ .../sshd_do_not_permit_user_env/rule.yml      |  2 +-
+ .../ansible/shared.yml                        | 19 +++++
+ .../bash/shared.sh                            |  6 ++
+ .../oval/shared.xml                           | 29 ++++++++
+ .../rule.yml                                  | 37 ++++++++++
+ .../rule.yml                                  |  2 +-
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  3 +
+ .../rule.yml                                  |  2 +
+ .../ansible/shared.yml                        |  2 +-
+ .../rule.yml                                  |  2 +
+ .../ansible/shared.yml                        |  2 +-
+ .../rule.yml                                  |  2 +
+ .../ansible/shared.yml                        |  2 +-
+ .../rule.yml                                  |  3 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  5 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  5 +-
+ .../ansible/shared.yml                        | 53 ++++++++++++++
+ .../bash/shared.sh                            | 19 +++++
+ .../oval/shared.xml                           | 46 ++++++++++++
+ .../rule.yml                                  | 35 +++++++++
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  5 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  5 +-
+ .../oval/shared.xml                           | 34 +++++++++
+ .../rule.yml                                  | 69 ++++++++++++++++++
+ .../auditd_audispd_disk_full_action/rule.yml  |  5 +-
+ .../rule.yml                                  |  4 +-
+ .../ansible/shared.yml                        | 12 ++++
+ .../oval/shared.xml                           | 45 ++++++++++++
+ .../rule.yml                                  | 53 ++++++++++++++
+ .../permissions_local_audit_binaries/rule.yml | 72 +++++++++++++++++++
+ .../permissions_local_var_log_audit/rule.yml  | 57 +++++++++++++++
+ shared/templates/extra_ovals.yml              |  6 ++
+ sle12/profiles/stig.profile                   | 37 +++++++++-
+ 51 files changed, 766 insertions(+), 20 deletions(-)
+ create mode 100644 linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/ansible/shared.yml
+ create mode 100644 linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/ansible/shared.yml
+ create mode 100644 linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/bash/shared.sh
+ create mode 100644 linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/oval/shared.xml
+ create mode 100644 linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/rule.yml
+ create mode 100644 linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/ansible/shared.yml
+ create mode 100644 linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/bash/shared.sh
+ create mode 100644 linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/oval/shared.xml
+ create mode 100644 linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/rule.yml
+ create mode 100644 linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/oval/shared.xml
+ create mode 100644 linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/rule.yml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/ansible/shared.yml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/oval/shared.xml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/rule.yml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/permissions_local_audit_binaries/rule.yml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/permissions_local_var_log_audit/rule.yml
+
+diff --git a/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/ansible/shared.yml b/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/ansible/shared.yml
+new file mode 100644
+index 0000000000..3c83850a05
+--- /dev/null
++++ b/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/ansible/shared.yml
+@@ -0,0 +1,49 @@
++# platform = multi_platform_sle
++# reboot = false
++# strategy = restrict
++# complexity = low
++# disruption = low
++
++{{{ ansible_instantiate_variables('var_time_service_set_maxpoll') }}}
++
++- name: Check that /etc/ntp.conf exist
++  stat:
++    path: /etc/ntp.conf
++  register: ntp_conf_exist_result
++
++- name: Check that /etc/chrony.conf exist
++  stat:
++    path: /etc/chrony.conf
++  register: chrony_conf_exist_result
++
++- name: Update the maxpoll values in /etc/ntp.conf
++  lineinfile:
++    path: /etc/ntp.conf
++    regex: '^(server.*maxpoll) [0-9]+(\s+.*)$'
++    line: '\1 {{ var_time_service_set_maxpoll }}\2'
++    backrefs: yes
++  when: ntp_conf_exist_result.stat.exists
++
++- name: Update the maxpoll values in /etc/chrony.conf
++  lineinfile:
++    path: /etc/chrony.conf
++    regex: '^(server.*maxpoll) [0-9]+(\s+.*)$'
++    line: '\1 {{ var_time_service_set_maxpoll }}\2'
++    backrefs: yes
++  when: chrony_conf_exist_result.stat.exists
++
++- name: Set the maxpoll values in /etc/ntp.conf
++  lineinfile:
++    path: /etc/ntp.conf
++    regex: '(^server\s+((?!maxpoll).)*)$'
++    line: '\1 maxpoll {{ var_time_service_set_maxpoll }}\n'
++    backrefs: yes
++  when: ntp_conf_exist_result.stat.exists
++
++- name: Set the maxpoll values in /etc/chrony.conf
++  lineinfile:
++    path: /etc/chrony.conf
++    regex: '(^server\s+((?!maxpoll).)*)$'
++    line: '\1 maxpoll {{ var_time_service_set_maxpoll }}\n'
++    backrefs: yes
++  when: chrony_conf_exist_result.stat.exists
+diff --git a/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/rule.yml b/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/rule.yml
+index d5f8b9125e..4e4be3002f 100644
+--- a/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/rule.yml
++++ b/linux_os/guide/services/ntp/chronyd_or_ntpd_set_maxpoll/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Configure Time Service Maxpoll Interval'
+ 
+@@ -26,6 +26,7 @@ platform: machine  # The check uses service_... extended definition, which doesn
+ identifiers:
+     cce@rhel7: CCE-80439-3
+     cce@rhcos4: CCE-82684-2
++    cce@sle12: CCE-83124-8
+ 
+ references:
+     stigid@ol7: OL07-00-040500
+@@ -39,6 +40,8 @@ references:
+     cobit5: APO11.04,BAI03.05,DSS05.04,DSS05.07,MEA02.01
+     iso27001-2013: A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.7.1
+     cis-csc: 1,14,15,16,3,5,6
++    stigid@sle12: SLES-12-030300
++    nist@sle12: AU-8(1)(a),AU-8(1)(b)
+ 
+ ocil_clause: 'it does not exist or maxpoll has not been set to the expected value'
+ 
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_do_not_permit_user_env/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_do_not_permit_user_env/rule.yml
+index 0c17411fad..e5d54261d3 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_do_not_permit_user_env/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_do_not_permit_user_env/rule.yml
+@@ -33,7 +33,7 @@ references:
+     srg: SRG-OS-000480-GPOS-00229
+     vmmsrg: SRG-OS-000480-VMM-002000
+     stigid@rhel7: RHEL-07-010460
+-    stigid@sle12: SLES-12-030150
++    stigid@sle12: SLES-12-030151
+     isa-62443-2013: 'SR 7.6'
+     isa-62443-2009: 4.3.4.3.2,4.3.4.3.3
+     cobit5: BAI10.01,BAI10.02,BAI10.03,BAI10.05
+diff --git a/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/ansible/shared.yml
+new file mode 100644
+index 0000000000..04e889199f
+--- /dev/null
++++ b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/ansible/shared.yml
+@@ -0,0 +1,19 @@
++# platform = multi_platform_sle
++# reboot = false
++# strategy = restrict
++# complexity = low
++# disruption = low
++
++- name: Find soft links /etc/pam.d/
++  find:
++    paths: /etc/pam.d
++    file_type: link
++    patterns: common-.*
++    use_regex: yes
++  register: find_pam_soft_links_result
++
++- name: Remove soft links in /etc/pam.d/
++  shell: |
++    target=$(readlink -f "{{ item.path }}")
++    cp -p --remove-destination "$target" "{{ item.path }}"
++  with_items: "{{ find_pam_soft_links_result.files }}"
+diff --git a/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/bash/shared.sh b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/bash/shared.sh
+new file mode 100644
+index 0000000000..ef195d3ac2
+--- /dev/null
++++ b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/bash/shared.sh
+@@ -0,0 +1,6 @@
++# platform = multi_platform_sle
++
++for link in $(find /etc/pam.d/ -type l -iname "common-*") ; do
++    target=$(readlink -f "$link")
++    cp -p --remove-destination "$target" "$link"
++done
+diff --git a/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/oval/shared.xml b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/oval/shared.xml
+new file mode 100644
+index 0000000000..0a8f356e7a
+--- /dev/null
++++ b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/oval/shared.xml
+@@ -0,0 +1,29 @@
++<def-group>
++  <definition class="compliance" id="pam_disable_automatic_configuration" version="1">
++    <metadata>
++      <title>The PAM configuration should not be changed automatically</title>
++      <affected family="unix">
++        <platform>multi_platform_sle</platform>
++      </affected>
++      <description>Verify the SUSE operating system is configured to not overwrite Pluggable
++    Authentication Modules (PAM) configuration on package changes.</description>
++    </metadata>
++    <criteria>
++        <criterion comment="/etc/pam.d/common-* are not symbolic links" test_ref="test_pam_disable_automatic_configuration" />
++    </criteria>
++  </definition>
++
++  <unix:file_test check="all" check_existence="all_exist" comment="/etc/pam.d/common-* are not symbolic links" id="test_pam_disable_automatic_configuration" version="1">
++    <unix:object object_ref="obj_pam_disable_automatic_configuration" />
++    <unix:state state_ref="state_pam_disable_automatic_configuration_no_symlink" />
++  </unix:file_test>
++
++  <unix:file_object comment="/etc/pam.d/common-* files" id="obj_pam_disable_automatic_configuration" version="1">
++    <unix:path operation="equals">/etc/pam.d</unix:path>
++    <unix:filename operation="pattern match">^common-.*$</unix:filename>
++  </unix:file_object>
++
++  <unix:file_state id="state_pam_disable_automatic_configuration_no_symlink" version="1">
++    <unix:type>regular</unix:type>
++  </unix:file_state>
++</def-group>
+diff --git a/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/rule.yml b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/rule.yml
+new file mode 100644
+index 0000000000..fe02158220
+--- /dev/null
++++ b/linux_os/guide/system/accounts/accounts-pam/pam_disable_automatic_configuration/rule.yml
+@@ -0,0 +1,37 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'The PAM configuration should not be changed automatically'
++
++description: |-
++    Verify the SUSE operating system is configured to not overwrite Pluggable
++    Authentication Modules (PAM) configuration on package changes.
++
++
++rationale: |-
++    <tt>pam-config</tt> is a command line utility that automatically generates
++    a system PAM configuration as packages are installed, updated or removed
++    from the system. <tt>pam-config</tt> removes configurations for PAM modules
++    and parameters that it does not know about. It may render ineffective PAM
++    configuration by the system administrator and thus impact system security.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83113-1
++
++references:
++    stigid@sle12: SLES-12-010910
++    disa@sle12: CCI-000366
++    srg@sle12: SRG-OS-000480-GPOS-00227
++    nist@sle12: CM-6(b),CM-6.1(iv)
++
++ocil_clause: 'that is not the case'
++
++ocil: |-
++    Check that soft links between PAM configuration files are removed with the following command:
++
++    <pre># find /etc/pam.d/ -type l -iname "common-*"</pre>
++
++    If any results are returned, this is a finding.
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
+index 22031b6517..b1d9dfbc4c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
+@@ -46,7 +46,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030410
+-    stigid@sle12: SLES-12-020600
++    stigid@sle12: SLES-12-020460
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown/rule.yml
+index 8c8ccf405f..27e9d98617 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27364-9
+     cce@rhel8: CCE-80686-9
+     cce@rhcos4: CCE-82557-0
++    cce@sle12: CCE-83137-0
+ 
+ references:
+     stigid@ol7: OL07-00-030370
+@@ -43,8 +44,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203,SRG-OS-000474-GPOS-00219
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030370
++    stigid@sle12: SLES-12-020420
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod/rule.yml
+index 7b66511acc..6d55b59af4 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27393-8
+     cce@rhel8: CCE-80687-7
+     cce@rhcos4: CCE-82558-8
++    cce@sle12: CCE-83133-9
+ 
+ references:
+     stigid@ol7: OL07-00-030420
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030420
++    stigid@sle12: SLES-12-020470
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat/rule.yml
+index 3882d0db26..d5b87320a7 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27388-8
+     cce@rhel8: CCE-80688-5
+     cce@rhcos4: CCE-82559-6
++    cce@sle12: CCE-83132-1
+ 
+ references:
+     stigid@ol7: OL07-00-030430
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030430
++    stigid@sle12: SLES-12-020480
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown/rule.yml
+index 7950e714f6..d75447dab4 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown/rule.yml
+@@ -33,6 +33,7 @@ identifiers:
+     cce@rhel7: CCE-27356-5
+     cce@rhel8: CCE-80689-3
+     cce@rhcos4: CCE-82560-4
++    cce@sle12: CCE-83136-2
+ 
+ references:
+     stigid@ol7: OL07-00-030380
+@@ -46,8 +47,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203,SRG-OS-000474-GPOS-00219
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030380
++    stigid@sle12: SLES-12-020430
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat/rule.yml
+index b35b2d7298..214f7e95c0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27387-0
+     cce@rhel8: CCE-80690-1
+     cce@rhcos4: CCE-82561-2
++    cce@sle12: CCE-83134-7
+ 
+ references:
+     stigid@ol7: OL07-00-030400
+@@ -43,8 +44,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203,SRG-OS-000474-GPOS-00219
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030400
++    stigid@sle12: SLES-12-020450
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr/rule.yml
+index fb936a04b6..af1eea1a36 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr/rule.yml
+@@ -35,6 +35,7 @@ identifiers:
+     cce@rhel7: CCE-27353-2
+     cce@rhel8: CCE-80691-9
+     cce@rhcos4: CCE-82562-0
++    cce@sle12: CCE-83138-8
+ 
+ references:
+     stigid@ol7: OL07-00-030480
+@@ -48,8 +49,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030480
++    stigid@sle12: SLES-12-020410
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr/rule.yml
+index 6d6216122d..33de1d53eb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27389-6
+     cce@rhel8: CCE-80692-7
+     cce@rhcos4: CCE-82563-8
++    cce@sle12: CCE-83141-2
+ 
+ references:
+     stigid@ol7: OL07-00-030450
+@@ -43,8 +44,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030450
++    stigid@sle12: SLES-12-020380
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown/rule.yml
+index 53d680a29c..04e8ae5d99 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27083-5
+     cce@rhel8: CCE-80693-5
+     cce@rhcos4: CCE-82564-6
++    cce@sle12: CCE-83135-4
+ 
+ references:
+     stigid@ol7: OL07-00-030390
+@@ -43,8 +44,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203,SRG-OS-000474-GPOS-00219
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030390
++    stigid@sle12: SLES-12-020440
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr/rule.yml
+index bbce29648d..55bc1502d6 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr/rule.yml
+@@ -35,6 +35,7 @@ identifiers:
+     cce@rhel7: CCE-27410-0
+     cce@rhel8: CCE-80694-3
+     cce@rhcos4: CCE-82565-3
++    cce@sle12: CCE-83139-6
+ 
+ references:
+     stigid@ol7: OL07-00-030490
+@@ -48,8 +49,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030490
++    stigid@sle12: SLES-12-020400
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr/rule.yml
+index f8890cea0d..abbe9269fe 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr/rule.yml
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-27367-2
+     cce@rhel8: CCE-80696-8
+     cce@rhcos4: CCE-82567-9
++    cce@sle12: CCE-83140-4
+ 
+ references:
+     stigid@ol7: OL07-00-030470
+@@ -47,8 +48,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030470
++    stigid@sle12: SLES-12-020390
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr/rule.yml
+index 4bcbaf54b4..a74756bfbd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27213-8
+     cce@rhel8: CCE-80697-6
+     cce@rhcos4: CCE-82568-7
++    cce@sle12: CCE-83142-0
+ 
+ references:
+     stigid@ol7: OL07-00-030440
+@@ -43,8 +44,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     pcidss: Req-10.5.5
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030440
++    stigid@sle12: SLES-12-020370
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open/rule.yml
+index ebccc4dbbf..97aa771056 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open/rule.yml
+@@ -39,6 +39,7 @@ identifiers:
+     cce@rhel7: CCE-80386-6
+     cce@rhel8: CCE-80753-7
+     cce@rhcos4: CCE-82633-9
++    cce@sle12: CCE-83131-3
+ 
+ references:
+     stigid@ol7: OL07-00-030510
+@@ -53,6 +54,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030510
++    stigid@sle12: SLES-12-020490
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
+index 4759760bc1..c7b605ec31 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_rhv,multi_platform_sle
+ # reboot = false
+ # complexity = low
+ # disruption = low
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/rule.yml
+index d53927fcab..0997c1c6a5 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/rule.yml
+@@ -27,6 +27,7 @@ identifiers:
+     cce@rhel7: CCE-80415-3
+     cce@rhel8: CCE-80711-5
+     cce@rhcos4: CCE-82580-2
++    cce@sle12: CCE-83128-9
+ 
+ references:
+     stigid@ol7: OL07-00-030830
+@@ -41,6 +42,7 @@ references:
+     srg: SRG-OS-000471-GPOS-00216,SRG-OS-000477-GPOS-00222
+     vmmsrg: SRG-OS-000477-VMM-001970
+     stigid@rhel7: RHEL-07-030830
++    stigid@sle12: SLES-12-020730
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
+index 62220a2294..3f3c3e3d94 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = false
+ # complexity = low
+ # disruption = low
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/rule.yml
+index a6c457485c..f54035bfcb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/rule.yml
+@@ -27,6 +27,7 @@ identifiers:
+     cce@rhel7: CCE-80547-3
+     cce@rhel8: CCE-80712-3
+     cce@rhcos4: CCE-82581-0
++    cce@sle12: CCE-83129-7
+ 
+ references:
+     stigid@ol7: OL07-00-030821
+@@ -41,6 +42,7 @@ references:
+     srg: SRG-OS-000471-GPOS-00216,SRG-OS-000477-GPOS-00222
+     vmmsrg: SRG-OS-000477-VMM-001970
+     stigid@rhel7: RHEL-07-030821
++    stigid@sle12: SLES-12-020740
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
+index ee6aa0ba59..d804bbd09e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_rhv,multi_platform_sle
+ # reboot = false
+ # complexity = low
+ # disruption = low
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/rule.yml
+index b81ca09151..829f3b2c8a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/rule.yml
+@@ -27,7 +27,7 @@ identifiers:
+     cce@rhel7: CCE-80414-6
+     cce@rhel8: CCE-80713-1
+     cce@rhcos4: CCE-82582-8
+-
++    cce@sle12: CCE-83130-5
+ references:
+     stigid@ol7: OL07-00-030820
+     cis: 5.2.17
+@@ -41,6 +41,7 @@ references:
+     srg: SRG-OS-000471-GPOS-00216,SRG-OS-000477-GPOS-00222
+     vmmsrg: SRG-OS-000477-VMM-001970
+     stigid@rhel7: RHEL-07-030820
++    stigid@sle12: SLES-12-020750
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab/rule.yml
+index 53be8f4928..0cd92027b1 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,wrlinux1019
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - crontab'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80410-4
+     cce@rhel8: CCE-80727-1
+     cce@rhcos4: CCE-82593-5
++    cce@sle12: CCE-83126-3
+ 
+ references:
+     stigid@ol7: OL07-00-030800
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030800
++    stigid@sle12: SLES-12-020710
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
+index 471a920ed4..4941b38aac 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,sle12
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - mount'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-81064-8
+     cce@rhel8: CCE-80989-7
+     cce@rhcos4: CCE-82595-0
++    cce@sle12: CCE-83145-3
+ 
+ references:
+     disa: CCI-000135,CCI-000172,CCI-002884
+@@ -41,8 +42,10 @@ references:
+     ospp: FAU_GEN.1.1.c
+     vmmsrg: SRG-OS-000471-VMM-001910
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     stigid@rhel7: RHEL-07-030740
+     stigid@ol7: OL07-00-030740
++    stigid@sle12: SLES-12-020290
+ 
+ ocil_clause: 'it is not the case'
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check/rule.yml
+index 824e7470ec..d6780b0156 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,wrlinux1019
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - pam_timestamp_check'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80411-2
+     cce@rhel8: CCE-80730-5
+     cce@rhcos4: CCE-82599-2
++    cce@sle12: CCE-83127-1
+ 
+ references:
+     stigid@ol7: OL07-00-030810
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030810
++    stigid@sle12: SLES-12-020720
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su/rule.yml
+index 4de737ddf1..86c423dd28 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,wrlinux1019
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - su'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80400-5
+     cce@rhel8: CCE-80736-2
+     cce@rhcos4: CCE-82605-7
++    cce@sle12: CCE-83143-8
+ 
+ references:
+     stigid@ol7: OL07-00-030680
+@@ -46,6 +47,7 @@ references:
+     srg: SRG-OS-000037-GPOS-00015,SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000462-GPOS-00206,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030680
++    stigid@sle12: SLES-12-020250
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo/rule.yml
+index 382c66cc88..9e9e892789 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,wrlinux1019
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - sudo'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80401-3
+     cce@rhel8: CCE-80737-0
+     cce@rhcos4: CCE-82606-5
++    cce@sle12: CCE-83144-6
+ 
+ references:
+     stigid@ol7: OL07-00-030690
+@@ -46,6 +47,7 @@ references:
+     srg: SRG-OS-000037-GPOS-00015,SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000462-GPOS-00206,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030690
++    stigid@sle12: SLES-12-020260
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount/rule.yml
+index e8a7ef5f9d..2ce9d62aaf 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,wrlinux1019
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - umount'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80405-4
+     cce@rhel8: CCE-80739-6
+     cce@rhcos4: CCE-82608-1
++    cce@sle12: CCE-83158-6
+ 
+ references:
+     stigid@ol7: OL07-00-030750
+@@ -43,8 +44,10 @@ references:
+     nist: AU-2(d),AU-12(c),AC-6(9),CM-6(a)
+     nist-csf: DE.CM-1,DE.CM-3,DE.CM-7,ID.SC-4,PR.PT-1
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000471-GPOS-00215
++    srg@sle12: SRG-OS-000037-GPOS-00015
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030750
++    stigid@sle12: SLES-12-020300
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/ansible/shared.yml
+new file mode 100644
+index 0000000000..8286d51cf2
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/ansible/shared.yml
+@@ -0,0 +1,53 @@
++# platform = multi_platform_sle
++# reboot = false
++# strategy = restrict
++# complexity = low
++# disruption = low
++
++- name: Service facts
++  service_facts:
++
++- name: Check the rules script being used
++  command:
++    grep '^ExecStartPost' /usr/lib/systemd/system/auditd.service
++  register: check_rules_scripts_result
++
++- name: Find audit rules in /etc/audit/rules.d
++  find:
++    paths: /etc/audit/rules.d
++    file_type: file
++    follow: yes
++  register: find_audit_rules_result
++  when:
++    - '"auditd.service" in ansible_facts.services'
++    - '"augenrules" in check_rules_scripts_result.stdout'
++
++- name: Enable syscall auditing (augenrules)
++  lineinfile:
++    path: "{{ item.path }}"
++    regex: ^(?i)(\s*-a\s+task,never)\s*$
++    line: '#-a task,never'
++  with_items: "{{ find_audit_rules_result.files }}"
++  when:
++    - '"auditd.service" in ansible_facts.services'
++    - '"augenrules" in check_rules_scripts_result.stdout'
++  register: augenrules_syscall_auditing_rule_update_result
++
++- name: Enable syscall auditing (auditctl)
++  lineinfile:
++    path: /etc/audit/audit.rules
++    regex: ^(?i)(\s*-a\s+task,never)\s*$
++    line: '#-a task,never'
++  when:
++    - '"auditd.service" in ansible_facts.services'
++    - '"auditctl" in check_rules_scripts_result.stdout'
++  register: auditctl_syscall_auditing_rule_update_result
++
++- name: Restart auditd.service
++  systemd:
++    name: auditd.service
++    state: restarted
++  when:
++    - ansible_facts.services["auditd.service"].state == "running"
++    - (augenrules_syscall_auditing_rule_update_result.changed or
++       auditctl_syscall_auditing_rule_update_result.changed)
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/bash/shared.sh b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/bash/shared.sh
+new file mode 100644
+index 0000000000..501095bb85
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/bash/shared.sh
+@@ -0,0 +1,19 @@
++# platform = multi_platform_sle
++
++if [ -f "/usr/lib/systemd/system/auditd.service" ] ; then
++    EXECSTARTPOST_SCRIPT=$(grep '^ExecStartPost=' /usr/lib/systemd/system/auditd.service | sed 's/ExecStartPost=//')
++
++    if [[ "$EXECSTARTPOST_SCRIPT" == *"augenrules"* ]] ; then
++        for f in /etc/audit/rules.d/*.rules ; do
++            sed -E -i --follow-symlinks 's/^(\s*-a\s+task,never)/#\1/' "$f"
++        done
++    else
++        # auditctl is used
++        sed -E -i --follow-symlinks 's/^(\s*-a\s+task,never)/#\1/' /etc/audit/audit.rules
++    fi
++
++    systemctl is-active --quiet auditd.service
++    if [ $? -ne 0 ] ; then
++        systemctl restart auditd.service
++    fi
++fi
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/oval/shared.xml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/oval/shared.xml
+new file mode 100644
+index 0000000000..f871e0195c
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/oval/shared.xml
+@@ -0,0 +1,46 @@
++<def-group>
++  <definition class="compliance" id="audit_rules_enable_syscall_auditing" version="1">
++    <metadata>
++      <title>Enable Syscall Auditing</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Syscall auditing should not be disabled.</description>
++    </metadata>
++
++    <criteria operator="OR">
++
++      <!-- Test the augenrules case -->
++      <criteria operator="AND">
++        <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
++        <criterion comment="check that no audit rule exists in /etc/audit/rules.d/*.rules that disables all syscall auditing" test_ref="test_enable_syscall_audit_augenrules" />
++      </criteria>
++
++      <!-- OR test the auditctl case -->
++      <criteria operator="AND">
++        <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
++        <criterion comment="check that no audit rule exists in /etc/audit/audit.rules that disables all syscall auditing" test_ref="test_enable_syscall_audit_auditctl" />
++      </criteria>
++
++    </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test check="all" check_existence="none_exist" comment="check that no audit rule exists in /etc/audit/rules.d/*.rules that disables all syscall auditing" id="test_enable_syscall_audit_augenrules" version="1">
++    <ind:object object_ref="object_enable_syscall_audit_augenrules" />
++  </ind:textfilecontent54_test>
++  <ind:textfilecontent54_object id="object_enable_syscall_audit_augenrules" version="1">
++    <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
++    <ind:pattern operation="pattern match">^[\s]*-a[\s]+task,never[\s]*$</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++  <ind:textfilecontent54_test check="all" check_existence="none_exist" comment="check that no audit rule exists in /etc/audit/audit.rules that disables all syscall auditing" id="test_enable_syscall_audit_auditctl" version="1">
++    <ind:object object_ref="object_enable_syscall_audit_auditctl" />
++  </ind:textfilecontent54_test>
++  <ind:textfilecontent54_object id="object_enable_syscall_audit_auditctl" version="1">
++    <ind:filepath>/etc/audit/audit.rules</ind:filepath>
++    <ind:pattern operation="pattern match">^[\s]*-a[\s]+task,never[\s]*$</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++</def-group>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/rule.yml
+new file mode 100644
+index 0000000000..9c23291d62
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_enable_syscall_auditing/rule.yml
+@@ -0,0 +1,35 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'Remove Default Configuration to Disable Syscall Auditing'
++
++description: |-
++    By default, {{{ full_name }}} ships an audit rule to disable syscall
++    auditing for performance reasons.
++
++    To make sure that syscall auditing works, this line must be removed from
++    <tt>/etc/audit/rules.d/audit.rules</tt> and <tt>/etc/audit/audit.rules</tt>:
++
++    <pre>-a task,never</pre>
++
++rationale: |-
++    Audit rules for syscalls do not take effect unless this line is removed.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83119-8
++
++references:
++    stigid@sle12: SLES-12-020199
++    srg@sle12: SRG-OS-000480-GPOS-00227
++    disa@sle12: CCI-000366 
++
++ocil_clause: 'syscall auditing is still disabled'
++
++ocil: |-
++    To check for the offending line, run the following command:
++    <pre>$ grep task,never /etc/audit/{rules.d,.}/audit.rules</pre>
++    There must not be any output, or else these lines must be removed from
++    the matching files.
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group/rule.yml
+index 750fba65bb..e4b2b8dcb8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Record Events that Modify User/Group Information - /etc/group'
+ 
+@@ -31,6 +31,7 @@ identifiers:
+     cce@rhel7: CCE-80433-6
+     cce@rhel8: CCE-80758-6
+     cce@rhcos4: CCE-82654-5
++    cce@sle12: CCE-83121-4
+ 
+ references:
+     stigid@ol7: OL07-00-030871
+@@ -51,6 +52,7 @@ references:
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS06.03,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+     iso27001-2013: A.11.2.6,A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.7.1,A.13.1.1,A.13.2.1,A.14.1.3,A.14.2.7,A.15.2.1,A.15.2.2,A.16.1.4,A.16.1.5,A.16.1.7,A.6.1.2,A.6.2.1,A.6.2.2,A.7.1.1,A.9.1.2,A.9.2.1,A.9.2.2,A.9.2.3,A.9.2.4,A.9.2.6,A.9.3.1,A.9.4.1,A.9.4.2,A.9.4.3,A.9.4.4,A.9.4.5
+     cis-csc: 1,11,12,13,14,15,16,18,19,2,3,4,5,6,7,8,9
++    stigid@sle12: SLES-12-020210
+ 
+ ocil_clause: 'the system is not configured to audit account changes'
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd/rule.yml
+index adf9f616b8..41434f664a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Record Events that Modify User/Group Information - /etc/security/opasswd'
+ 
+@@ -31,6 +31,7 @@ identifiers:
+     cce@rhel7: CCE-80430-2
+     cce@rhel8: CCE-80760-2
+     cce@rhcos4: CCE-82656-0
++    cce@sle12: CCE-83123-0
+ 
+ references:
+     stigid@ol7: OL07-00-030874
+@@ -51,6 +52,8 @@ references:
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS06.03,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+     iso27001-2013: A.11.2.6,A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.7.1,A.13.1.1,A.13.2.1,A.14.1.3,A.14.2.7,A.15.2.1,A.15.2.2,A.16.1.4,A.16.1.5,A.16.1.7,A.6.1.2,A.6.2.1,A.6.2.2,A.7.1.1,A.9.1.2,A.9.2.1,A.9.2.2,A.9.2.3,A.9.2.4,A.9.2.6,A.9.3.1,A.9.4.1,A.9.4.2,A.9.4.3,A.9.4.4,A.9.4.5
+     cis-csc: 1,11,12,13,14,15,16,18,19,2,3,4,5,6,7,8,9
++    srg@sle12: SRG-OS-000004-GPOS-00004,SRG-OS-000239-GPOS-00089,SRG-OS-000240-GPOS-00090,SRG-OS-000241-GPOS-00091,SRG-OS-000303-GPOS-00120,SRG-OS-000476-GPOS-00221
++    stigid@sle12: SLES-12-020230
+ 
+ ocil_clause: 'the system is not configured to audit account changes'
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd/rule.yml
+index c0e3b4b23a..bae0a29903 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Record Events that Modify User/Group Information - /etc/passwd'
+ 
+@@ -31,6 +31,7 @@ identifiers:
+     cce@rhel7: CCE-80435-1
+     cce@rhel8: CCE-80761-0
+     cce@rhcos4: CCE-82657-8
++    cce@sle12: CCE-83120-6
+ 
+ references:
+     stigid@ol7: OL07-00-030870
+@@ -51,6 +52,7 @@ references:
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS06.03,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+     iso27001-2013: A.11.2.6,A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.7.1,A.13.1.1,A.13.2.1,A.14.1.3,A.14.2.7,A.15.2.1,A.15.2.2,A.16.1.4,A.16.1.5,A.16.1.7,A.6.1.2,A.6.2.1,A.6.2.2,A.7.1.1,A.9.1.2,A.9.2.1,A.9.2.2,A.9.2.3,A.9.2.4,A.9.2.6,A.9.3.1,A.9.4.1,A.9.4.2,A.9.4.3,A.9.4.4,A.9.4.5
+     cis-csc: 1,11,12,13,14,15,16,18,19,2,3,4,5,6,7,8,9
++    stigid@sle12: SLES-12-020200
+ 
+ ocil_clause: 'the system is not configured to audit account changes'
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow/rule.yml
+index 6545282c8a..f3d9cf9cd2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Record Events that Modify User/Group Information - /etc/shadow'
+ 
+@@ -31,6 +31,7 @@ identifiers:
+     cce@rhel7: CCE-80431-0
+     cce@rhel8: CCE-80762-8
+     cce@rhcos4: CCE-82658-6
++    cce@sle12: CCE-83122-2
+ 
+ references:
+     stigid@ol7: OL07-00-030873
+@@ -51,6 +52,8 @@ references:
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS06.03,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+     iso27001-2013: A.11.2.6,A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.7.1,A.13.1.1,A.13.2.1,A.14.1.3,A.14.2.7,A.15.2.1,A.15.2.2,A.16.1.4,A.16.1.5,A.16.1.7,A.6.1.2,A.6.2.1,A.6.2.2,A.7.1.1,A.9.1.2,A.9.2.1,A.9.2.2,A.9.2.3,A.9.2.4,A.9.2.6,A.9.3.1,A.9.4.1,A.9.4.2,A.9.4.3,A.9.4.4,A.9.4.5
+     cis-csc: 1,11,12,13,14,15,16,18,19,2,3,4,5,6,7,8,9
++    stigid@sle12: SLES-12-020220
++    srg@sle12: SRG-OS-000004-GPOS-00004,SRG-OS-000239-GPOS-00089,SRG-OS-000240-GPOS-00090,SRG-OS-000241-GPOS-00091,SRG-OS-000303-GPOS-00120,SRG-OS-000476-GPOS-00221
+ 
+ ocil_clause: 'the system is not configured to audit account changes'
+ 
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/oval/shared.xml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/oval/shared.xml
+new file mode 100644
+index 0000000000..8aa7b04f7c
+--- /dev/null
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/oval/shared.xml
+@@ -0,0 +1,34 @@
++{{% if target_oval_version >= [5, 11.2] %}}
++<def-group oval_version="5.11.2">
++  <definition class="compliance" id="auditd_audispd_configure_sufficiently_large_partition" version="1">
++    {{{ oval_metadata("Configure a sufficiently large partition for audit logs.") }}}
++    <criteria>
++        <criterion comment="Check that the partition with audit logs is at least 10G large" test_ref="test_aacsflp" />
++    </criteria>
++  </definition>
++
++  <!-- partition for the mount point for audit logs -->
++  <linux:partition_object id="obj_aacsflp_audit_partition" version="1">
++    <linux:mount_point operation="equals">/var/log/audit</linux:mount_point>
++  </linux:partition_object>
++  <!-- total partition size in bytes -->
++  <local_variable id="var_aacsflp_audit_partition_size" comment="total capacity (in bytes) of the audit partition" datatype="string" version="1">
++    <arithmetic arithmetic_operation="multiply">
++      <object_component item_field="block_size" object_ref="obj_aacsflp_audit_partition" />
++      <object_component item_field="total_space" object_ref="obj_aacsflp_audit_partition" />
++    </arithmetic>
++  </local_variable>
++  <ind:variable_object id="obj_aacsflp_audit_partition_size" version="1">
++    <ind:var_ref>var_aacsflp_audit_partition_size</ind:var_ref>
++  </ind:variable_object>
++
++  <ind:variable_test id="test_aacsflp" version="1" check="all" check_existence="all_exist" comment="Check that the partition with audit logs is at least 10G large">
++    <ind:object object_ref="obj_aacsflp_audit_partition_size" />
++    <ind:state state_ref="state_aacsflp_partition_sufficiently_large" />
++  </ind:variable_test>
++  <ind:variable_state id="state_aacsflp_partition_sufficiently_large" version="1">
++      <ind:value operation="greater than or equal" datatype="int">10000000000</ind:value>
++  </ind:variable_state>
++
++</def-group>
++{{% endif %}}
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/rule.yml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/rule.yml
+new file mode 100644
+index 0000000000..421b410446
+--- /dev/null
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_sufficiently_large_partition/rule.yml
+@@ -0,0 +1,69 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'Configure a Sufficiently Large Partition for Audit Logs'
++
++description: |-
++    The SUSE operating system must allocate audit record storage capacity to
++    store at least one weeks worth of audit records when audit records are not
++    immediately sent to a central audit record storage facility.
++
++    The partition size needed to capture a week's worth of audit records is
++    based on the activity level of the system and the total storage capacity
++    available. In normal circumstances, 10.0 GB of storage space for audit
++    records will be sufficient.
++
++    Determine which partition the audit records are being written to with the
++    following command:
++
++    <pre># grep log_file /etc/audit/auditd.conf
++    log_file = /var/log/audit/audit.log</pre>
++
++    Check the size of the partition that audit records are written to with the
++    following command:
++
++    <pre># df -h /var/log/audit/
++    /dev/sda2 24G 10.4G 13.6G 43% /var/log/audit</pre>
++
++rationale: |-
++    Information stored in one location is vulnerable to accidental or incidental
++    deletion or alteration.Off-loading is a common process in information
++    systems with limited audit storage capacity.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83114-9
++
++references:
++    disa@sle12: CCI-001849
++    srg@sle12: SRG-OS-000342-GPOS-00133
++    stigid@sle12: SLES-12-020020 
++
++ocil_clause: 'audispd is not sending logs to a remote system and the local partition has inadequate'
++
++ocil: |-
++    To verify whether audispd plugin off-loads audit records onto a different
++    system or media from the system being audited, run the following command:
++
++    <pre># grep -i remote_server /etc/audisp/audisp-remote.conf</pre>
++
++    The output should return something similar to where <i>REMOTE_SYSTEM</i>
++    is an IP address or hostname:
++    <pre>remote_server = <i>REMOTE_SYSTEM</i></pre>
++
++    Determine which partition the audit records are being written to with the
++    following command:
++
++    <pre># grep log_file /etc/audit/auditd.conf
++    log_file = /var/log/audit/audit.log</pre>
++
++    Check the size of the partition that audit records are written to with the
++    following command and verify whether it is sufficiently large:
++
++    <pre># df -h /var/log/audit/
++    /dev/sda2 24G 10.4G 13.6G 43% /var/log/audit</pre>
++
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action/rule.yml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action/rule.yml
+index 5b9baa2858..d3bf2845ef 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action/rule.yml
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Configure audispd''s Plugin disk_full_action When Disk Is Full'
+ 
+@@ -23,6 +23,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80539-0
++    cce@sle12: CCE-83116-4
+ 
+ references:
+     stigid@ol7: OL07-00-030320
+@@ -30,6 +31,8 @@ references:
+     disa: CCI-001851
+     srg: SRG-OS-000342-GPOS-00133
+     stigid@rhel7: RHEL-07-030320
++    srg@sle12: SRG-OS-000479-GPOS-00224
++    stigid@sle12: SLES-12-020110
+ 
+ ocil_clause: 'the system is not configured to switch to single user mode for corrective action'
+ 
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action/rule.yml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action/rule.yml
+index 9e677d225c..f756e47969 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action/rule.yml
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Configure audispd''s Plugin network_failure_action On Network Failure'
+ 
+@@ -24,6 +24,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80538-2
++    cce@sle12: CCE-83115-6
+ 
+ references:
+     stigid@ol7: OL07-00-030321
+@@ -31,6 +32,7 @@ references:
+     disa: CCI-001851
+     srg: SRG-OS-000342-GPOS-00133
+     stigid@rhel7: RHEL-07-030321
++    stigid@sle12: SLES-12-020100
+ 
+ ocil_clause: 'the system is not configured to switch to single user mode for corrective action'
+ 
+diff --git a/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/ansible/shared.yml b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/ansible/shared.yml
+new file mode 100644
+index 0000000000..7ee0817b30
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/ansible/shared.yml
+@@ -0,0 +1,12 @@
++# platform = multi_platform_sle
++# reboot = false
++# complexity = low
++# strategy = configure
++# disruption = low
++
++{{{ ansible_lineinfile(msg='Configure permission for /var/log/messages', path='/etc/permissions.local', regex='^\/var\/log\/messages\s+root.*', new_line='/var/log/messages root:root 640', create='yes', state='present', register='update_permissions_local_result') }}}
++
++- name: "Correct file permissions after update /etc/permissions.local"
++  shell: >
++    chkstat --set --system
++  when: update_permissions_local_result.changed
+diff --git a/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/oval/shared.xml b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/oval/shared.xml
+new file mode 100644
+index 0000000000..c0af07f781
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/oval/shared.xml
+@@ -0,0 +1,45 @@
++<def-group>
++  <definition class="compliance" id="file_permissions_var_log_messages" version="1">
++    <metadata>
++        <title>Verify that /var/log/messages is readable only by root</title>
++      <affected family="unix">
++        <platform>multi_platform_sle</platform>
++      </affected>
++      <description>
++          Checks that /var/log/messages is only readable by root.
++      </description>
++    </metadata>
++    <criteria operator="OR">
++      <extend_definition comment="Check if syslog service is disabled" definition_ref="service_syslog_disabled" />
++      <criterion test_ref="test_permissions_var_log_messages_files" />
++    </criteria>
++  </definition>
++
++  <unix:file_test  check="all" check_existence="all_exist" comment="system.map files readable only by root" id="test_permissions_var_log_messages_files" version="1">
++    <unix:object object_ref="object_file_permissions_var_log_messages_files" />
++    <unix:state state_ref="state_owner_var_log_messages" />
++    <unix:state state_ref="state_file_permissions_var_log_messages" />
++  </unix:file_test>
++
++  <unix:file_object comment="system.mapfiles" id="object_file_permissions_var_log_messages_files" version="1">
++    <unix:filepath>/var/log/messages</unix:filepath>
++  </unix:file_object>
++
++  <unix:file_state id="state_owner_var_log_messages" version="1">
++    <unix:group_id datatype="int" operation="equals">0</unix:group_id>
++    <unix:user_id datatype="int" operation="equals">0</unix:user_id>
++  </unix:file_state>
++
++  <unix:file_state id="state_file_permissions_var_log_messages" version="1">
++    <unix:suid datatype="boolean">false</unix:suid>
++    <unix:sgid datatype="boolean">false</unix:sgid>
++    <unix:sticky datatype="boolean">false</unix:sticky>
++    <unix:uexec datatype="boolean">false</unix:uexec>
++    <unix:gwrite datatype="boolean">false</unix:gwrite>
++    <unix:gexec datatype="boolean">false</unix:gexec>
++    <unix:oread datatype="boolean">false</unix:oread>
++    <unix:owrite datatype="boolean">false</unix:owrite>
++    <unix:oexec datatype="boolean">false</unix:oexec>
++  </unix:file_state>
++
++</def-group>
+diff --git a/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/rule.yml b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/rule.yml
+new file mode 100644
+index 0000000000..e0569758a9
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/file_permissions_var_log_messages/rule.yml
+@@ -0,0 +1,53 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'Verify that local /var/log/messages is not world-readable'
++
++description: |-
++    Files containing sensitive informations should be protected by restrictive
++    permissions. Most of the time, there is no need that these files need to be read by any non-root user
++    {{{ describe_file_permissions(file="/var/log/messages", perms="0640") }}}
++
++    Check that "permissions.local" file contains the correct permissions rules with the following command:
++
++    <pre># grep -i messages /etc/permissions.local
++
++    /var/log/messages root:root 640</pre>
++
++rationale: |-
++    The <tt>/var/log/messages</tt> file contains system error messages. Only
++    authorized personnel should be aware of errors and the details of the
++    errors. Error messages are an indicator of an organization's operational
++    state or can identify the SUSE operating system or platform. Additionally,
++    Personally Identifiable Information (PII) and operational information must
++    not be revealed through error messages to unauthorized personnel or their
++    designated representatives.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83112-3
++
++references:
++    disa@sle12: CCI-001314
++    nist@sle12: SI-11(c)
++    stigid@sle12: SLES-12-010890
++    srg@sle12: SRG-OS-000206-GPOS-00084
++
++ocil_clause: 'Make sure /var/log/messages is not world-readable'
++
++ocil: |-
++    {{{ ocil_file_permissions(file="/var/log/messages", perms="-rw-r-----") }}}
++
++    Check that <tt>permissions.local</tt> file contains the correct permissions rules with the following command:
++
++    <pre># grep -i messages /etc/permissions.local
++
++    /var/log/messages root:root 640</pre>
++
++    If the command does not return any or different output, this is a finding.
++
++    Run the following command to correct the permissions after adding the missing entry:
++
++    <pre># sudo chkstat --set --system</pre>
+diff --git a/linux_os/guide/system/permissions/permissions_local/permissions_local_audit_binaries/rule.yml b/linux_os/guide/system/permissions/permissions_local/permissions_local_audit_binaries/rule.yml
+new file mode 100644
+index 0000000000..b66a44452f
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/permissions_local_audit_binaries/rule.yml
+@@ -0,0 +1,72 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'Verify Permissions of Local Logs of audit Tools'
++
++description: |-
++    The SUSE operating system audit tools must have the proper permissions
++    configured to protect against unauthorized access.
++
++    Check that "permissions.local" file contains the correct permissions rules
++    with the following command:
++
++    <pre>grep "^/usr/sbin/au" /etc/permissions.local
++
++    /usr/sbin/audispd root:root 0750
++    /usr/sbin/auditctl root:root 0750
++    /usr/sbin/auditd root:root 0750
++    /usr/sbin/ausearch root:root 0755
++    /usr/sbin/aureport root:root 0755
++    /usr/sbin/autrace root:root 0750
++    /usr/sbin/augenrules root:root 0750
++    </pre>
++
++    Audit tools include but are not limited to vendor-provided and open-source
++    audit tools needed to successfully view and manipulate audit information
++    system activity and records. Audit tools include custom queries and report
++    generators.
++
++rationale: |-
++    Protecting audit information also includes identifying and protecting the
++    tools used to view and manipulate log data. Therefore, protecting audit
++    tools is necessary to prevent unauthorized operation on audit information.
++
++    SUSE operating systems providing tools to interface with audit information
++    will leverage user permissions and roles identifying the user accessing the
++    tools and the corresponding rights the user enjoys to make access decisions
++    regarding the access to audit tools.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83118-0
++
++references:
++    disa@sle12: CCI-001493,CCI-001494,CCI-001495
++    nisti@sle12: AU-9
++    srg@sle12: SRG-OS-000256-GPOS-00097,SRG-OS-000257-GPOS-00098,SRG-OS-000258-GPOS-00099
++    stigid@sle12: SLES-12-020130
++
++ocil: |-
++    Check that <tt>permissions.local</tt> file contains the correct permissions
++    rules with the following command:
++
++    <pre>grep "^/usr/sbin/au" /etc/permissions.local
++
++    /usr/sbin/audispd root:root 0750
++    /usr/sbin/auditctl root:root 0750
++    /usr/sbin/auditd root:root 0750
++    /usr/sbin/ausearch root:root 0755
++    /usr/sbin/aureport root:root 0755
++    /usr/sbin/autrace root:root 0750
++    /usr/sbin/augenrules root:root 0750
++    </pre>
++
++    If the command does not return all the above lines, the missing ones need
++    to be added.
++
++    Run the following command to correct the permissions after adding missing
++    entries:
++
++    <pre># sudo chkstat --set --system</pre>
+diff --git a/linux_os/guide/system/permissions/permissions_local/permissions_local_var_log_audit/rule.yml b/linux_os/guide/system/permissions/permissions_local/permissions_local_var_log_audit/rule.yml
+new file mode 100644
+index 0000000000..0eb6bfc893
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/permissions_local_var_log_audit/rule.yml
+@@ -0,0 +1,57 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'Verify that Local Logs of the audit Daemon are not World-Readable'
++
++description: |-
++    Files containing sensitive informations should be protected by restrictive
++    permissions. Most of the time, there is no need that these files need to bei
++    read by any non-root user.
++
++    Check that "permissions.local" file contains the correct permissions rules with the following command:
++
++    <pre># grep -i audit /etc/permissions.local
++
++    /var/log/audit/ root:root 600
++    /var/log/audit/audit.log root:root 600
++    /etc/audit/audit.rules root:root 640
++    /etc/audit/rules.d/audit.rules root:root 640</pre>
++
++rationale: |-
++    Without the capability to restrict which roles and individuals can select
++    which events are audited, unauthorized personnel may be able to prevent the
++    auditing of critical events. Misconfigured audits may degrade the system's
++    performance by overwhelming the audit log. Misconfigured audits may also
++    make it more difficult to establish, correlate, and investigate the events
++    relating to an incident or identify those responsible for one.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83117-2
++
++references:
++    disa@sle12: CCI-000164
++    nist: AU-9
++    srg@sle12: SRG-OS-000057-GPOS-00027,SRG-OS-000058-GPOS-00028,SRG-OS-000059-GPOS-00029
++    stigid@sle12: SLES-12-020120
++
++ocil: |-
++    Check that <tt>permissions.local</tt> file contains the correct permissionsi
++    rules with the following command:
++
++    <pre># grep -i audit /etc/permissions.local
++
++    /var/log/audit/ root:root 600
++    /var/log/audit/audit.log root:root 600
++    /etc/audit/audit.rules root:root 640
++    /etc/audit/rules.d/audit.rules root:root 640</pre>
++
++    If the command does not return all the above lines, the missing ones need
++    to be added.
++
++    Run the following command to correct the permissions after adding missing
++    entries:
++
++    <pre># sudo chkstat --set --system</pre>
+diff --git a/shared/templates/extra_ovals.yml b/shared/templates/extra_ovals.yml
+index 2d305f56d4..89dbe31beb 100644
+--- a/shared/templates/extra_ovals.yml
++++ b/shared/templates/extra_ovals.yml
+@@ -43,3 +43,9 @@ service_sssd_disabled:
+   vars:
+     servicename: sssd
+     packagename: sssd-common
++
++service_syslog_disabled:
++  name: service_disabled
++  vars:
++    servicename: syslog
++    packagename: rsyslog
+diff --git a/sle12/profiles/stig.profile b/sle12/profiles/stig.profile
+index 4c8b361226..095be4febe 100644
+--- a/sle12/profiles/stig.profile
++++ b/sle12/profiles/stig.profile
+@@ -8,8 +8,10 @@ description: |-
+ 
+ selections:
+     - sshd_approved_macs=stig
++    - var_account_disable_post_pw_expiration=35
+     - var_accounts_fail_delay=4
+     - var_removable_partition=dev_cdrom
++    - var_time_service_set_maxpoll=system_default
+     - account_disable_post_pw_expiration
+     - account_temp_expire_date
+     - accounts_have_homedir_login_defs
+@@ -27,22 +29,52 @@ selections:
+     - accounts_user_interactive_home_directory_exists
+     - aide_scan_notification
+     - audit_rules_dac_modification_chmod
++    - audit_rules_dac_modification_chown
++    - audit_rules_dac_modification_fchmod
++    - audit_rules_dac_modification_fchmodat
++    - audit_rules_dac_modification_fchown
++    - audit_rules_dac_modification_fchownat
++    - audit_rules_dac_modification_fremovexattr
++    - audit_rules_dac_modification_fsetxattr
++    - audit_rules_dac_modification_lchown
++    - audit_rules_dac_modification_lremovexattr
++    - audit_rules_dac_modification_removexattr
++    - audit_rules_dac_modification_setxattr
++    - audit_rules_enable_syscall_auditing
++    - audit_rules_kernel_module_loading_delete
++    - audit_rules_kernel_module_loading_finit
++    - audit_rules_kernel_module_loading_init
+     - audit_rules_login_events_lastlog
+     - audit_rules_login_events_tallylog
+     - audit_rules_privileged_commands_chage
++    - audit_rules_privileged_commands_crontab
++    - audit_rules_privileged_commands_mount
++    - audit_rules_privileged_commands_pam_timestamp_check
++    - audit_rules_privileged_commands_su
++    - audit_rules_privileged_commands_sudo
++    - audit_rules_privileged_commands_umount
+     - audit_rules_privileged_commands_unix_chkpwd
+     - audit_rules_unsuccessful_file_modification_creat
+     - audit_rules_unsuccessful_file_modification_ftruncate
++    - audit_rules_unsuccessful_file_modification_open
+     - audit_rules_unsuccessful_file_modification_open_by_handle_at
+     - audit_rules_unsuccessful_file_modification_openat
+     - audit_rules_unsuccessful_file_modification_truncate
++    - audit_rules_usergroup_modification_group
+     - audit_rules_usergroup_modification_gshadow
++    - audit_rules_usergroup_modification_opasswd
++    - audit_rules_usergroup_modification_passwd
++    - audit_rules_usergroup_modification_shadow
++    - auditd_audispd_configure_sufficiently_large_partition
++    - auditd_audispd_disk_full_action
+     - auditd_audispd_encrypt_sent_records
++    - auditd_audispd_network_failure_action
+     - auditd_data_disk_full_action
+     - auditd_data_retention_action_mail_acct
+     - auditd_data_retention_space_left
+     - banner_etc_issue
+     - banner_etc_motd
++    - chronyd_or_ntpd_set_maxpoll
+     - dir_perms_world_writable_sticky_bits
+     - dir_perms_world_writable_system_owned_group
+     - disable_ctrlaltdel_reboot
+@@ -54,6 +86,7 @@ selections:
+     - file_permissions_sshd_private_key
+     - file_permissions_sshd_pub_key
+     - file_permissions_ungroupowned
++    - file_permissions_var_log_messages
+     - ftp_present_banner
+     - gnome_gdm_disable_automatic_login
+     - grub2_password
+@@ -74,6 +107,9 @@ selections:
+     - package_audit-audispd-plugins_installed
+     - package_audit_installed
+     - package_telnet-server_removed
++    - pam_disable_automatic_configuration
++    - permissions_local_audit_binaries
++    - permissions_local_var_log_audit
+     - postfix_client_configure_mail_alias
+     - run_chkstat
+     - security_patches_up_to_date
+@@ -106,4 +142,3 @@ selections:
+     - sysctl_net_ipv4_ip_forward
+     - sysctl_net_ipv6_conf_all_accept_source_route
+     - sysctl_net_ipv6_conf_default_accept_source_route
+-

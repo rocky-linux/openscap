@@ -1,0 +1,94 @@
+From d5673795ba2f87ae1649c84591ee13d7876af0b2 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Wed, 13 Jan 2021 14:01:03 +0100
+Subject: [PATCH 1/3] add rule
+
+---
+ .../sysctl_kernel_modules_disabled/rule.yml   | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+new file mode 100644
+index 0000000000..1811c43815
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+@@ -0,0 +1,34 @@
++documentation_complete: true
++
++prodtype: fedora,ol8,rhel7,rhel8
++
++title: 'Disable loading and unloading of kernel modules'
++
++description: '{{{ describe_sysctl_option_value(sysctl="kernel.modules_disabled", value="1") }}}'
++
++rationale: |-
++    Malicious kernel modules can have a significant impact on system security and
++    availability. Disabling loading of kernel modules prevents this threat. Note
++    that once this option has been set, it cannot be reverted without doing a
++    system reboot. Make sure that all needed kernel modules are loaded before
++    setting this option.
++
++severity: medium
++
++identifiers:
++    cce@rhel7: CCE-83392-1
++    cce@rhel8: CCE-83397-0
++
++references:
++    anssi: BP28(R24)
++
++{{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.modules_disabled", value="1") }}}
++
++platform: machine
++
++template:
++    name: sysctl
++    vars:
++        sysctlvar: kernel.modules_disabled
++        sysctlval: '1'
++        datatype: int
+
+From 5e4f6a4a0b70c07488595080cfd98fdbfb02e352 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Wed, 13 Jan 2021 14:01:15 +0100
+Subject: [PATCH 2/3] add rule to anssi profile
+
+---
+ controls/anssi.yml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/controls/anssi.yml b/controls/anssi.yml
+index 9e2b899b6d..f435459af3 100644
+--- a/controls/anssi.yml
++++ b/controls/anssi.yml
+@@ -483,7 +483,8 @@ controls:
+       sysctl kernel.modules_disabledconf:
+       Prohibition of loading modules (except those already loaded to this point)
+       kernel.modules_disabled = 1
+-    # rules: TBD
++    rules:
++    - sysctl_kernel_modules_disabled
+ 
+   - id: R25
+     level: enhanced
+
+From a4a91fbb7f23854e4f80819a023c1adc4e7110c5 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Thu, 14 Jan 2021 09:30:01 +0100
+Subject: [PATCH 3/3] remove cces from pool
+
+---
+ shared/references/cce-redhat-avail.txt | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/shared/references/cce-redhat-avail.txt b/shared/references/cce-redhat-avail.txt
+index 4dbec8255c..137d975a3d 100644
+--- a/shared/references/cce-redhat-avail.txt
++++ b/shared/references/cce-redhat-avail.txt
+@@ -1,5 +1,3 @@
+-CCE-83392-1
+-CCE-83397-0
+ CCE-83398-8
+ CCE-83399-6
+ CCE-83404-4

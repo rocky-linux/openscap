@@ -1,0 +1,57 @@
+From 01b1ade0e5713bf3f11f78cc0ca7e43f74eb8a46 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 01:02:48 +0100
+Subject: [PATCH 1/2] Drop remediation for sysctl_kernel_modules_disabled
+
+Remediating this during kickstart install time renders the machine
+unbootable.
+---
+ .../restrictions/sysctl_kernel_modules_disabled/rule.yml       | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+index 1811c43815..34e8290f74 100644
+--- a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+@@ -32,3 +32,6 @@ template:
+         sysctlvar: kernel.modules_disabled
+         sysctlval: '1'
+         datatype: int
++    backends:
++        # Automated remediation of this rule disrupts installs via kickstart
++        bash: 'off'
+
+From 77eeafd1af1445a185651c77b143bce0004badda Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 09:23:17 +0100
+Subject: [PATCH 2/2] Add warning why rule has no remediation
+
+Rule sysctl_kernel_modules_disabled disrupts the install and boot
+process if remediated during installation.
+---
+ .../restrictions/sysctl_kernel_modules_disabled/rule.yml   | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+index 34e8290f74..438cd2759e 100644
+--- a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_modules_disabled/rule.yml
+@@ -26,6 +26,11 @@ references:
+ 
+ platform: machine
+ 
++warnings:
++  - general:
++      This rule doesn't come with Bash remediation.
++      Remediating this rule during the installation process disrupts the install and boot process.
++
+ template:
+     name: sysctl
+     vars:
+@@ -33,5 +38,5 @@ template:
+         sysctlval: '1'
+         datatype: int
+     backends:
+-        # Automated remediation of this rule disrupts installs via kickstart
++        # Automated remediation of this rule during installations disrupts the first boot
+         bash: 'off'

@@ -1,0 +1,386 @@
+From 5f8f98024f8955a0327b67f873923757a51d082c Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 19 Jan 2021 12:32:07 +0100
+Subject: [PATCH 1/7] add rule and remediations
+
+---
+ .../ansible/shared.yml                        | 13 +++++
+ .../bash/shared.sh                            |  7 +++
+ .../oval/shared.xml                           | 38 +++++++++++++
+ .../rule.yml                                  | 57 +++++++++++++++++++
+ shared/references/cce-redhat-avail.txt        |  1 -
+ 5 files changed, 115 insertions(+), 1 deletion(-)
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/ansible/shared.yml
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/rule.yml
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/ansible/shared.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/ansible/shared.yml
+new file mode 100644
+index 0000000000..cefba7db05
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/ansible/shared.yml
+@@ -0,0 +1,13 @@
++# platform = Red Hat Enterprise Linux 7,Oracle Linux 7
++# reboot = false
++# strategy = restrict
++# complexity = low
++# disruption = low
++
++- name: "Configure sshd to use approved MACs"
++  lineinfile:
++    path: /etc/ssh/sshd_config
++    line: 'MACs hmac-sha2-512,hmac-sha2-256'
++    state: present
++    regexp: '^[\s]*MACs[\s]+(hmac-sha2-512(?=[\w,-@]+|$),?)?(hmac-sha2-256(?=[\w,-@]+|$),?)?[\s]*(?:#.*)?$'
++    create: True
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
+new file mode 100644
+index 0000000000..c76190fb96
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
+@@ -0,0 +1,7 @@
++# platform = multi_platform_wrlinux,Red Hat Enterprise Linux 7,Oracle Linux 7
++
++if grep -q -P '^[[:space:]]*MACs[[:space:]]+' /etc/ssh/sshd_config; then
++  sed -i 's/^\s*MACs.*/MACs hmac-sha2-512,hmac-sha2-256/' /etc/ssh/sshd_config
++else
++  echo "MACs hmac-sha2-512,hmac-sha2-256" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+new file mode 100644
+index 0000000000..d7fbd9f0ed
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+@@ -0,0 +1,38 @@
++<def-group>
++  <definition class="compliance" id="sshd_use_approved_macs_ordered_stig" version="1">
++    {{{ oval_metadata("Limit the Message Authentication Codes (MACs) to those which are FIPS-approved.") }}}
++    <criteria operator="AND">
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
++      <criteria comment="SSH is configured correctly or is not installed"
++      operator="OR">
++        <criteria comment="sshd is not installed" operator="AND">
++          <extend_definition comment="sshd is not required or requirement is unset"
++          definition_ref="sshd_not_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server removed"
++          definition_ref="package_openssh-server_removed" />
++        </criteria>
++        <criteria comment="sshd is installed and configured" operator="AND">
++          <extend_definition comment="sshd is required or requirement is unset"
++          definition_ref="sshd_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server installed"
++          definition_ref="package_openssh-server_installed" />
++          <criterion comment="Check MACs in /etc/ssh/sshd_config"
++          test_ref="test_sshd_use_approved_macs_ordered_stig" />
++        </criteria>
++      </criteria>
++    </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test check="all" check_existence="all_exist"
++  comment="tests the value of MACs setting in the /etc/ssh/sshd_config file"
++  id="test_sshd_use_approved_macs_ordered_stig" version="1">
++    <ind:object object_ref="obj_sshd_use_approved_macs_ordered_stig" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="obj_sshd_use_approved_macs_ordered_stig" version="1">
++    <ind:filepath>/etc/ssh/sshd_config</ind:filepath>
++    <ind:pattern operation="pattern match">^[\s]*(?i)MACs(?-i)[\s]+(?=[\w,-@]+)(hmac-sha2-512(?=[\w,-@]+|$),?)?(hmac-sha2-256(?=[\w,-@]+|$),?)?[\s]*(?:#.*)?$</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++</def-group>
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/rule.yml
+new file mode 100644
+index 0000000000..dc9f7dca7c
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/rule.yml
+@@ -0,0 +1,57 @@
++documentation_complete: true
++
++prodtype: rhel7
++
++title: 'Use Only FIPS 140-2 Validated MACs'
++
++description: |-
++    Limit the MACs to those hash algorithms which are FIPS-approved.
++    The following line in <tt>/etc/ssh/sshd_config</tt>
++    demonstrates use of FIPS-approved MACs:
++    <pre>MACs hmac-sha2-512,hmac-sha2-256</pre>
++    This rule ensures that there are configured MACs mentioned
++    above (or their subset), keeping the given order of algorithms.
++
++rationale: |-
++    DoD Information Systems are required to use FIPS-approved cryptographic hash
++    functions. The only SSHv2 hash algorithms meeting this requirement is SHA2.
++
++severity: medium
++
++identifiers:
++    cce@rhel7: CCE-83398-8
++
++references:
++    disa: CCI-000068,CCI-000803,CCI-000877,CCI-001453,CCI-003123
++    srg: SRG-OS-000125-GPOS-00065,SRG-OS-000250-GPOS-00093,SRG-OS-000394-GPOS-00174
++    stigid@rhel7: RHEL-07-040400
++
++ocil_clause: 'MACs option is commented out or not using FIPS-approved hash algorithms'
++
++ocil: |-
++    Only FIPS-approved MACs should be used. To verify that only FIPS-approved
++    MACs are in use, run the following command:
++    <pre>$ sudo grep -i macs /etc/ssh/sshd_config</pre>
++    The output should contain only following MACs (or a subset) in the exact order:
++    <pre>hmac-sha2-512,hmac-sha2-256</pre>
++
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        System Crypto Modules must be provided by a vendor that undergoes
++        FIPS-140 certifications.
++        FIPS-140 is applicable to all Federal agencies that use
++        cryptographic-based security systems to protect sensitive information
++        in computer and telecommunication systems (including voice systems) as
++        defined in Section 5131 of the Information Technology Management Reform
++        Act of 1996, Public Law 104-106. This standard shall be used in
++        designing and implementing cryptographic modules that Federal
++        departments and agencies operate or are operated for them under
++        contract. See <b>{{{ weblink(link="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-2.pdf") }}}</b>
++        To meet this, the system has to have cryptographic software provided by
++        a vendor that has undergone this certification. This means providing
++        documentation, test results, design information, and independent third
++        party review by an accredited lab. While open source software is
++        capable of meeting this, it does not meet FIPS-140 unless the vendor
++        submits to this process.
+From 18ea3b8671e15c06a5c1c864d9d1d67f4262189e Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 19 Jan 2021 12:32:25 +0100
+Subject: [PATCH 2/7] add tests
+
+---
+ .../tests/comment.fail.sh                                  | 7 +++++++
+ .../tests/correct_reduced_list.pass.sh                     | 7 +++++++
+ .../tests/correct_scrambled.fail.sh                        | 7 +++++++
+ .../tests/correct_value.pass.sh                            | 7 +++++++
+ .../tests/line_not_there.fail.sh                           | 3 +++
+ .../tests/no_parameters.fail.sh                            | 7 +++++++
+ .../tests/wrong_value.fail.sh                              | 7 +++++++
+ 7 files changed, 45 insertions(+)
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/comment.fail.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_reduced_list.pass.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_scrambled.fail.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_value.pass.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/line_not_there.fail.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/no_parameters.fail.sh
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/wrong_value.fail.sh
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/comment.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/comment.fail.sh
+new file mode 100644
+index 0000000000..26bf18234c
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/comment.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/# MACs hmac-sha2-512,hmac-sha2-256/" /etc/ssh/sshd_config
++else
++	echo "# ciphers MACs hmac-sha2-512,hmac-sha2-256" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_reduced_list.pass.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_reduced_list.pass.sh
+new file mode 100644
+index 0000000000..0d922cdee9
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_reduced_list.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/MACs hmac-sha2-512/" /etc/ssh/sshd_config
++else
++	echo "MACs hmac-sha2-512" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_scrambled.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_scrambled.fail.sh
+new file mode 100644
+index 0000000000..ce3f459352
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_scrambled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/MACs hmac-sha2-256,hmac-sha2-512/" /etc/ssh/sshd_config
++else
++	echo "MACs hmac-sha2-256,hmac-sha2-512" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_value.pass.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_value.pass.sh
+new file mode 100644
+index 0000000000..19da7102a7
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/correct_value.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/MACs hmac-sha2-512,hmac-sha2-256/" /etc/ssh/sshd_config
++else
++	echo 'MACs hmac-sha2-512,hmac-sha2-256' >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/line_not_there.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/line_not_there.fail.sh
+new file mode 100644
+index 0000000000..fd1f19347a
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/line_not_there.fail.sh
+@@ -0,0 +1,3 @@
++#!/bin/bash
++
++sed -i "/^MACs.*/d" /etc/ssh/sshd_config
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/no_parameters.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/no_parameters.fail.sh
+new file mode 100644
+index 0000000000..44c07c6de0
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/no_parameters.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/MACs /" /etc/ssh/sshd_config
++else
++	echo 'MACs ' >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/wrong_value.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..cf56cd228f
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/tests/wrong_value.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^MACs" /etc/ssh/sshd_config; then
++	sed -i "s/^MACs.*/MACs hmac-sha2-512,hmac-sha2-256,blahblah/" /etc/ssh/sshd_config
++else
++	echo "MACs hmac-sha2-512,hmac-sha2-256,blahblah" >> /etc/ssh/sshd_config
++fi
+
+From a334b4b434adf92c94b8bd6bb888751782e70ad3 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 19 Jan 2021 12:32:58 +0100
+Subject: [PATCH 3/7] modify rhel7 stig profile
+
+---
+ rhel7/profiles/stig.profile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/rhel7/profiles/stig.profile b/rhel7/profiles/stig.profile
+index 6c06a8ede6..17c781d3eb 100644
+--- a/rhel7/profiles/stig.profile
++++ b/rhel7/profiles/stig.profile
+@@ -28,7 +28,6 @@ selections:
+     - inactivity_timeout_value=15_minutes
+     - var_screensaver_lock_delay=5_seconds
+     - sshd_idle_timeout_value=10_minutes
+-    - sshd_approved_macs=stig
+     - var_accounts_fail_delay=4
+     - var_selinux_state=enforcing
+     - var_selinux_policy_name=targeted
+@@ -259,7 +258,7 @@ selections:
+     - sshd_print_last_log
+     - sshd_disable_root_login
+     - sshd_allow_only_protocol2
+-    - sshd_use_approved_macs
++    - sshd_use_approved_macs_ordered_stig
+     - file_permissions_sshd_pub_key
+     - file_permissions_sshd_private_key
+     - sshd_disable_gssapi_auth
+
+From df71fc735efa8754a73fab5d355d422c6e0ffa53 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 19 Jan 2021 12:33:10 +0100
+Subject: [PATCH 4/7] remove rhel7 stigid from sshd_use_approved_macs
+
+---
+ .../services/ssh/ssh_server/sshd_use_approved_macs/rule.yml      | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
+index 394c733f51..d47eb443f5 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
+@@ -54,7 +54,6 @@ references:
+     nist-csf: PR.AC-1,PR.AC-3,PR.DS-5,PR.PT-4
+     srg: SRG-OS-000125-GPOS-00065,SRG-OS-000250-GPOS-00093,SRG-OS-000394-GPOS-00174
+     vmmsrg: SRG-OS-000033-VMM-000140,SRG-OS-000120-VMM-000600,SRG-OS-000478-VMM-001980,SRG-OS-000480-VMM-002000,SRG-OS-000396-VMM-001590
+-    stigid@rhel7: RHEL-07-040400
+     stigid@sle12: SLES-12-030180
+     isa-62443-2013: 'SR 1.1,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.7,SR 1.8,SR 1.9,SR 2.6,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.3.3.5.1,4.3.3.6.6
+
+From 9c24aaaba67f0123a82335672fd25aacd913caa4 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Thu, 21 Jan 2021 11:43:16 +0100
+Subject: [PATCH 5/7] simplify regex
+
+---
+ .../sshd_use_approved_macs_ordered_stig/oval/shared.xml         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+index d7fbd9f0ed..5973488661 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+@@ -31,7 +31,7 @@
+ 
+   <ind:textfilecontent54_object id="obj_sshd_use_approved_macs_ordered_stig" version="1">
+     <ind:filepath>/etc/ssh/sshd_config</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*(?i)MACs(?-i)[\s]+(?=[\w,-@]+)(hmac-sha2-512(?=[\w,-@]+|$),?)?(hmac-sha2-256(?=[\w,-@]+|$),?)?[\s]*(?:#.*)?$</ind:pattern>
++    <ind:pattern operation="pattern match">^[\s]*(?i)MACs(?-i)[\s]+(?=[\w,-@]+)(hmac-sha2-512(?=[\w,]+|$),?)?(hmac-sha2-256)?[\s]*(?:#.*)?$</ind:pattern>
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+
+From e3973f4c2988308a2d1a18e67a730a059f791336 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Thu, 21 Jan 2021 11:55:19 +0100
+Subject: [PATCH 6/7] make bash remediation more readable
+
+---
+ .../sshd_use_approved_macs_ordered_stig/bash/shared.sh          | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
+index c76190fb96..f8f6f39bee 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/bash/shared.sh
+@@ -1,6 +1,6 @@
+ # platform = multi_platform_wrlinux,Red Hat Enterprise Linux 7,Oracle Linux 7
+ 
+-if grep -q -P '^[[:space:]]*MACs[[:space:]]+' /etc/ssh/sshd_config; then
++if grep -q -P '^\s*MACs\s+' /etc/ssh/sshd_config; then
+   sed -i 's/^\s*MACs.*/MACs hmac-sha2-512,hmac-sha2-256/' /etc/ssh/sshd_config
+ else
+   echo "MACs hmac-sha2-512,hmac-sha2-256" >> /etc/ssh/sshd_config
+
+From e5c379ac8cbd7bd42b116d3a5473a78406a662fd Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Thu, 21 Jan 2021 13:05:18 +0100
+Subject: [PATCH 7/7] one more small fix to oval regex
+
+---
+ .../sshd_use_approved_macs_ordered_stig/oval/shared.xml         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+index 5973488661..b5443b07c4 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs_ordered_stig/oval/shared.xml
+@@ -31,7 +31,7 @@
+ 
+   <ind:textfilecontent54_object id="obj_sshd_use_approved_macs_ordered_stig" version="1">
+     <ind:filepath>/etc/ssh/sshd_config</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*(?i)MACs(?-i)[\s]+(?=[\w,-@]+)(hmac-sha2-512(?=[\w,]+|$),?)?(hmac-sha2-256)?[\s]*(?:#.*)?$</ind:pattern>
++    <ind:pattern operation="pattern match">^[\s]*(?i)MACs(?-i)[\s]+(?=[\w]+)(hmac-sha2-512(?=[\w,]+|$),?)?(hmac-sha2-256)?[\s]*(?:#.*)?$</ind:pattern>
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 

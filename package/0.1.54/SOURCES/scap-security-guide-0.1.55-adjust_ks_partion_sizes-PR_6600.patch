@@ -1,0 +1,213 @@
+From afa3b348ed0af551967870f48334afbabecb89ab Mon Sep 17 00:00:00 2001
+From: Milan Lysonek <mlysonek@redhat.com>
+Date: Thu, 4 Feb 2021 09:43:51 +0100
+Subject: [PATCH] Extend /var partition to 3GB in rhel8 kickstarts
+
+---
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg     | 4 ++--
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg         | 4 ++--
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg | 4 ++--
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg      | 4 ++--
+ rhel8/kickstart/ssg-rhel8-cis-ks.cfg                     | 4 ++--
+ rhel8/kickstart/ssg-rhel8-cui-ks.cfg                     | 4 ++--
+ rhel8/kickstart/ssg-rhel8-ospp-ks.cfg                    | 4 ++--
+ rhel8/kickstart/ssg-rhel8-pci-dss-ks.cfg                 | 4 ++--
+ rhel8/kickstart/ssg-rhel8-stig-ks.cfg                    | 4 ++--
+ 9 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+index 52af3ef47e..4e249f61e2 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+@@ -110,7 +110,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=4216 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=3192 --grow
+ # Ensure /usr Located On Separate Partition
+ logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+ # Ensure /opt Located On Separate Partition
+@@ -124,7 +124,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+index 702f23d4dc..a1511b157a 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+@@ -110,7 +110,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=4216 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=3192 --grow
+ # Ensure /usr Located On Separate Partition
+ logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+ # Ensure /opt Located On Separate Partition
+@@ -124,7 +124,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+index b875692944..981d291847 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+@@ -110,7 +110,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=4216 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=3192 --grow
+ # Ensure /usr Located On Separate Partition
+ logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+ # Ensure /opt Located On Separate Partition
+@@ -124,7 +124,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
+index 4a114aebb6..7fc4945518 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
+@@ -110,7 +110,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=4216 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=3192 --grow
+ # Ensure /usr Located On Separate Partition
+ logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+ # Ensure /opt Located On Separate Partition
+@@ -124,7 +124,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-cis-ks.cfg b/rhel8/kickstart/ssg-rhel8-cis-ks.cfg
+index bf3804b3fa..ee3a20bcc2 100644
+--- a/rhel8/kickstart/ssg-rhel8-cis-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-cis-ks.cfg
+@@ -109,7 +109,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=11264 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=10240 --grow
+ # Ensure /home Located On Separate Partition
+ logvol /home --fstype=xfs --name=LogVol02 --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # Ensure /tmp Located On Separate Partition
+@@ -117,7 +117,7 @@ logvol /tmp --fstype=xfs --name=LogVol01 --vgname=VolGroup --size=1024 --fsoptio
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=LogVol7 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=LogVol03 --vgname=VolGroup --size=2048
++logvol /var --fstype=xfs --name=LogVol03 --vgname=VolGroup --size=3072
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=LogVol04 --vgname=VolGroup --size=1024
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-cui-ks.cfg b/rhel8/kickstart/ssg-rhel8-cui-ks.cfg
+index 6e0f83ebb7..8e4b92584f 100644
+--- a/rhel8/kickstart/ssg-rhel8-cui-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-cui-ks.cfg
+@@ -107,7 +107,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=root --vgname=VolGroup --size=11264 --grow
++logvol / --fstype=xfs --name=root --vgname=VolGroup --size=10240 --grow
+ # Ensure /home Located On Separate Partition
+ logvol /home --fstype=xfs --name=home --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # Ensure /tmp Located On Separate Partition
+@@ -115,7 +115,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-ospp-ks.cfg b/rhel8/kickstart/ssg-rhel8-ospp-ks.cfg
+index 119e98364f..ec490c38ee 100644
+--- a/rhel8/kickstart/ssg-rhel8-ospp-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-ospp-ks.cfg
+@@ -107,7 +107,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=root --vgname=VolGroup --size=11264 --grow
++logvol / --fstype=xfs --name=root --vgname=VolGroup --size=10240 --grow
+ # Ensure /home Located On Separate Partition
+ logvol /home --fstype=xfs --name=home --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # Ensure /tmp Located On Separate Partition
+@@ -115,7 +115,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-pci-dss-ks.cfg b/rhel8/kickstart/ssg-rhel8-pci-dss-ks.cfg
+index 21a50f52fd..386cbcc169 100644
+--- a/rhel8/kickstart/ssg-rhel8-pci-dss-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-pci-dss-ks.cfg
+@@ -103,13 +103,13 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=12288 --grow
++logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=11264 --grow
+ # CCE-26557-9: Ensure /home Located On Separate Partition
+ logvol /home --fstype=xfs --name=LogVol02 --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # CCE-26435-8: Ensure /tmp Located On Separate Partition
+ logvol /tmp --fstype=xfs --name=LogVol01 --vgname=VolGroup --size=1024 --fsoptions="nodev,noexec,nosuid"
+ # CCE-26639-5: Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=LogVol03 --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=LogVol03 --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # CCE-26215-4: Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=LogVol04 --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # CCE-26436-6: Ensure /var/log/audit Located On Separate Partition
+diff --git a/rhel8/kickstart/ssg-rhel8-stig-ks.cfg b/rhel8/kickstart/ssg-rhel8-stig-ks.cfg
+index a3e5e5fec1..28f7ff0927 100644
+--- a/rhel8/kickstart/ssg-rhel8-stig-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-stig-ks.cfg
+@@ -107,7 +107,7 @@ part pv.01 --grow --size=1
+ volgroup VolGroup --pesize=4096 pv.01
+ 
+ # Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=root --vgname=VolGroup --size=11264 --grow
++logvol / --fstype=xfs --name=root --vgname=VolGroup --size=10240 --grow
+ # Ensure /home Located On Separate Partition
+ logvol /home --fstype=xfs --name=home --vgname=VolGroup --size=1024 --fsoptions="nodev"
+ # Ensure /tmp Located On Separate Partition
+@@ -115,7 +115,7 @@ logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="n
+ # Ensure /var/tmp Located On Separate Partition
+ logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=2048 --fsoptions="nodev"
++logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+ # Ensure /var/log Located On Separate Partition
+ logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+ # Ensure /var/log/audit Located On Separate Partition

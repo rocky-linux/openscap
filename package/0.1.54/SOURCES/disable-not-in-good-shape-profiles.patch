@@ -1,0 +1,109 @@
+From 48e959ebf2b892fefa642f19bc8cc1d2d639fb29 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 3 Dec 2020 14:35:47 +0100
+Subject: [PATCH] Disable profiles that are not in good shape for RHEL8
+
+---
+ rhel8/CMakeLists.txt                           | 6 ------
+ rhel8/profiles/anssi_bp28_high.profile         | 2 +-
+ rhel8/profiles/cjis.profile                    | 2 +-
+ rhel8/profiles/ism_o.profile                   | 2 +-
+ rhel8/profiles/rhelh-stig.profile              | 2 +-
+ rhel8/profiles/rhelh-vpp.profile               | 2 +-
+ rhel8/profiles/rht-ccp.profile                 | 2 +-
+ rhel8/profiles/standard.profile                | 2 +-
+ 11 files changed, 10 insertions(+), 16 deletions(-)
+
+diff --git a/rhel8/CMakeLists.txt b/rhel8/CMakeLists.txt
+index d61689c97..5e444a101 100644
+--- a/rhel8/CMakeLists.txt
++++ b/rhel8/CMakeLists.txt
+@@ -14,15 +14,9 @@ ssg_build_html_table_by_ref(${PRODUCT} "cis")
+ ssg_build_html_table_by_ref(${PRODUCT} "pcidss")
+ ssg_build_html_table_by_ref(${PRODUCT} "anssi")
+ 
+-ssg_build_html_nistrefs_table(${PRODUCT} "standard")
+ ssg_build_html_nistrefs_table(${PRODUCT} "ospp")
+ ssg_build_html_nistrefs_table(${PRODUCT} "stig")
+ 
+-ssg_build_html_anssirefs_table(${PRODUCT} "bp28_minimal")
+-ssg_build_html_anssirefs_table(${PRODUCT} "bp28_intermediary")
+-ssg_build_html_anssirefs_table(${PRODUCT} "bp28_enhanced")
+-ssg_build_html_anssirefs_table(${PRODUCT} "bp28_high")
+-
+ ssg_build_html_cce_table(${PRODUCT})
+ 
+ ssg_build_html_srgmap_tables(${PRODUCT} "stig" ${DISA_SRG_TYPE})
+diff --git a/rhel8/profiles/anssi_bp28_high.profile b/rhel8/profiles/anssi_bp28_high.profile
+index ccad93d67..6a854378c 100644
+--- a/rhel8/profiles/anssi_bp28_high.profile
++++ b/rhel8/profiles/anssi_bp28_high.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'ANSSI BP-028 (high)'
+ 
+diff --git a/rhel8/profiles/cjis.profile b/rhel8/profiles/cjis.profile
+index 035d2705b..c6475f33e 100644
+--- a/rhel8/profiles/cjis.profile
++++ b/rhel8/profiles/cjis.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ metadata:
+     version: 5.4
+diff --git a/rhel8/profiles/ism_o.profile b/rhel8/profiles/ism_o.profile
+index a3c427c01..4605dea3b 100644
+--- a/rhel8/profiles/ism_o.profile
++++ b/rhel8/profiles/ism_o.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ metadata:
+     SMEs:
+diff --git a/rhel8/profiles/rhelh-stig.profile b/rhel8/profiles/rhelh-stig.profile
+index 1efca5f44..c3d0b0964 100644
+--- a/rhel8/profiles/rhelh-stig.profile
++++ b/rhel8/profiles/rhelh-stig.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: '[DRAFT] DISA STIG for Red Hat Enterprise Linux Virtualization Host (RHELH)'
+ 
+diff --git a/rhel8/profiles/rhelh-vpp.profile b/rhel8/profiles/rhelh-vpp.profile
+index 2baee6d66..8592d7aaf 100644
+--- a/rhel8/profiles/rhelh-vpp.profile
++++ b/rhel8/profiles/rhelh-vpp.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'VPP - Protection Profile for Virtualization v. 1.0 for Red Hat Enterprise Linux Hypervisor (RHELH)'
+ 
+diff --git a/rhel8/profiles/rht-ccp.profile b/rhel8/profiles/rht-ccp.profile
+index c84579592..164ec98c4 100644
+--- a/rhel8/profiles/rht-ccp.profile
++++ b/rhel8/profiles/rht-ccp.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Red Hat Corporate Profile for Certified Cloud Providers (RH CCP)'
+ 
+diff --git a/rhel8/profiles/standard.profile b/rhel8/profiles/standard.profile
+index a63ae2cf3..da669bb84 100644
+--- a/rhel8/profiles/standard.profile
++++ b/rhel8/profiles/standard.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Standard System Security Profile for Red Hat Enterprise Linux 8'
+ 
+-- 
+2.26.2
+

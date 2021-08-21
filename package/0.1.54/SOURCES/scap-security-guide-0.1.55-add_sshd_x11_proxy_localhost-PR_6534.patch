@@ -1,0 +1,106 @@
+From 389d25be2b69e4e5c828d9b0b72573e0962cabb4 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Wed, 13 Jan 2021 17:07:48 +0100
+Subject: [PATCH 1/4] add rule
+
+---
+ .../sshd_x11_use_localhost/rule.yml           | 43 +++++++++++++++++++
+ shared/references/cce-redhat-avail.txt        |  3 --
+ 2 files changed, 43 insertions(+), 3 deletions(-)
+ create mode 100644 linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+new file mode 100644
+index 0000000000..67131e509c
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+@@ -0,0 +1,43 @@
++documentation_complete: true
++
++prodtype: fedora,ol7,rhel7
++
++title: 'Prevent remote hosts from connecting to the proxy display'
++
++description: |-
++    The SSH daemon should prevent remote hosts from connecting to the proxy
++    display. Make sure that the option <tt>X11UseLocalhost</tt> is set to
++    <tt>yes</tt> within the SSH server configuration file.
++
++
++rationale: |-
++    When X11 forwarding is enabled, there may be additional exposure to the
++    server and client displays if the sshd proxy display is configured to listen
++    on the wildcard address. By default, sshd binds the forwarding server to the
++    loopback address and sets the hostname part of the <tt>DISPLAY</tt>
++    environment variable to localhost. This prevents remote hosts from
++    connecting to the proxy display.  
++
++severity: medium
++
++identifiers:
++    cce@rhel7: CCE-83404-4
++
++references:
++    srg: SRG-OS-000480-GPOS-00227
++    stig@rhel7: RHEL-07-040711
++    disa: CCI-000366
++    nist: CM-6(b)
++
++ocil_clause: "the display proxy is listening on wildcard address"
++
++ocil: |-
++    {{{ ocil_sshd_option(default="yes", option="X11UseLocalhost", value="yes") }}}
++
++template:
++    name: sshd_lineinfile
++    vars:
++        missing_parameter_pass: 'false'
++        parameter: X11UseLocalhost
++        rule_id: sshd_x11_use_localhost
++        value: 'yes'
+From a40b9e68305afb52c2c674848b71cbcaee25fe32 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Wed, 13 Jan 2021 17:08:08 +0100
+Subject: [PATCH 2/4] add rule to the stig profile
+
+---
+ rhel7/profiles/stig.profile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rhel7/profiles/stig.profile b/rhel7/profiles/stig.profile
+index 88b50d5ef4..817e0982e5 100644
+--- a/rhel7/profiles/stig.profile
++++ b/rhel7/profiles/stig.profile
+@@ -286,6 +286,7 @@ selections:
+     - package_vsftpd_removed
+     - package_tftp-server_removed
+     - sshd_enable_x11_forwarding
++    - sshd_x11_use_localhost
+     - tftpd_uses_secure_mode
+     - package_xorg-x11-server-common_removed
+     - xwindows_runlevel_target
+
+From be2f96b80fbfb74708381e15a2a6e76c3952bbb5 Mon Sep 17 00:00:00 2001
+From: vojtapolasek <krecoun@gmail.com>
+Date: Fri, 15 Jan 2021 07:46:09 +0100
+Subject: [PATCH 4/4] Update
+ linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+
+Co-authored-by: Gabriel Becker <ggasparb@redhat.com>
+---
+ .../services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+index 67131e509c..7267d2443a 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_x11_use_localhost/rule.yml
+@@ -37,7 +37,7 @@ ocil: |-
+ template:
+     name: sshd_lineinfile
+     vars:
+-        missing_parameter_pass: 'false'
++        missing_parameter_pass: 'true'
+         parameter: X11UseLocalhost
+         rule_id: sshd_x11_use_localhost
+         value: 'yes'

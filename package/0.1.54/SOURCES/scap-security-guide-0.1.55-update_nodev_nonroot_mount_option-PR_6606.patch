@@ -1,0 +1,352 @@
+From cbede36c7a4e35cb882c35892cff72f9f190cbf9 Mon Sep 17 00:00:00 2001
+From: Milan Lysonek <mlysonek@redhat.com>
+Date: Mon, 8 Feb 2021 15:57:43 +0100
+Subject: [PATCH 1/5] Add nodev,nosuid,noexec options to /boot in ANSSI
+ kickstart
+
+---
+ rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg     | 2 +-
+ rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg         | 2 +-
+ rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg | 2 +-
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg     | 2 +-
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg         | 2 +-
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
+index 1d35bedb91..c381512476 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
+@@ -99,7 +99,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
+index 73225c2fab..a672b38b83 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
+@@ -103,7 +103,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
+index 20c4c59a78..88a7cee8ab 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
+@@ -99,7 +99,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+index 728946ecb7..6f66a3774b 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+@@ -90,7 +90,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+index cd0eff2625..b5c09253a5 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+@@ -94,7 +94,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+index 3a241b06f4..fb785e0c11 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+@@ -90,7 +90,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
++part /boot --fstype=xfs --size=512 --fsoptions="nodev,nosuid,noexec"
+ part pv.01 --grow --size=1
+ 
+ # Create a Logical Volume Management (LVM) group (optional)
+
+From 15be64cc2d6c21b0351bb8d3d1b55b1924be99ca Mon Sep 17 00:00:00 2001
+From: Milan Lysonek <mlysonek@redhat.com>
+Date: Tue, 9 Feb 2021 12:45:34 +0100
+Subject: [PATCH 2/5] Add mount_option_nodev_nonroot_local_partitions bash
+ remediation
+
+---
+ .../bash/shared.sh                             | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/bash/shared.sh
+
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/bash/shared.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/bash/shared.sh
+new file mode 100644
+index 0000000000..7e2b3bd76b
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/bash/shared.sh
+@@ -0,0 +1,18 @@
++# platform = multi_platform_all
++. /usr/share/scap-security-guide/remediation_functions
++
++include_mount_options_functions
++
++MOUNT_OPTION="nodev"
++# Create array of local non-root partitions
++readarray -t partitions_records < <(findmnt --mtab --raw --evaluate | grep "^/\w" | grep "\s/dev/\w")
++
++for partition_record in "${partitions_records[@]}"; do
++    # Get all important information for fstab
++    mount_point="$(echo ${partition_record} | cut -d " " -f1)"
++    device="$(echo ${partition_record} | cut -d " " -f2)"
++    device_type="$(echo ${partition_record} | cut -d " " -f3)"
++    # device and device_type will be used only in case when the device doesn't have fstab record
++    ensure_mount_option_in_fstab "$mount_point" "$MOUNT_OPTION" "$device" "$device_type"
++    ensure_partition_is_mounted "$mount_point"
++done
+
+From 36958b72896a69cb580f00a986673c8ae99cb011 Mon Sep 17 00:00:00 2001
+From: Milan Lysonek <mlysonek@redhat.com>
+Date: Tue, 9 Feb 2021 12:45:54 +0100
+Subject: [PATCH 3/5] Add mount_option_nodev_nonroot_local_partitions test
+ scenarios
+
+---
+ .../tests/correct.pass.sh                     | 23 +++++++++++++++++
+ .../local_mounted_during_runtime.fail.sh      | 19 ++++++++++++++
+ .../tests/missing_multiple_nodev.fail.sh      | 23 +++++++++++++++++
+ .../tests/missing_one_nodev.fail.sh           | 23 +++++++++++++++++
+ .../tests/remote_without_nodev.pass.sh        | 25 +++++++++++++++++++
+ 5 files changed, 113 insertions(+)
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/correct.pass.sh
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/local_mounted_during_runtime.fail.sh
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_multiple_nodev.fail.sh
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_one_nodev.fail.sh
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/remote_without_nodev.pass.sh
+
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/correct.pass.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/correct.pass.sh
+new file mode 100644
+index 0000000000..8bfac4b80f
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/correct.pass.sh
+@@ -0,0 +1,23 @@
++#!/bin/bash
++
++. $SHARED/partition.sh
++
++# Add nodev option to all records in fstab to ensure that test will
++# run on environment where everything is set correctly for rule check.
++cp /etc/fstab /etc/fstab.backup
++sed -e 's/\bnodev\b/,/g' -e 's/,,//g' -e 's/\s,\s/defaults/g' /etc/fstab.backup
++awk '{$4 = $4",nodev"; print}' /etc/fstab.backup > /etc/fstab
++# Remount all partitions. (--all option can't be used because it doesn't
++# mount e.g. /boot partition
++declare -a partitions=( $(awk '{print $2}' /etc/fstab | grep "^/\w") )
++for partition in ${partitions[@]}; do
++    mount -o remount "$partition"
++done
++
++PARTITION="/dev/new_partition1"; create_partition
++make_fstab_given_partition_line "/tmp/partition1" ext2 nodev
++mount_partition "/tmp/partition1"
++
++PARTITION="/dev/new_partition2"; create_partition
++make_fstab_given_partition_line "/tmp/partition2" ext2 nodev
++mount_partition "/tmp/partition2"
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/local_mounted_during_runtime.fail.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/local_mounted_during_runtime.fail.sh
+new file mode 100644
+index 0000000000..84cadd6f73
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/local_mounted_during_runtime.fail.sh
+@@ -0,0 +1,19 @@
++#!/bin/bash
++
++. $SHARED/partition.sh
++
++# Add nodev option to all records in fstab to ensure that test will
++# run on environment where everything is set correctly for rule check.
++cp /etc/fstab /etc/fstab.backup
++sed -e 's/\bnodev\b/,/g' -e 's/,,//g' -e 's/\s,\s/defaults/g' /etc/fstab.backup
++awk '{$4 = $4",nodev"; print}' /etc/fstab.backup > /etc/fstab
++# Remount all partitions. (--all option can't be used because it doesn't
++# mount e.g. /boot partition
++declare -a partitions=( $(awk '{print $2}' /etc/fstab | grep "^/\w") )
++for partition in ${partitions[@]}; do
++    mount -o remount "$partition"
++done
++
++PARTITION="/dev/new_partition1"; create_partition
++mkdir /tmp/test_dir
++mount $PARTITION /tmp/test_dir
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_multiple_nodev.fail.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_multiple_nodev.fail.sh
+new file mode 100644
+index 0000000000..7a09093f46
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_multiple_nodev.fail.sh
+@@ -0,0 +1,23 @@
++#!/bin/bash
++
++. $SHARED/partition.sh
++
++# Add nodev option to all records in fstab to ensure that test will
++# run on environment where everything is set correctly for rule check.
++cp /etc/fstab /etc/fstab.backup
++sed -e 's/\bnodev\b/,/g' -e 's/,,//g' -e 's/\s,\s/defaults/g' /etc/fstab.backup
++awk '{$4 = $4",nodev"; print}' /etc/fstab.backup > /etc/fstab
++# Remount all partitions. (--all option can't be used because it doesn't
++# mount e.g. /boot partition
++declare -a partitions=( $(awk '{print $2}' /etc/fstab | grep "^/\w") )
++for partition in ${partitions[@]}; do
++    mount -o remount "$partition"
++done
++
++PARTITION="/dev/new_partition1"; create_partition
++make_fstab_given_partition_line "/tmp/partition1" ext2
++mount_partition "/tmp/partition1"
++
++PARTITION="/dev/new_partition2"; create_partition
++make_fstab_given_partition_line "/tmp/partition2" ext2
++mount_partition "/tmp/partition2"
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_one_nodev.fail.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_one_nodev.fail.sh
+new file mode 100644
+index 0000000000..c20a98bdcc
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/missing_one_nodev.fail.sh
+@@ -0,0 +1,23 @@
++#!/bin/bash
++
++. $SHARED/partition.sh
++
++# Add nodev option to all records in fstab to ensure that test will
++# run on environment where everything is set correctly for rule check.
++cp /etc/fstab /etc/fstab.backup
++sed -e 's/\bnodev\b/,/g' -e 's/,,//g' -e 's/\s,\s/defaults/g' /etc/fstab.backup
++awk '{$4 = $4",nodev"; print}' /etc/fstab.backup > /etc/fstab
++# Remount all partitions. (--all option can't be used because it doesn't
++# mount e.g. /boot partition
++declare -a partitions=( $(awk '{print $2}' /etc/fstab | grep "^/\w") )
++for partition in ${partitions[@]}; do
++    mount -o remount "$partition"
++done
++
++PARTITION="/dev/new_partition1"; create_partition
++make_fstab_given_partition_line "/tmp/partition1" ext2 nodev
++mount_partition "/tmp/partition1"
++
++PARTITION="/dev/new_partition2"; create_partition
++make_fstab_given_partition_line "/tmp/partition2" ext2
++mount_partition "/tmp/partition2"
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/remote_without_nodev.pass.sh b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/remote_without_nodev.pass.sh
+new file mode 100644
+index 0000000000..a95410526f
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/tests/remote_without_nodev.pass.sh
+@@ -0,0 +1,25 @@
++#!/bin/bash
++# packages = nfs-utils
++
++. $SHARED/partition.sh
++
++# Add nodev option to all records in fstab to ensure that test will
++# run on environment where everything is set correctly for rule check.
++cp /etc/fstab /etc/fstab.backup
++sed -e 's/\bnodev\b/,/g' -e 's/,,//g' -e 's/\s,\s/defaults/g' /etc/fstab.backup
++awk '{$4 = $4",nodev"; print}' /etc/fstab.backup > /etc/fstab
++# Remount all partitions. (--all option can't be used because it doesn't
++# mount e.g. /boot partition
++declare -a partitions=( $(awk '{print $2}' /etc/fstab | grep "^/\w") )
++for partition in ${partitions[@]}; do
++    mount -o remount "$partition"
++done
++
++mkdir /tmp/testdir
++mkdir /tmp/testmount
++chown 2 /tmp/testdir
++chmod 777 /tmp/testdir
++
++echo '/tmp/testdir localhost(rw)' > /etc/exports
++systemctl restart nfs-server
++mount.nfs localhost:/tmp/testdir /tmp/testmount
+
+From b7bec83d7a3ad186413777f70fe2b5d20e01e56b Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 10 Feb 2021 18:32:26 +0100
+Subject: [PATCH 4/5] Add Ansible for
+ mount_option_nodev_nonroot_local_partitions
+
+The remediation metadata were inspired by the template mount_options
+---
+ .../ansible/shared.yml                         | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
+
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
+new file mode 100644
+index 0000000000..8530604308
+--- /dev/null
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
+@@ -0,0 +1,18 @@
++# platform = multi_platform_all
++# reboot = false
++# strategy = configure
++# complexity = low
++# disruption = high
++
++- name: Ensure non-root local partitions are mounted with nodev option
++  mount:
++    path: "{{ item.mount }}"
++    src: "{{ item.device}}"
++    opts: "{{ item.options }},nodev"
++    state: "mounted"
++    fstype: "{{ item.fstype }}"
++  when:
++    - "item.mount is match('/\\w')"
++    - "item.options is not search('nodev')"
++  with_items:
++    - "{{ ansible_facts.mounts }}"
+
+From dab22894ca0798dde27c77704a7fd34d62d77f8f Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 10 Feb 2021 20:29:32 +0100
+Subject: [PATCH 5/5] Add space before and after variable
+
+---
+ .../ansible/shared.yml                                          | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
+index 8530604308..2aa9a53e4d 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions/ansible/shared.yml
+@@ -7,7 +7,7 @@
+ - name: Ensure non-root local partitions are mounted with nodev option
+   mount:
+     path: "{{ item.mount }}"
+-    src: "{{ item.device}}"
++    src: "{{ item.device }}"
+     opts: "{{ item.options }},nodev"
+     state: "mounted"
+     fstype: "{{ item.fstype }}"

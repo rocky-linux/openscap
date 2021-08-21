@@ -1,0 +1,426 @@
+From fad3761eff3a3857bb4201ac90642dfc37217a2a Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 09:41:26 +0100
+Subject: [PATCH 1/4] Remove extra configurations from ANSSI minimal ks
+
+- No need to restrict IPv6
+- Root login is not restricted
+- Simplify boot command
+- Simplify paritioning
+- No requirement to enforce use of SELinux
+---
+ .../ssg-rhel7-anssi_nt28_minimal-ks.cfg       | 46 ++--------------
+ .../ssg-rhel8-anssi_bp28_minimal-ks.cfg       | 53 +------------------
+ 2 files changed, 5 insertions(+), 94 deletions(-)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_minimal-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_minimal-ks.cfg
+index 4160ac094c..9bc4eae44f 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_minimal-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_minimal-ks.cfg
+@@ -54,7 +54,7 @@ keyboard us
+ #       "--bootproto=static" must be used. For example:
+ # network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
+ #
+-network --onboot yes --device eth0 --bootproto dhcp --noipv6
++network --onboot yes --device eth0 --bootproto dhcp
+ 
+ # Set the system's root password (required)
+ # Plaintext password is: server
+@@ -62,26 +62,12 @@ network --onboot yes --device eth0 --bootproto dhcp --noipv6
+ # encrypted password form for different plaintext password
+ rootpw --iscrypted $6$/0RYeeRdK70ynvYz$jH2ZN/80HM6DjndHMxfUF9KIibwipitvizzXDH1zW.fTjyD3RD3tkNdNUaND18B/XqfAUW3vy1uebkBybCuIm0
+ 
+-# The selected profile will restrict root login
+-# Add a user that can login and escalate privileges
+-# Plaintext password is: admin123
+-user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUafQM9jyHCY9BiE5/ahXLNWUMiVQnFGblu0WWGZ1e6icTaCGO4GNgZNtspp1Let/qpM7FMVB0 --iscrypted
+-
+-# Configure firewall settings for the system (optional)
+-# --enabled	reject incoming connections that are not in response to outbound requests
+-# --ssh		allow sshd service through the firewall
+-firewall --enabled --ssh
+-
+ # Set up the authentication options for the system (required)
+ # --enableshadow	enable shadowed passwords by default
+ # --passalgo		hash / crypt algorithm for new passwords
+ # See the manual page for authconfig for a complete list of possible options.
+ authconfig --enableshadow --passalgo=sha512
+ 
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +75,7 @@ timezone --utc America/New_York
+ # Plaintext password is: password
+ # Refer to e.g. https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw to see how to create
+ # encrypted password form for different plaintext password
+-bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+@@ -103,33 +89,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
+-part pv.01 --grow --size=1
+-
+-# Create a Logical Volume Management (LVM) group (optional)
+-volgroup VolGroup --pesize=4096 pv.01
+-
+-# Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=4216 --grow
+-# Ensure /usr Located On Separate Partition
+-logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+-# Ensure /opt Located On Separate Partition
+-logvol /opt --fstype=xfs --name=LogVol09 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid"
+-# Ensure /srv Located On Separate Partition
+-logvol /srv --fstype=xfs --name=LogVol10 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid"
+-# Ensure /home Located On Separate Partition
+-logvol /home --fstype=xfs --name=LogVol02 --vgname=VolGroup --size=1024 --fsoptions="nodev"
+-# Ensure /tmp Located On Separate Partition
+-logvol /tmp --fstype=xfs --name=LogVol01 --vgname=VolGroup --size=1024 --fsoptions="nodev,noexec,nosuid"
+-# Ensure /var/tmp Located On Separate Partition
+-logvol /var/tmp --fstype=xfs --name=LogVol7 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+-# Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=LogVol03 --vgname=VolGroup --size=2048 --fsoptions="nodev"
+-# Ensure /var/log Located On Separate Partition
+-logvol /var/log --fstype=xfs --name=LogVol04 --vgname=VolGroup --size=1024 --fsoptions="nodev"
+-# Ensure /var/log/audit Located On Separate Partition
+-logvol /var/log/audit --fstype=xfs --name=LogVol05 --vgname=VolGroup --size=512 --fsoptions="nodev"
+-logvol swap --name=lv_swap --vgname=VolGroup --size=2016
++autopart
+ 
+ # Despite the ID referencing NT-28, the profile is aligned to BP-028
+ %addon org_fedora_oscap
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
+index 7fc4945518..1d62b55d55 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_minimal-ks.cfg
+@@ -6,9 +6,6 @@
+ # https://pykickstart.readthedocs.io/en/latest/
+ # http://usgcb.nist.gov/usgcb/content/configuration/workstation-ks.cfg
+ 
+-# Install a fresh new system (optional)
+-install
+-
+ # Specify installation method to use for installation
+ # To use a different one comment out the 'url' one below, update
+ # the selected choice with proper options & un-comment it
+@@ -61,26 +58,6 @@ network --onboot yes --bootproto dhcp
+ # to see how to create encrypted password form for different plaintext password
+ rootpw --iscrypted $6$0WWGZ1e6icT$1KiHZK.Nzp3HQerfiy8Ic3pOeCWeIzA.zkQ7mkvYT3bNC5UeGK2ceE5b6TkSg4D/kiSudkT04QlSKknsrNE220
+ 
+-# The selected profile will restrict root login
+-# Add a user that can login and escalate privileges
+-# Plaintext password is: admin123
+-user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUafQM9jyHCY9BiE5/ahXLNWUMiVQnFGblu0WWGZ1e6icTaCGO4GNgZNtspp1Let/qpM7FMVB0 --iscrypted
+-
+-# Configure firewall settings for the system (optional)
+-# --enabled	reject incoming connections that are not in response to outbound requests
+-# --ssh		allow sshd service through the firewall
+-firewall --enabled --ssh
+-
+-# Set up the authentication options for the system (required)
+-# --enableshadow	enable shadowed passwords by default
+-# --passalgo		hash / crypt algorithm for new passwords
+-# See the manual page for authconfig for a complete list of possible options.
+-authconfig --enableshadow --passalgo=sha512
+-
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +66,7 @@ timezone --utc America/New_York
+ # Refer to e.g.
+ #   https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw
+ # to see how to create encrypted password form for different plaintext password
+-bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192 slub_debug=P page_poison=1 vsyscall=none" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+@@ -103,33 +80,7 @@ zerombr
+ clearpart --linux --initlabel
+ 
+ # Create primary system partitions (required for installs)
+-part /boot --fstype=xfs --size=512
+-part pv.01 --grow --size=1
+-
+-# Create a Logical Volume Management (LVM) group (optional)
+-volgroup VolGroup --pesize=4096 pv.01
+-
+-# Create particular logical volumes (optional)
+-logvol / --fstype=xfs --name=LogVol06 --vgname=VolGroup --size=3192 --grow
+-# Ensure /usr Located On Separate Partition
+-logvol /usr --fstype=xfs --name=LogVol08 --vgname=VolGroup --size=5000 --fsoptions="nodev"
+-# Ensure /opt Located On Separate Partition
+-logvol /opt --fstype=xfs --name=LogVol09 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid"
+-# Ensure /srv Located On Separate Partition
+-logvol /srv --fstype=xfs --name=LogVol10 --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid"
+-# Ensure /home Located On Separate Partition
+-logvol /home --fstype=xfs --name=home --vgname=VolGroup --size=1024 --fsoptions="nodev"
+-# Ensure /tmp Located On Separate Partition
+-logvol /tmp --fstype=xfs --name=tmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+-# Ensure /var/tmp Located On Separate Partition
+-logvol /var/tmp --fstype=xfs --name=vartmp --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+-# Ensure /var Located On Separate Partition
+-logvol /var --fstype=xfs --name=var --vgname=VolGroup --size=3072 --fsoptions="nodev"
+-# Ensure /var/log Located On Separate Partition
+-logvol /var/log --fstype=xfs --name=log --vgname=VolGroup --size=1024 --fsoptions="nodev,nosuid,noexec"
+-# Ensure /var/log/audit Located On Separate Partition
+-logvol /var/log/audit --fstype=xfs --name=audit --vgname=VolGroup --size=512 --fsoptions="nodev,nosuid,noexec"
+-logvol swap --name=swap --vgname=VolGroup --size=2016
++autopart
+ 
+ # The OpenSCAP installer add-on is used to apply SCAP (Security Content Automation Protocol)
+ # content - security policies - on the installed system.This add-on has been enabled by default
+
+From 3884ae59b59d69c928acb1d3d52a3f68834aa709 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 09:53:20 +0100
+Subject: [PATCH 2/4] Align ANSSI kickstarts with intermediary level
+
+- Simplify boot command
+- No requirement to enforce use of SELinux
+---
+ .../ssg-rhel7-anssi_nt28_intermediary-ks.cfg    |  6 +-----
+ .../ssg-rhel8-anssi_bp28_intermediary-ks.cfg    | 17 ++---------------
+ 2 files changed, 3 insertions(+), 20 deletions(-)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
+index ab654410b5..20c4c59a78 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_intermediary-ks.cfg
+@@ -78,10 +78,6 @@ firewall --enabled --ssh
+ # See the manual page for authconfig for a complete list of possible options.
+ authconfig --enableshadow --passalgo=sha512
+ 
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +85,7 @@ timezone --utc America/New_York
+ # Plaintext password is: password
+ # Refer to e.g. https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw to see how to create
+ # encrypted password form for different plaintext password
+-bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+index 981d291847..3a241b06f4 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_intermediary-ks.cfg
+@@ -6,9 +6,6 @@
+ # https://pykickstart.readthedocs.io/en/latest/
+ # http://usgcb.nist.gov/usgcb/content/configuration/workstation-ks.cfg
+ 
+-# Install a fresh new system (optional)
+-install
+-
+ # Specify installation method to use for installation
+ # To use a different one comment out the 'url' one below, update
+ # the selected choice with proper options & un-comment it
+@@ -52,7 +49,7 @@ keyboard us
+ #       "--bootproto=static" must be used. For example:
+ # network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
+ #
+-network --onboot yes --bootproto dhcp
++network --onboot yes --bootproto dhcp --noipv6
+ 
+ # Set the system's root password (required)
+ # Plaintext password is: server
+@@ -71,16 +68,6 @@ user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUaf
+ # --ssh		allow sshd service through the firewall
+ firewall --enabled --ssh
+ 
+-# Set up the authentication options for the system (required)
+-# --enableshadow	enable shadowed passwords by default
+-# --passalgo		hash / crypt algorithm for new passwords
+-# See the manual page for authconfig for a complete list of possible options.
+-authconfig --enableshadow --passalgo=sha512
+-
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +76,7 @@ timezone --utc America/New_York
+ # Refer to e.g.
+ #   https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw
+ # to see how to create encrypted password form for different plaintext password
+-bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192 slub_debug=P page_poison=1 vsyscall=none" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+
+From 745ec9b02bb45ca89d2705e79b36b17060508765 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 14:03:09 +0100
+Subject: [PATCH 3/4] Align ANSSI kickstarts with enhanced level
+
+- Keep restricting IPv6
+- Audit enabled during boot
+- No requirement to enforce use of SELinux
+---
+ .../ssg-rhel7-anssi_nt28_enhanced-ks.cfg        |  6 +-----
+ .../ssg-rhel8-anssi_bp28_enhanced-ks.cfg        | 17 ++---------------
+ 2 files changed, 3 insertions(+), 20 deletions(-)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
+index 2e75873a28..1d35bedb91 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_enhanced-ks.cfg
+@@ -78,10 +78,6 @@ firewall --enabled --ssh
+ # See the manual page for authconfig for a complete list of possible options.
+ authconfig --enableshadow --passalgo=sha512
+ 
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +85,7 @@ timezone --utc America/New_York
+ # Plaintext password is: password
+ # Refer to e.g. https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw to see how to create
+ # encrypted password form for different plaintext password
+-bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr --append="audit=1 audit_backlog_limig=8192" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+index 4e249f61e2..728946ecb7 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_enhanced-ks.cfg
+@@ -6,9 +6,6 @@
+ # https://pykickstart.readthedocs.io/en/latest/
+ # http://usgcb.nist.gov/usgcb/content/configuration/workstation-ks.cfg
+ 
+-# Install a fresh new system (optional)
+-install
+-
+ # Specify installation method to use for installation
+ # To use a different one comment out the 'url' one below, update
+ # the selected choice with proper options & un-comment it
+@@ -52,7 +49,7 @@ keyboard us
+ #       "--bootproto=static" must be used. For example:
+ # network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
+ #
+-network --onboot yes --bootproto dhcp
++network --onboot yes --bootproto dhcp --noipv6
+ 
+ # Set the system's root password (required)
+ # Plaintext password is: server
+@@ -71,16 +68,6 @@ user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUaf
+ # --ssh		allow sshd service through the firewall
+ firewall --enabled --ssh
+ 
+-# Set up the authentication options for the system (required)
+-# --enableshadow	enable shadowed passwords by default
+-# --passalgo		hash / crypt algorithm for new passwords
+-# See the manual page for authconfig for a complete list of possible options.
+-authconfig --enableshadow --passalgo=sha512
+-
+-# State of SELinux on the installed system (optional)
+-# Defaults to enforcing
+-selinux --enforcing
+-
+ # Set the system time zone (required)
+ timezone --utc America/New_York
+ 
+@@ -89,7 +76,7 @@ timezone --utc America/New_York
+ # Refer to e.g.
+ #   https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw
+ # to see how to create encrypted password form for different plaintext password
+-bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192 slub_debug=P page_poison=1 vsyscall=none" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+
+From 6804cdfbdea9992daf48fe545d8005be9f37bc56 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 2 Feb 2021 14:08:15 +0100
+Subject: [PATCH 4/4] Align ANSSI Kickstarts with high level
+
+---
+ rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg |  2 +-
+ rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg | 13 ++-----------
+ 2 files changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg b/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
+index 745dcbd058..73225c2fab 100644
+--- a/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-anssi_nt28_high-ks.cfg
+@@ -89,7 +89,7 @@ timezone --utc America/New_York
+ # Plaintext password is: password
+ # Refer to e.g. https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw to see how to create
+ # encrypted password form for different plaintext password
+-bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
+ 
+ # Initialize (format) all disks (optional)
+ zerombr
+diff --git a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+index a1511b157a..cd0eff2625 100644
+--- a/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-anssi_bp28_high-ks.cfg
+@@ -6,9 +6,6 @@
+ # https://pykickstart.readthedocs.io/en/latest/
+ # http://usgcb.nist.gov/usgcb/content/configuration/workstation-ks.cfg
+ 
+-# Install a fresh new system (optional)
+-install
+-
+ # Specify installation method to use for installation
+ # To use a different one comment out the 'url' one below, update
+ # the selected choice with proper options & un-comment it
+@@ -52,7 +49,7 @@ keyboard us
+ #       "--bootproto=static" must be used. For example:
+ # network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
+ #
+-network --onboot yes --bootproto dhcp
++network --onboot yes --bootproto dhcp --noipv6
+ 
+ # Set the system's root password (required)
+ # Plaintext password is: server
+@@ -71,12 +68,6 @@ user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUaf
+ # --ssh		allow sshd service through the firewall
+ firewall --enabled --ssh
+ 
+-# Set up the authentication options for the system (required)
+-# --enableshadow	enable shadowed passwords by default
+-# --passalgo		hash / crypt algorithm for new passwords
+-# See the manual page for authconfig for a complete list of possible options.
+-authconfig --enableshadow --passalgo=sha512
+-
+ # State of SELinux on the installed system (optional)
+ # Defaults to enforcing
+ selinux --enforcing
+@@ -89,7 +80,7 @@ timezone --utc America/New_York
+ # Refer to e.g.
+ #   https://pykickstart.readthedocs.io/en/latest/commands.html#rootpw
+ # to see how to create encrypted password form for different plaintext password
+-bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192 slub_debug=P page_poison=1 vsyscall=none" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
++bootloader --location=mbr --append="audit=1 audit_backlog_limit=8192" --password=$6$zCPaBARiNlBYUAS7$40phthWpqvaPVz3QUeIK6n5qoazJDJD5Nlc9OKy5SyYoX9Rt4jFaLjzqJCwpgR4RVAEFSADsqQot0WKs5qNto0
+ 
+ # Initialize (format) all disks (optional)
+ zerombr

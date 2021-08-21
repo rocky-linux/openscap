@@ -1,0 +1,259 @@
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/rule.yml
+index abcebf60c7..50c7d689af 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/rule.yml
+@@ -61,7 +61,6 @@ references:
+     nist-csf: PR.AC-1,PR.AC-3,PR.AC-4,PR.AC-6,PR.AC-7,PR.IP-1,PR.PT-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000033-GPOS-00014,SRG-OS-000120-GPOS-00061,SRG-OS-000125-GPOS-00065,SRG-OS-000250-GPOS-00093,SRG-OS-000393-GPOS-00173,SRG-OS-000394-GPOS-00174
+     vmmsrg: SRG-OS-000033-VMM-000140,SRG-OS-000120-VMM-000600,SRG-OS-000478-VMM-001980,SRG-OS-000396-VMM-001590
+-    stigid@rhel7: RHEL-07-040110
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.10,SR 2.11,SR 2.12,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.3.3.2.2,4.3.3.3.9,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO11.04,APO13.01,BAI03.05,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.04,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS05.10,DSS06.03,DSS06.06,DSS06.10,MEA02.01
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/ansible/shared.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/ansible/shared.yml
+new file mode 100644
+index 0000000000..4796a2eab1
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/ansible/shared.yml
+@@ -0,0 +1,13 @@
++# platform = Red Hat Enterprise Linux 7,Oracle Linux 7
++# reboot = false
++# strategy = restrict
++# complexity = low
++# disruption = low
++
++- name: "Configure sshd to use approved ciphers"
++  lineinfile:
++    path: /etc/ssh/sshd_config
++    line: 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr'
++    state: present
++    regexp: '^[\s]*[Cc]iphers[\s]+(aes256-ctr(?=[\w,-@]+|$),?)?(aes192-ctr(?=[\w,-@]+|$),?)?(aes128-ctr(?=[\w,-@]+|$),?)?[\s]*(?:#.*)?$'
++    create: True
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/bash/shared.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/bash/shared.sh
+new file mode 100644
+index 0000000000..8f751ed516
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/bash/shared.sh
+@@ -0,0 +1,7 @@
++# platform = multi_platform_wrlinux,Red Hat Enterprise Linux 7,Oracle Linux 7
++
++if grep -q -P '^\s*[Cc]iphers\s+' /etc/ssh/sshd_config; then
++  sed -i 's/^\s*[Cc]iphers.*/Ciphers aes256-ctr,aes192-ctr,aes128-ctr/' /etc/ssh/sshd_config
++else
++  echo "Ciphers aes256-ctr,aes192-ctr,aes128-ctr" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/oval/shared.xml
+new file mode 100644
+index 0000000000..53ff0a2a9e
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/oval/shared.xml
+@@ -0,0 +1,38 @@
++<def-group>
++  <definition class="compliance" id="sshd_use_approved_ciphers_ordered_stig" version="1">
++    {{{ oval_metadata("Limit the ciphers to those which are FIPS-approved.") }}}
++    <criteria operator="AND">
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
++      <criteria comment="SSH is configured correctly or is not installed"
++      operator="OR">
++        <criteria comment="sshd is not installed" operator="AND">
++          <extend_definition comment="sshd is not required or requirement is unset"
++          definition_ref="sshd_not_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server removed"
++          definition_ref="package_openssh-server_removed" />
++        </criteria>
++        <criteria comment="sshd is installed and configured" operator="AND">
++          <extend_definition comment="sshd is required or requirement is unset"
++          definition_ref="sshd_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server installed"
++          definition_ref="package_openssh-server_installed" />
++          <criterion comment="Check the Cipers list in /etc/ssh/sshd_config"
++          test_ref="test_sshd_use_approved_ciphers_ordered_stig" />
++        </criteria>
++      </criteria>
++    </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test check="all" check_existence="all_exist"
++  comment="tests the value of Ciphers setting in the /etc/ssh/sshd_config file"
++  id="test_sshd_use_approved_ciphers_ordered_stig" version="1">
++    <ind:object object_ref="obj_sshd_use_approved_ciphers_ordered_stig" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="obj_sshd_use_approved_ciphers_ordered_stig" version="1">
++    <ind:filepath>/etc/ssh/sshd_config</ind:filepath>
++    <ind:pattern operation="pattern match">^[\s]*(?i)Ciphers(?-i)[\s]+(?=[\w]+)(aes256-ctr(?=[\w,]+|$),?)?(aes192-ctr(?=[\w,]+|$),?)?(aes128-ctr)?[\s]*(?:#.*)?$</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++</def-group>
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/rule.yml
+new file mode 100644
+index 0000000000..0751064179
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/rule.yml
+@@ -0,0 +1,64 @@
++documentation_complete: true
++
++prodtype: rhel7
++
++title: 'Use Only FIPS 140-2 Validated Ciphers'
++
++description: |-
++    Limit the ciphers to those algorithms which are FIPS-approved.
++    The following line in <tt>/etc/ssh/sshd_config</tt>
++    demonstrates use of FIPS-approved ciphers:
++    <pre>Ciphers aes256-ctr,aes192-ctr,aes128-ctr</pre>
++    This rule ensures that there are configured ciphers mentioned
++    above (or their subset), keeping the given order of algorithms.
++
++rationale: |-
++    Unapproved mechanisms that are used for authentication to the cryptographic module are not verified and therefore
++    cannot be relied upon to provide confidentiality or integrity, and system data may be compromised.
++    <br />
++    Operating systems utilizing encryption are required to use FIPS-compliant mechanisms for authenticating to
++    cryptographic modules.
++    <br />
++    FIPS 140-2 is the current standard for validating that mechanisms used to access cryptographic modules
++    utilize authentication that meets industry and government requirements. For government systems, this allows
++    Security Levels 1, 2, 3, or 4 for use on {{{ full_name }}}.
++
++severity: medium
++
++identifiers:
++    cce@rhel7: CCE-83398-8
++
++references:
++    disa: CCI-000068,CCI-000366,CCI-000803,CCI-000877,CCI-002890,CCI-003123
++    srg: SRG-OS-000033-GPOS-00014,SRG-OS-000120-GPOS-00061,SRG-OS-000125-GPOS-00065,SRG-OS-000250-GPOS-00093,SRG-OS-000393-GPOS-00173,SRG-OS-000394-GPOS-00174
++    stigid@rhel7: RHEL-07-040110
++
++ocil_clause: 'FIPS ciphers are not configured or the enabled ciphers are not FIPS-approved'
++
++ocil: |-
++    Only FIPS ciphers should be used. To verify that only FIPS-approved
++    ciphers are in use, run the following command:
++    <pre>$ sudo grep Ciphers /etc/ssh/sshd_config</pre>
++    The output should contain only following ciphers (or a subset) in the exact order:
++    <pre>aes256-ctr,aes192-ctr,aes128-ctr</pre>
++
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        System Crypto Modules must be provided by a vendor that undergoes
++        FIPS-140 certifications.
++        FIPS-140 is applicable to all Federal agencies that use
++        cryptographic-based security systems to protect sensitive information
++        in computer and telecommunication systems (including voice systems) as
++        defined in Section 5131 of the Information Technology Management Reform
++        Act of 1996, Public Law 104-106. This standard shall be used in
++        designing and implementing cryptographic modules that Federal
++        departments and agencies operate or are operated for them under
++        contract. See <b>{{{ weblink(link="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-2.pdf") }}}</b>
++        To meet this, the system has to have cryptographic software provided by
++        a vendor that has undergone this certification. This means providing
++        documentation, test results, design information, and independent third
++        party review by an accredited lab. While open source software is
++        capable of meeting this, it does not meet FIPS-140 unless the vendor
++        submits to this process.
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/comment.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/comment.fail.sh
+new file mode 100644
+index 0000000000..daff7d7c53
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/comment.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/# ciphers aes256-ctr,aes192-ctr,aes128-ctr/" /etc/ssh/sshd_config
++else
++	echo "# ciphers aes256-ctr,aes192-ctr,aes128-ctr" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_reduced_list.pass.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_reduced_list.pass.sh
+new file mode 100644
+index 0000000000..b9d22262af
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_reduced_list.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/Ciphers aes192-ctr,aes128-ctr/" /etc/ssh/sshd_config
++else
++	echo "Ciphers aes192-ctr,aes128-ctr" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_scrambled.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_scrambled.fail.sh
+new file mode 100644
+index 0000000000..b99d3832cd
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_scrambled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/Ciphers aes128-ctr,aes192-ctr,aes256-ctr/" /etc/ssh/sshd_config
++else
++	echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr" >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_value.pass.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_value.pass.sh
+new file mode 100644
+index 0000000000..6dfd54631c
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/correct_value.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/ciphers aes256-ctr,aes192-ctr,aes128-ctr/" /etc/ssh/sshd_config
++else
++	echo 'ciphers aes256-ctr,aes192-ctr,aes128-ctr' >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/line_not_there.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/line_not_there.fail.sh
+new file mode 100644
+index 0000000000..7b38914a1a
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/line_not_there.fail.sh
+@@ -0,0 +1,3 @@
++#!/bin/bash
++
++sed -i "/^Ciphers.*/d" /etc/ssh/sshd_config
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/no_parameters.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/no_parameters.fail.sh
+new file mode 100644
+index 0000000000..6fdb47093d
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/no_parameters.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/Ciphers /" /etc/ssh/sshd_config
++else
++	echo 'Ciphers ' >> /etc/ssh/sshd_config
++fi
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/wrong_value.fail.sh b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..24fdf0f30d
+--- /dev/null
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers_ordered_stig/tests/wrong_value.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++if grep -q "^Ciphers" /etc/ssh/sshd_config; then
++	sed -i "s/^Ciphers.*/ Ciphers aes128-ctr,aes192-ctr,weak-cipher,aes128-cbc,aes192-cbc,aes256-cbc,3des-cbc,rijndael-cbc@lysator\.liu\.se/" /etc/ssh/sshd_config
++else
++	echo " Ciphers aes128-ctr,aes192-ctr,weak-cipher,aes128-cbc,aes192-cbc,aes256-cbc,3des-cbc,rijndael-cbc@lysator\.liu\.se" >> /etc/ssh/sshd_config
++fi
+diff --git a/rhel7/profiles/stig.profile b/rhel7/profiles/stig.profile
+index 6c06a8ede6..adf86894e1 100644
+--- a/rhel7/profiles/stig.profile
++++ b/rhel7/profiles/stig.profile
+@@ -239,8 +239,7 @@ selections:
+     - install_antivirus
+     - accounts_max_concurrent_login_sessions
+     - configure_firewalld_ports
+-    - sshd_approved_ciphers=stig
+-    - sshd_use_approved_ciphers
++    - sshd_use_approved_ciphers_ordered_stig
+     - accounts_tmout
+     - sshd_enable_warning_banner
+     - sssd_ldap_start_tls
