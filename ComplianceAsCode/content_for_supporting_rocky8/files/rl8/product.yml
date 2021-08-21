@@ -1,4 +1,4 @@
-product: rocky8
+product: rl8
 full_name: Rocky Linux 8
 type: platform
 
@@ -26,7 +26,7 @@ cpes:
   - rocky8:
       name: "cpe:/o:rocky:rocky:8"
       title: "Rocky Linux 8"
-      check_id: installed_OS_is_rocky8
+      check_id: installed_OS_is_rl8
 
 # Mapping of CPE platform to package
 platform_package_overrides:
