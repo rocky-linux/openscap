@@ -22,7 +22,7 @@ diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
      add_subdirectory("products/wrlinux1019" "wrlinux1019")
  endif()
 +if (SSG_PRODUCT_ROCKY8)
-+    add_subdirectory("products/rocky8" "rocky8")
++    add_subdirectory("products/rl8" "rl8")
 +endif()
 +
 
@@ -47,7 +47,7 @@ diff -Nru content.org/shared/checks/oval/install_mcafee_hbss.xml content/shared/
  	<platform>multi_platform_sle</platform>
  	<platform>multi_platform_ubuntu</platform>
  	<platform>multi_platform_wrlinux</platform>
-+	<platform>multi_platform_rocky</platform>
++	<platform>multi_platform_rl</platform>
        </affected>
        <description>McAfee Host-Based Intrusion Detection Software (HBSS) software
        should be installed.</description>
@@ -59,12 +59,12 @@ diff -Nru content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml content/
  	<platform>multi_platform_ol</platform>
  	<platform>multi_platform_rhcos</platform>
 -	<platform>multi_platform_rhel</platform>
-+	<platform>multi_platform_rhel,multi_platform_rocky</platform>
++	<platform>multi_platform_rhel,multi_platform_rl</platform>
  	<platform>multi_platform_rhv</platform>
  	<platform>multi_platform_sle</platform>
  	<platform>multi_platform_ubuntu</platform>
  	<platform>multi_platform_wrlinux</platform>
-+	<platform>multi_platform_rocky</platform>
++	<platform>multi_platform_rl</platform>
        </affected>
        <description>Disables IPv6 for all network interfaces.</description>
      </metadata>
@@ -77,7 +77,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
      'vsel',
 -    'wrlinux8', 'wrlinux1019'
 +    'wrlinux8', 'wrlinux1019',
-+    'rocky8'
++    'rl8'
  ]
 
  JINJA_MACROS_BASE_DEFINITIONS = os.path.join(os.path.dirname(os.path.dirname(
@@ -85,7 +85,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
      "Ubuntu 20.04": "ubuntu2004",
      "WRLinux 8": "wrlinux8",
      "WRLinux 1019": "wrlinux1019",
-+    "Rocky Linux 8": "rocky8",
++    "Rocky Linux 8": "rl8",
  }
 
 
@@ -94,7 +94,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
 
  MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhosp", "rhv", "debian", "ubuntu",
 -                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "example"]
-+                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "rocky", "example"]
++                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "rl", "example"]
 
  MULTI_PLATFORM_MAPPING = {
      "multi_platform_debian": ["debian9", "debian10"],
@@ -102,7 +102,7 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
      "multi_platform_sle": ["sle12", "sle15"],
      "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
      "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
-+    "multi_platform_rocky": ["rocky8"],
++    "multi_platform_rl": ["rl8"],
  }
 
  RHEL_CENTOS_CPE_MAPPING = {
@@ -110,5 +110,5 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
      'ol': 'Oracle Linux',
      'ocp': 'Red Hat OpenShift Container Platform',
      'rhcos': 'Red Hat Enterprise Linux CoreOS',
-+    'rocky': 'Rocky Linux',
++    'rl': 'Rocky Linux',
  }
