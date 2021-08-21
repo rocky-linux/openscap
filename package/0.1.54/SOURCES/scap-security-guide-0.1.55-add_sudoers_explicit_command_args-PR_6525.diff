@@ -1,0 +1,196 @@
+diff --git a/controls/anssi.yml b/controls/anssi.yml
+index 851993512..515a4a172 100644
+--- a/controls/anssi.yml
++++ b/controls/anssi.yml
+@@ -850,7 +850,8 @@ controls:
+   - id: R63
+     level: intermediary
+     title: Explicit arguments in sudo specifications
+-    # rules: TBD
++    rules:
++    - sudoers_explicit_command_args
+ 
+   - id: R64
+     level: intermediary
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/oval/shared.xml b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/oval/shared.xml
+new file mode 100644
+index 000000000..94a0cb421
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/oval/shared.xml
+@@ -0,0 +1,25 @@
++<def-group>
++     <definition class="compliance" id="{{{ rule_id }}}" version="1">
++     {{{ oval_metadata("Check that sudoers doesn't contain commands without arguments specified") }}}
++     <criteria operator="AND">
++	     <criterion comment="Make sure that no commands are without arguments" test_ref="test_{{{ rule_id }}}" />
++     </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test check="all" check_existence="none_exist"
++  comment="Make sure that no command in user spec is without any argument"
++	  id="test_{{{ rule_id }}}" version="1">
++  <ind:object object_ref="object_{{{ rule_id }}}" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="object_{{{ rule_id }}}" version="1">
++    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
++    <!-- The regex idea: <user list> <host list> = (<the whole command with at least an arg>,)* <command with no arg> <end of the line or next command spec we don't care about>
++         where a command is <runas spec>?<anything except ,>+,
++           - ',' is a command delimiter, while
++         The last capturing group holds the offending command without args.
++    -->
++    <ind:pattern operation="pattern match">^(?:\s*[^#=]+)=(?:\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+(?:[ \t]+[^,\s]+)+[ \t]*,)*(\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+[ \t]*(?:,|$))</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++</def-group>
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/rule.yml b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/rule.yml
+new file mode 100644
+index 000000000..a0590c8b0
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/rule.yml
+@@ -0,0 +1,46 @@
++documentation_complete: true
++
++title: "Explicit arguments in sudo specifications"
++
++description: |-
++    All commands in the sudoers file must strictly specify the arguments allowed to be used for a given user.
++    If the command is supposed to be executed only without arguments, pass "" as an argument in the corresponding user specification.
++
++rationale: |-
++    Any argument can modify quite significantly the behavior of a program, whether regarding the
++    realized operation (read, write, delete, etc.) or accessed resources (path in a file system tree). To
++    avoid any possibility of misuse of a command by a user, the ambiguities must be removed at the
++    level of its specification.
++
++    For example, on some systems, the kernel messages are only accessible by root.
++    If a user nevertheless must have the privileges to read them, the argument of the dmesg command has to be restricted
++    in order to prevent the user from flushing the buffer through the -c option:
++    <pre>
++    user ALL = dmesg ""
++    </pre>
++
++severity: medium
++
++identifiers:
++  cce@rhel7: CCE-83631-2
++  cce@rhel8: CCE-83632-0
++
++references:
++    anssi: BP28(R63)
++
++ocil_clause: '/etc/sudoers file contains user specifications that allow execution of commands with any arguments'
++
++ocil: |-
++    To determine if arguments that commands can be executed with are restricted, run the following command:
++    <pre>$ sudo grep -PR '^(?:\s*[^#=]+)=(?:\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+(?:[ \t]+[^,\s]+)+[ \t]*,)*(\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+[ \t]*(?:,|$))' /etc/sudoers /etc/sudoers.d/</pre>
++    The command should return no output.
++
++platform: sudo
++
++warnings:
++  - general:
++      This rule doesn't come with a remediation, as absence of arguments in the user spec doesn't mean that the command is intended to be executed with no arguments.
++
++  - general:
++      The rule can produce false findings when an argument contains a comma - sudoers syntax allows comma escaping using backslash, but the check doesn't support that.
++      For example, <code>root ALL=(ALL) echo 1\,2</code> allows root to execute <code>echo 1,2</code>, but the check would interpret it as two commands <code>echo 1\</code> and <code>2</code>.
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/commented.pass.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/commented.pass.sh
+new file mode 100644
+index 000000000..b0d05b2a5
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/commented.pass.sh
+@@ -0,0 +1,5 @@
++# platform = multi_platform_all
++# packages = sudo
++
++echo '#jen,!fred		ALL, !SERVERS = !/bin/sh' > /etc/sudoers
++echo '# somebody ALL=/bin/ls, (!bob,alice) !/bin/cat, /bin/dog' > /etc/sudoers.d/foo
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-1.fail.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-1.fail.sh
+new file mode 100644
+index 000000000..c6f885f9f
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-1.fail.sh
+@@ -0,0 +1,5 @@
++# platform = multi_platform_all
++# packages = sudo
++# remediation = none
++
++echo 'somebody ALL=/bin/ls, (!bob,alice) /bin/cat arg, /bin/dog' > /etc/sudoers
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-2.fail.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-2.fail.sh
+new file mode 100644
+index 000000000..fce851f55
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/complex-2.fail.sh
+@@ -0,0 +1,5 @@
++# platform = multi_platform_all
++# packages = sudo
++# remediation = none
++
++echo 'nobody ALL=/bin/ls, (!bob,alice) /bin/dog, /bin/cat arg' > /etc/sudoers
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/false_positive.fail.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/false_positive.fail.sh
+new file mode 100644
+index 000000000..baf66468d
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/false_positive.fail.sh
+@@ -0,0 +1,9 @@
++# platform = multi_platform_all
++# remediation = none
++# packages = sudo
++
++# The val1\,val2 is the first argument of the /bin/dog command that contains a comma.
++# Our check tends to interpret the comma as commad delimiter, so the dog arg is val1\
++# and val2 is another command in the user spec.
++echo 'nobody ALL=/bin/ls "", (!bob,alice) /bin/dog val1\,val2, /bin/cat ""' > /etc/sudoers
++
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.fail.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.fail.sh
+new file mode 100644
+index 000000000..9a04a205a
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.fail.sh
+@@ -0,0 +1,5 @@
++# platform = multi_platform_all
++# packages = sudo
++# remediation = none
++
++echo 'jen,!fred		ALL,SERVERS = /bin/sh ' > /etc/sudoers
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.pass.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.pass.sh
+new file mode 100644
+index 000000000..4a3a7c94b
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/simple.pass.sh
+@@ -0,0 +1,6 @@
++# platform = multi_platform_all
++# packages = sudo
++
++echo 'nobody ALL=/bin/ls "", (!bob,alice) /bin/dog arg, /bin/cat ""' > /etc/sudoers
++echo 'jen,!fred		ALL,!SERVERS = /bin/sh arg' >> /etc/sudoers
++echo 'nobody ALL=/bin/ls arg arg, (bob,!alice) /bin/dog arg, /bin/cat arg' > /etc/sudoers.d/foo
+diff --git a/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/sudoers_d.fail.sh b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/sudoers_d.fail.sh
+new file mode 100644
+index 000000000..9643a3337
+--- /dev/null
++++ b/linux_os/guide/system/software/sudo/sudoers_explicit_command_args/tests/sudoers_d.fail.sh
+@@ -0,0 +1,9 @@
++# platform = multi_platform_all
++# packages = sudo
++# remediation = none
++
++echo 'nobody ALL=/bin/ls, (!bob,alice) /bin/dog arg, /bin/cat ""' > /etc/sudoers
++echo 'jen,!fred		ALL,!SERVERS = /bin/sh arg' >> /etc/sudoers
++echo 'nobody ALL=/bin/ls, (bob,!alice) /bin/dog arg, /bin/cat arg' > /etc/sudoers.d/foo
++
++echo 'user ALL = ALL' > /etc/sudoers.d/bar
+diff --git a/shared/references/cce-redhat-avail.txt b/shared/references/cce-redhat-avail.txt
+index 4dbec8255..94a116b59 100644
+--- a/shared/references/cce-redhat-avail.txt
++++ b/shared/references/cce-redhat-avail.txt
+@@ -140,8 +140,6 @@ CCE-83626-2
+ CCE-83627-0
+ CCE-83628-8
+ CCE-83629-6
+-CCE-83631-2
+-CCE-83632-0
+ CCE-83633-8
+ CCE-83634-6
+ CCE-83635-3

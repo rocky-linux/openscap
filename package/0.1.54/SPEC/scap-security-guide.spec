@@ -3,7 +3,7 @@
 
 Name:                 scap-security-guide
 Version:              0.1.54
-Release:              5%{?dist}.rocky
+Release:              5.1%{?dist}.rocky
 Summary:              Security guidance and baselines in SCAP formats
 Group:                Applications/System
 License:              BSD
@@ -42,8 +42,8 @@ Patch26:              scap-security-guide-0.1.55-drop_kernel_module_vfat_disable
 Patch27:              scap-security-guide-0.1.55-remove_auditd_data_retention_space_left_from_RHEL8_STIG-PR_6615.patch
 # Untill ANSSI High profile is shipped we drop the ks too
 Patch28:              remove-ANSSI-high-ks.patch
-# WIP
-#Patch29:              0001-Add-Rocky-Linux-content.patch
+# Rocky Linux support
+Patch29:              0001-scap-security-guide-0.1.54-rocky8-support.patch
 
 BuildArch:            noarch
 
@@ -146,6 +146,9 @@ cp -r %{_builddir}/%{_static_rhel6_content}/guides %{buildroot}%{_docdir}/%{name
 %doc %{_docdir}/%{name}/tables/*.html
 
 %changelog
+* Sat Aug 21 2021 Scott R. Shinn <scott@rockylinux.org> - 0.1.54-5.1.rocky
+- Resync with 0.1.54-5, merge in rocky 8 profiles
+
 * Sun Jun 20 2021 Mustafa Gezen <mustafa@rockylinux.org> - 0.1.54-5.rocky
 - Add Rocky Linux content based on https://github.com/atomicturtle/openscap
 - Authored by atomicturtle
