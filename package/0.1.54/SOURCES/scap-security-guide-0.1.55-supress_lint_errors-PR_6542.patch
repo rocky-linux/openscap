@@ -1,0 +1,30 @@
+From e5399b7bf17d5bdb995851b3d2a27f3ab2e6066a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Mon, 18 Jan 2021 15:21:51 +0100
+Subject: [PATCH] Supress Ansible lint error 503
+
+It says that Tasks that run when changed should likely be handlers.
+However, we don't use handlers, and developer guide says that handlers
+aren't supported. I assume handlers would cause problems for SCAP
+scanners. Unless we start to support handlers this error isn't fixable
+for us therefore we can suppress it globally.
+
+Addressing problems in scap-security-guide-lint-check Jenkins job:
+30/48 Test #260: ansible-playbook-ansible-lint-check-rhel8 .........***Failed  630.77 sec
+all/sudo_add_umask.yml:30: [E503] Tasks that run when changed should likely be handlers
+anssi_bp28_enhanced/sudo_add_umask.yml:30: [E503] Tasks that run when changed should likely be handlers
+anssi_bp28_high/sudo_add_umask.yml:30: [E503] Tasks that run when changed should likely be handlers
+anssi_bp28_intermediary/sudo_add_umask.yml:30: [E503] Tasks that run when changed should likely be handlers
+---
+ tests/ansible-lint_config.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tests/ansible-lint_config.yml b/tests/ansible-lint_config.yml
+index d5107476a9..e4b4443f8c 100644
+--- a/tests/ansible-lint_config.yml
++++ b/tests/ansible-lint_config.yml
+@@ -3,3 +3,4 @@ skip_list:
+   - '301' # Commands should not change things if nothing needs doing
+   - '303' # Using command rather than module
+   - '403' # Package installs should not use latest
++  - '503' # Tasks that run when changed should likely be handlers

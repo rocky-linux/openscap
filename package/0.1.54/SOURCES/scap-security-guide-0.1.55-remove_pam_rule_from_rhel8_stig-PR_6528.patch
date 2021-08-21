@@ -1,0 +1,43 @@
+From 0f10e6fe07e068f3fac8cb9563141530f3d8b9e8 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 12 Jan 2021 16:23:07 +0100
+Subject: [PATCH 1/2] remove rule from rhel8 stig
+
+---
+ rhel8/profiles/stig.profile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/rhel8/profiles/stig.profile b/rhel8/profiles/stig.profile
+index 882c481066..cda0239433 100644
+--- a/rhel8/profiles/stig.profile
++++ b/rhel8/profiles/stig.profile
+@@ -45,7 +45,6 @@ selections:
+     - package_audispd-plugins_installed
+     - package_libcap-ng-utils_installed
+     - auditd_audispd_syslog_plugin_activated
+-    - accounts_passwords_pam_faillock_enforce_local
+     - accounts_password_pam_enforce_local
+     - accounts_password_pam_enforce_root
+ 
+
+From b558c9030d2f16e59571e1730a3b0350d257d298 Mon Sep 17 00:00:00 2001
+From: Vojtech Polasek <vpolasek@redhat.com>
+Date: Tue, 12 Jan 2021 16:23:25 +0100
+Subject: [PATCH 2/2] modify profile stability test
+
+---
+ tests/data/profile_stability/rhel8/stig.profile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tests/data/profile_stability/rhel8/stig.profile b/tests/data/profile_stability/rhel8/stig.profile
+index a4ad24aec2..6676ca497c 100644
+--- a/tests/data/profile_stability/rhel8/stig.profile
++++ b/tests/data/profile_stability/rhel8/stig.profile
+@@ -41,7 +41,6 @@ selections:
+ - accounts_password_set_max_life_existing
+ - accounts_password_set_min_life_existing
+ - accounts_passwords_pam_faillock_deny
+-- accounts_passwords_pam_faillock_enforce_local
+ - accounts_passwords_pam_faillock_interval
+ - accounts_passwords_pam_faillock_unlock_time
+ - accounts_umask_etc_bashrc

@@ -1,0 +1,39 @@
+From 9c6bdd92d2980aff87d1de0085250078ac131eda Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Tue, 16 Feb 2021 15:49:46 +0100
+Subject: [PATCH] Remove auditd_data_retention_space_left from RHEL8 STIG
+ profile.
+
+This rule is not aligned with STIG because it checks for space left in
+megabytes, whereas STIG demands space left in percentage.
+---
+ rhel8/profiles/stig.profile                     | 3 ++-
+ tests/data/profile_stability/rhel8/stig.profile | 1 -
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rhel8/profiles/stig.profile b/rhel8/profiles/stig.profile
+index 0aa6f28986..dccfb548b7 100644
+--- a/rhel8/profiles/stig.profile
++++ b/rhel8/profiles/stig.profile
+@@ -219,7 +219,8 @@ selections:
+     - package_rsyslog_installed
+     - package_rsyslog-gnutls_installed
+     - rsyslog_remote_loghost
+-    - auditd_data_retention_space_left
++    # this rule expects configuration in MB instead percentage as how STIG demands
++    # - auditd_data_retention_space_left
+     - auditd_data_retention_space_left_action
+     # remediation fails because default configuration file contains pool instead of server keyword
+     - chronyd_or_ntpd_set_maxpoll
+diff --git a/tests/data/profile_stability/rhel8/stig.profile b/tests/data/profile_stability/rhel8/stig.profile
+index 55b645b67b..41782dcf3d 100644
+--- a/tests/data/profile_stability/rhel8/stig.profile
++++ b/tests/data/profile_stability/rhel8/stig.profile
+@@ -63,7 +63,6 @@ selections:
+ - auditd_data_disk_full_action
+ - auditd_data_retention_action_mail_acct
+ - auditd_data_retention_max_log_file_action
+-- auditd_data_retention_space_left
+ - auditd_data_retention_space_left_action
+ - auditd_local_events
+ - auditd_log_format

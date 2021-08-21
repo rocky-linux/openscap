@@ -1,0 +1,34 @@
+From cb299dd0ce870d55cb530bc5e5ad9a9f52734bf4 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 19 Jan 2021 09:42:26 +0100
+Subject: [PATCH] Add metadata to ANSSI R35
+
+Current implementation cannot diferentiate between system and
+standard user umask, they are both set to the same value.
+---
+ controls/anssi.yml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/controls/anssi.yml b/controls/anssi.yml
+index dec9d68c99..621996e985 100644
+--- a/controls/anssi.yml
++++ b/controls/anssi.yml
+@@ -572,10 +572,18 @@ controls:
+       only be read by the user and his group, and be editable only by his owner).
+       The umask for users must be set to 0077 (any file created by a user is
+       readable and editable only by him).
++    notes: >-
++      There is no simple way to check and remediate different umask values for
++      system and standard users reliably.
++      The different values are set in a conditional clause in a shell script
++      (e.g. /etc/profile or /etc/bashrc).
++      The current implementation checks and fixes both umask to the same value.
++    automated: partially
+     rules:
+     - var_accounts_user_umask=077
+     - accounts_umask_etc_login_defs
+     - accounts_umask_etc_profile
++    - accounts_umask_etc_bashrc
+ 
+   - id: R36
+     title: Rights to access sensitive content files

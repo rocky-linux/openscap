@@ -1,0 +1,1313 @@
+From 0e28027e3094a219956bbd8d9f6ead1375b901fe Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Fri, 22 Jan 2021 12:20:03 -0800
+Subject: [PATCH] Enable checks and remediations for the following SLES-12
+ STIGs:
+
+  - SLES-12-010510 'aide_scan_notification'
+  - SLES-12-010700 'file_permissions_ungroupowned'
+  - SLES-12-010710 'accounts_user_interactive_home_directory_defined'
+  - SLES-12-010730 'accounts_user_interactive_home_directory_exists'
+  - SLES-12-010740 'file_permissions_home_directories'
+  - SLES-12-010750 'file_groupownership_home_directories'
+  - SLES-12-010760 'file_permission_user_init_files'
+  - SLES-12-010770 'accounts_user_home_paths_only'
+  - SLES-12-010780 'accounts_user_dot_no_world_writable_programs'
+  - SLES-12-010790 'mount_option_home_nosuid'
+  - SLES-12-010800 'mount_option_nosuid_removable_partitions'
+  - SLES-12-010810 'mount_option_nosuid_remote_filesystems'
+  - SLES-12-010820 'mount_option_noexec_remote_filesystems'
+  - SLES-12-010830 'dir_perms_world_writable_system_owned_group'
+  - SLES-12-010840 'service_kdump_disabled'
+  - SLES-12-010880 'run_chkstat'
+  - SLES-12-020500 'audit_rules_unsuccessful_file_modification_truncate'
+  - SLES-12-020510 'audit_rules_unsuccessful_file_modification_ftruncate'
+  - SLES-12-020520 'audit_rules_unsuccessful_file_modification_creat'
+  - SLES-12-020530 'audit_rules_unsuccessful_file_modification_openat'
+  - SLES-12-020540 'audit_rules_unsuccessful_file_modification_open_by_handle_at'
+  - SLES-12-020590 'audit_rules_usergroup_modification_gshadow'
+  - SLES-12-020600 'audit_rules_dac_modification_chmod'
+  - SLES-12-020650 'audit_rules_login_events_tallylog'
+  - SLES-12-020660 'audit_rules_login_events_lastlog'
+  - SLES-12-020680 'audit_rules_privileged_commands_unix_chkpwd'
+  - SLES-12-020690 'audit_rules_privileged_commands_chage'
+  - SLES-12-030030 'kernel_module_dccp_disabled'
+  - SLES-12-030140 'sshd_disable_root_login'
+  - SLES-12-030180 'sshd_use_approved_macs'
+  - SLES-12-030380 'sysctl_net_ipv4_icmp_echo_ignore_broadcasts'
+  - SLES-12-030390 'sysctl_net_ipv4_conf_all_accept_redirects'
+  - SLES-12-030400 'sysctl_net_ipv4_conf_default_accept_redirects'
+  - SLES-12-030401 'sysctl_net_ipv6_conf_default_accept_source_route'
+  - SLES-12-030420 'sysctl_net_ipv4_conf_all_send_redirects'
+  - SLES-12-030430 'sysctl_net_ipv4_ip_forward'
+
+Corrections:
+
+  - Rule 'sysctl_net_ipv4_conf_default_send_redirects' was originally submitted
+    with an incorrect SLES12 STIG ID. The correct SLES12 STIG ID should
+    be 'SLES-12-030410'.
+---
+ .../base/service_kdump_disabled/rule.yml      |  1 +
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../sshd_disable_root_login/rule.yml          |  1 +
+ .../sshd_use_approved_macs/ansible/shared.yml |  2 +-
+ .../sshd_use_approved_macs/rule.yml           |  1 +
+ .../rule.yml                                  |  6 ++-
+ .../accounts_user_home_paths_only/rule.yml    |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../file_permission_user_init_files/rule.yml  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  2 +
+ .../audit_rules_login_events_lastlog/rule.yml |  2 +
+ .../rule.yml                                  |  2 +
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  5 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../rule.yml                                  |  2 +-
+ .../sysctl_net_ipv4_ip_forward/rule.yml       |  4 +-
+ .../kernel_module_dccp_disabled/rule.yml      |  4 +-
+ .../rule.yml                                  |  9 ++--
+ .../file_permissions_ungroupowned/rule.yml    |  4 +-
+ .../mount_option_home_nosuid/rule.yml         |  4 +-
+ .../rule.yml                                  |  4 +-
+ .../permissions/permissions_local/group.yml   | 12 +++++
+ .../permissions_local/run_chkstat/rule.yml    | 50 +++++++++++++++++++
+ .../aide_scan_notification/bash/shared.sh     | 13 ++++-
+ .../aide_scan_notification/oval/shared.xml    | 12 +++--
+ .../aide/aide_scan_notification/rule.yml      |  8 ++-
+ .../aide/package_aide_installed/rule.yml      |  2 +-
+ .../ansible.template                          |  2 +-
+ .../audit_rules_login_events/ansible.template |  2 +-
+ .../ansible.template                          |  2 +-
+ .../ansible.template                          |  2 +-
+ .../ansible.template                          |  2 +-
+ sle12/profiles/stig.profile                   | 39 +++++++++++++++
+ 48 files changed, 229 insertions(+), 40 deletions(-)
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/group.yml
+ create mode 100644 linux_os/guide/system/permissions/permissions_local/run_chkstat/rule.yml
+
+diff --git a/linux_os/guide/services/base/service_kdump_disabled/rule.yml b/linux_os/guide/services/base/service_kdump_disabled/rule.yml
+index 3737b264ce..ff9d439b4f 100644
+--- a/linux_os/guide/services/base/service_kdump_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_kdump_disabled/rule.yml
+@@ -22,6 +22,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80258-7
+     cce@rhel8: CCE-80878-2
++    cce@sle12: CCE-83105-7
+ 
+ references:
+     stigid@ol7: OL07-00-021300
+diff --git a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_noexec_remote_filesystems/rule.yml b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_noexec_remote_filesystems/rule.yml
+index a4a8160aa9..d9c17fb416 100644
+--- a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_noexec_remote_filesystems/rule.yml
++++ b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_noexec_remote_filesystems/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Mount Remote Filesystems with noexec'
+ 
+@@ -16,6 +16,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80436-9
++    cce@sle12: CCE-83103-2
+ 
+ references:
+     stigid@ol7: OL07-00-021021
+@@ -29,6 +30,7 @@ references:
+     cobit5: APO01.06,DSS05.04,DSS05.07,DSS06.02
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 12,13,14,15,16,18,3,5
++    stigid@sle12: SLES-12-010820
+ 
+ ocil_clause: 'the setting does not show'
+ 
+diff --git a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_nosuid_remote_filesystems/rule.yml b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_nosuid_remote_filesystems/rule.yml
+index 7a40ea2b27..c14b0aeefb 100644
+--- a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_nosuid_remote_filesystems/rule.yml
++++ b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/mounting_remote_filesystems/mount_option_nosuid_remote_filesystems/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Mount Remote Filesystems with nosuid'
+ 
+@@ -14,6 +14,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80240-5
++    cce@sle12: CCE-83102-4
+ 
+ references:
+     stigid@ol7: OL07-00-021020
+@@ -27,6 +28,7 @@ references:
+     cobit5: APO01.06,DSS05.04,DSS05.07,DSS06.02
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 12,13,14,15,16,18,3,5
++    stigid@sle12: SLES-12-010810
+ 
+ ocil_clause: 'the setting does not show'
+ 
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_disable_root_login/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_disable_root_login/rule.yml
+index 74002ded9a..287954db61 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_disable_root_login/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_disable_root_login/rule.yml
+@@ -21,6 +21,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27445-6
+     cce@rhel8: CCE-80901-2
++    cce@sle12: CCE-83035-6
+ 
+ references:
+     stigid@ol7: OL07-00-040370
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/ansible/shared.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/ansible/shared.yml
+index 1a9b6990e9..2c5cf7e1c7 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/ansible/shared.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = Red Hat Enterprise Linux 7,Oracle Linux 7
++# platform = Red Hat Enterprise Linux 7,Oracle Linux 7,multi_platform_sle
+ # reboot = false
+ # strategy = restrict
+ # complexity = low
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
+index 394c733f51..a0bc4578a6 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/rule.yml
+@@ -43,6 +43,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27455-5
+     cce@rhel8: CCE-82198-3
++    cce@sle12: CCE-83036-4
+ 
+ references:
+     stigid@ol7: OL07-00-040400
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_user_dot_no_world_writable_programs/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_user_dot_no_world_writable_programs/rule.yml
+index ad337e982c..77f3a12148 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_user_dot_no_world_writable_programs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_user_dot_no_world_writable_programs/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'User Initialization Files Must Not Run World-Writable Programs'
+ 
+@@ -20,17 +20,19 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80523-4
++    cce@sle12: CCE-83099-2
+ 
+ references:
+     stigid@ol7: OL07-00-020730
+     disa: CCI-000366
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020730
++    stigid@sle12: SLES-12-010780
+ 
+ ocil_clause: 'files are executing world-writable programs'
+ 
+ ocil: |-
+     To verify that local initialization files do not execute world-writable programs,
+     execute the following command:
+-    <pre>$ sudo find /home -perm -002 -type f -exec ls -ld {} -name ".[^.]*" \;</pre>
++    <pre>$ sudo find /home -perm -002 -type f -name ".[^.]*" -exec ls -ld {} \;</pre>
+     There should be no output.
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_user_home_paths_only/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_user_home_paths_only/rule.yml
+index 9c9dd92fb0..0154c1d73b 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_user_home_paths_only/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_user_home_paths_only/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Ensure that Users Path Contains Only Local Directories'
+ 
+@@ -24,12 +24,14 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80524-2
++    cce@sle12: CCE-83098-4
+ 
+ references:
+     stigid@ol7: OL07-00-020720
+     disa: CCI-000366
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020720
++    stigid@sle12: SLES-12-010770
+ 
+ ocil_clause: 'paths contain more than local home directories'
+ 
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_defined/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_defined/rule.yml
+index 6d6c28eb85..9ee21744b2 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_defined/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_defined/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'All Interactive Users Must Have A Home Directory Defined'
+ 
+@@ -16,12 +16,14 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80528-3
++    cce@sle12: CCE-83075-2
+ 
+ references:
+     stigid@ol7: OL07-00-020600
+     disa: CCI-000366
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020600
++    stigid@sle12: SLES-12-010710
+ 
+ ocil_clause: 'users home directory is not defined'
+ 
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_exists/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_exists/rule.yml
+index 42dfdeabed..a262abba7a 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_exists/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_user_interactive_home_directory_exists/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'All Interactive Users Home Directories Must Exist'
+ 
+@@ -22,6 +22,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80529-1
+     cce@rhel8: CCE-83424-2
++    cce@sle12: CCE-83074-5
+ 
+ references:
+     stigid@ol7: OL07-00-020620
+@@ -29,6 +30,7 @@ references:
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020620
+     cis@rhel8: 6.2.20
++    stigid@sle12: SLES-12-010730
+ 
+ ocil_clause: 'users home directory does not exist'
+ 
+diff --git a/linux_os/guide/system/accounts/accounts-session/file_groupownership_home_directories/rule.yml b/linux_os/guide/system/accounts/accounts-session/file_groupownership_home_directories/rule.yml
+index 0efb03da74..820a942220 100644
+--- a/linux_os/guide/system/accounts/accounts-session/file_groupownership_home_directories/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/file_groupownership_home_directories/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'All Interactive User Home Directories Must Be Group-Owned By The Primary User'
+ 
+@@ -21,6 +21,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80532-5
+     cce@rhel8: CCE-83434-1
++    cce@sle12: CCE-83096-8
+ 
+ references:
+     stigid@ol7: OL07-00-020650
+@@ -28,6 +29,7 @@ references:
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020650
+     cis@rhel8: 6.2.8
++    stigid@sle12: SLES-12-010750
+ 
+ ocil_clause: 'the group ownership is incorrect'
+ 
+diff --git a/linux_os/guide/system/accounts/accounts-session/file_permission_user_init_files/rule.yml b/linux_os/guide/system/accounts/accounts-session/file_permission_user_init_files/rule.yml
+index 6d719039a3..4810c941d6 100644
+--- a/linux_os/guide/system/accounts/accounts-session/file_permission_user_init_files/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/file_permission_user_init_files/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Ensure All User Initialization Files Have Mode 0740 Or Less Permissive'
+ 
+@@ -18,12 +18,14 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80525-9
++    cce@sle12: CCE-83097-6
+ 
+ references:
+     stigid@ol7: OL07-00-020710
+     disa: CCI-000366
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020710
++    stigid@sle12: SLES-12-010760
+ 
+ ocil_clause: 'they are not 0740 or more permissive'
+ 
+diff --git a/linux_os/guide/system/accounts/accounts-session/file_permissions_home_directories/rule.yml b/linux_os/guide/system/accounts/accounts-session/file_permissions_home_directories/rule.yml
+index edb1b821d3..4898bfa6b6 100644
+--- a/linux_os/guide/system/accounts/accounts-session/file_permissions_home_directories/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/file_permissions_home_directories/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'All Interactive User Home Directories Must Have mode 0750 Or Less Permissive'
+ 
+@@ -18,12 +18,14 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80530-9
++    cce@sle12: CCE-83076-0
+ 
+ references:
+     stigid@ol7: OL07-00-020630
+     disa: CCI-000366
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-020630
++    stigid@sle12: SLES-12-010740
+ 
+ ocil_clause: 'they are more permissive'
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
+index 5dc589b5fc..22031b6517 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod/rule.yml
+@@ -30,6 +30,7 @@ identifiers:
+     cce@rhel7: CCE-27339-1
+     cce@rhel8: CCE-80685-1
+     cce@rhcos4: CCE-82556-2
++    cce@sle12: CCE-83106-5
+ 
+ references:
+     stigid@ol7: OL07-00-030410
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000392-GPOS-00172,SRG-OS-000458-GPOS-00203
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000474-VMM-001940
+     stigid@rhel7: RHEL-07-030410
++    stigid@sle12: SLES-12-020600
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_creat/rule.yml
+index cd550e7c0a..b5abef23d9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_creat/rule.yml
+@@ -36,6 +36,7 @@ identifiers:
+     cce@rhel7: CCE-80385-8
+     cce@rhel8: CCE-80751-1
+     cce@rhcos4: CCE-82621-4
++    cce@sle12: CCE-83092-7
+ 
+ references:
+     stigid@ol7: OL07-00-030500
+@@ -50,6 +51,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030500
++    stigid@sle12: SLES-12-020520
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_ftruncate/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_ftruncate/rule.yml
+index 9696633f7e..9ed6b36699 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_ftruncate/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_ftruncate/rule.yml
+@@ -39,6 +39,7 @@ identifiers:
+     cce@rhel7: CCE-80390-8
+     cce@rhel8: CCE-80752-9
+     cce@rhcos4: CCE-82629-7
++    cce@sle12: CCE-83091-9
+ 
+ references:
+     stigid@ol7: OL07-00-030550
+@@ -53,6 +54,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030550
++    stigid@sle12: SLES-12-020510
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at/rule.yml
+index 08cd7a656c..28076744c3 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at/rule.yml
+@@ -36,6 +36,7 @@ identifiers:
+     cce@rhel7: CCE-80388-2
+     cce@rhel8: CCE-80755-2
+     cce@rhcos4: CCE-82640-4
++    cce@sle12: CCE-83094-3
+ 
+ references:
+     stigid@ol7: OL07-00-030530
+@@ -50,6 +51,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030530
++    stigid@sle12: SLES-12-020540
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_openat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_openat/rule.yml
+index 32501fd295..f1699ab14e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_openat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_openat/rule.yml
+@@ -39,6 +39,7 @@ identifiers:
+     cce@rhel7: CCE-80387-4
+     cce@rhel8: CCE-80754-5
+     cce@rhcos4: CCE-82634-7
++    cce@sle12: CCE-83093-5
+ 
+ references:
+     stigid@ol7: OL07-00-030520
+@@ -53,6 +54,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030520
++    stigid@sle12: SLES-12-020530
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_truncate/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_truncate/rule.yml
+index 037812a685..60d98c5803 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_truncate/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_modification/audit_rules_unsuccessful_file_modification_truncate/rule.yml
+@@ -39,6 +39,7 @@ identifiers:
+     cce@rhel7: CCE-80389-0
+     cce@rhel8: CCE-80756-0
+     cce@rhcos4: CCE-82651-1
++    cce@sle12: CCE-83085-1
+ 
+ references:
+     stigid@ol7: OL07-00-030540
+@@ -53,6 +54,7 @@ references:
+     srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
+     vmmsrg: SRG-OS-000458-VMM-001810,SRG-OS-000461-VMM-001830
+     stigid@rhel7: RHEL-07-030540
++    stigid@sle12: SLES-12-020500
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog/rule.yml
+index 7590cb2353..54e820c309 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog/rule.yml
+@@ -28,6 +28,7 @@ identifiers:
+     cce@rhel7: CCE-80384-1
+     cce@rhel8: CCE-80719-8
+     cce@rhcos4: CCE-82584-4
++    cce@sle12: CCE-83108-1
+ 
+ references:
+     cis@rhel7: 4.1.8
+@@ -43,6 +44,7 @@ references:
+     srg: SRG-OS-000392-GPOS-00172,SRG-OS-000470-GPOS-00214,SRG-OS-000473-GPOS-00218
+     vmmsrg: SRG-OS-000473-VMM-001930,SRG-OS-000470-VMM-001900
+     stigid@rhel7: RHEL-07-030620
++    stigid@sle12: SLES-12-020660
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
+index 267cafb758..730b7d7201 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
+@@ -28,6 +28,7 @@ identifiers:
+     cce@rhel7: CCE-80994-7
+     cce@rhel8: CCE-80720-6
+     cce@rhcos4: CCE-82585-1
++    cce@sle12: CCE-83107-3
+ 
+ references:
+     cis: 5.2.8
+@@ -41,6 +42,7 @@ references:
+     srg: SRG-OS-000392-GPOS-00172,SRG-OS-000470-GPOS-00214,SRG-OS-000473-GPOS-00218
+     vmmsrg: SRG-OS-000473-VMM-001930,SRG-OS-000470-VMM-001900
+     stigid@rhel7: RHEL-07-030600
++    stigid@sle12: SLES-12-020650
+     isa-62443-2013: 'SR 1.13,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.3.6.6,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage/rule.yml
+index 9503765c88..0fcf3fb9f6 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - chage'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80398-1
+     cce@rhel8: CCE-80725-5
+     cce@rhcos4: CCE-82591-9
++    cce@sle12: CCE-83110-7
+ 
+ references:
+     stigid@ol7: OL07-00-030660
+@@ -45,6 +46,7 @@ references:
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030660
++    stigid@sle12: SLES-12-020690
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd/rule.yml
+index 0171bd3758..b458ed6d8c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Ensure auditd Collects Information on the Use of Privileged Commands - unix_chkpwd'
+ 
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80396-5
+     cce@rhel8: CCE-80740-4
+     cce@rhcos4: CCE-82609-9
++    cce@sle12: CCE-83109-9
+ 
+ references:
+     stigid@ol7: OL07-00-030640
+@@ -46,6 +47,7 @@ references:
+     srg: SRG-OS-000042-GPOS-00020,SRG-OS-000392-GPOS-00172,SRG-OS-000471-GPOS-00215
+     vmmsrg: SRG-OS-000471-VMM-001910
+     stigid@rhel7: RHEL-07-030640
++    stigid@sle12: SLES-12-020680
+     isa-62443-2013: 'SR 2.10,SR 2.11,SR 2.12,SR 2.8,SR 2.9,SR 6.1,SR 6.2'
+     isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.8,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow/rule.yml
+index 9ee6de4b51..0b5707f596 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Record Events that Modify User/Group Information - /etc/gshadow'
+ 
+@@ -31,6 +31,7 @@ identifiers:
+     cce@rhel7: CCE-80432-8
+     cce@rhel8: CCE-80759-4
+     cce@rhcos4: CCE-82655-2
++    cce@sle12: CCE-83095-0
+ 
+ references:
+     stigid@ol7: OL07-00-030872
+@@ -46,6 +47,7 @@ references:
+     srg: SRG-OS-000004-GPOS-00004
+     vmmsrg: SRG-OS-000004-VMM-000040,SRG-OS-000239-VMM-000810,SRG-OS-000240-VMM-000820,SRG-OS-000241-VMM-000830,SRG-OS-000274-VMM-000960,SRG-OS-000275-VMM-000970,SRG-OS-000276-VMM-000980,SRG-OS-000277-VMM-000990,SRG-OS-000303-VMM-001090,SRG-OS-000304-VMM-001100,SRG-OS-000476-VMM-001960
+     stigid@rhel7: RHEL-07-030872
++    stigid@sle12: SLES-12-020590
+     isa-62443-2013: 'SR 1.1,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.10,SR 2.11,SR 2.12,SR 2.6,SR 2.8,SR 2.9,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.1,SR 6.2,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.10,4.3.2.6.7,4.3.3.2.2,4.3.3.3.9,4.3.3.5.1,4.3.3.5.2,4.3.3.5.8,4.3.3.6.6,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.4.7,4.3.4.5.6,4.3.4.5.7,4.3.4.5.8,4.4.2.1,4.4.2.2,4.4.2.4
+     cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,APO12.06,APO13.01,BAI03.05,BAI08.02,DSS01.03,DSS01.04,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS03.05,DSS05.02,DSS05.03,DSS05.04,DSS05.05,DSS05.07,DSS06.03,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_default_accept_source_route/rule.yml b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_default_accept_source_route/rule.yml
+index 76aed7c565..af6be9505a 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_default_accept_source_route/rule.yml
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_default_accept_source_route/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4
++prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12
+ 
+ title: 'Disable Kernel Parameter for Accepting Source-Routed Packets on IPv6 Interfaces by Default'
+ 
+@@ -22,6 +22,7 @@ identifiers:
+     cce@rhel7: CCE-80355-1
+     cce@rhel8: CCE-81015-0
+     cce@rhcos4: CCE-82481-3
++    cce@sle12: CCE-83087-7 
+ 
+ references:
+     anssi: BP28(R22)
+@@ -35,6 +36,7 @@ references:
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.12.1.1,A.12.1.2,A.13.1.1,A.13.1.2,A.13.1.3,A.13.2.1,A.13.2.2,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 1,12,13,14,15,16,18,4,6,8,9
+     srg: SRG-OS-000480-GPOS-00227
++    stigid@sle12: SLES-12-030401
+     cis@rhel8: 3.2.1
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.default.accept_source_route", value="0") }}}
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects/rule.yml
+index 5a529710db..361073e99c 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable Accepting ICMP Redirects for All IPv4 Interfaces'
+ 
+@@ -21,6 +21,7 @@ identifiers:
+     cce@rhel7: CCE-80158-9
+     cce@rhel8: CCE-80917-8
+     cce@rhcos4: CCE-82469-8
++    cce@sle12: CCE-83090-1 
+ 
+ references:
+     stigid@ol7: OL07-00-040641
+@@ -33,6 +34,7 @@ references:
+     nist-csf: DE.CM-1,PR.DS-4,PR.IP-1,PR.PT-3
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040641
++    stigid@sle12: SLES-12-030390 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3
+     cobit5: APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS03.05,DSS05.02,DSS05.05,DSS05.07,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects/rule.yml
+index d3336d246f..ed4a024797 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,sle12
+ 
+ title: 'Disable Kernel Parameter for Accepting ICMP Redirects by Default on IPv4 Interfaces'
+ 
+@@ -20,6 +20,7 @@ identifiers:
+     cce@rhel7: CCE-80163-9
+     cce@rhel8: CCE-80919-4
+     cce@rhcos4: CCE-82470-6
++    cce@sle12: CCE-83081-0 
+ 
+ references:
+     stigid@ol7: OL07-00-040640
+@@ -32,6 +33,8 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040640
++    stigid@sle12: SLES-12-030400 
++
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts/rule.yml
+index a7f24853f6..ef659ec1c2 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Enable Kernel Parameter to Ignore ICMP Broadcast Echo Requests on IPv4 Interfaces'
+ 
+@@ -19,6 +19,7 @@ identifiers:
+     cce@rhel7: CCE-80165-4
+     cce@rhel8: CCE-80922-8
+     cce@rhcos4: CCE-82491-2
++    cce@sle12: CCE-83080-2 
+ 
+ references:
+     stigid@ol7: OL07-00-040630
+@@ -30,6 +31,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040630
++    stigid@sle12: SLES-12-030380  
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects/rule.yml
+index d610f022fe..f49353c25c 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable Kernel Parameter for Sending ICMP Redirects on all IPv4 Interfaces'
+ 
+@@ -19,6 +19,7 @@ identifiers:
+     cce@rhel7: CCE-80156-3
+     cce@rhel8: CCE-80918-6
+     cce@rhcos4: CCE-82484-7
++    cce@sle12: CCE-83089-3 
+ 
+ references:
+     stigid@ol7: OL07-00-040660
+@@ -31,6 +32,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040660
++    stigid@sle12: SLES-12-030420 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+index 861c3485f3..d7d5bfe607 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+@@ -32,7 +32,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040650
+-    stigid@sle12: SLES-12-030420 
++    stigid@sle12: SLES-12-030410 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward/rule.yml
+index 12d84a2604..b9f3d060d5 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,rhcos4
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,rhcos4,sle12
+ 
+ title: 'Disable Kernel Parameter for IP Forwarding on IPv4 Interfaces'
+ 
+@@ -17,6 +17,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80157-1
+     cce@rhel8: CCE-81024-2
++    cce@sle12: CCE-83088-5 
+ 
+ references:
+     stigid@ol7: OL07-00-040740
+@@ -28,6 +29,7 @@ references:
+     nist-csf: DE.CM-1,PR.DS-4,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040740
++    stigid@sle12: SLES-12-030430 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3
+     cobit5: APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS03.05,DSS05.02,DSS05.05,DSS05.07,DSS06.06
+diff --git a/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled/rule.yml b/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled/rule.yml
+index ee7140be4b..d9db321b70 100644
+--- a/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled/rule.yml
++++ b/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable DCCP Support'
+ 
+@@ -19,10 +19,12 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-82024-1
+     cce@rhel8: CCE-80833-7
++    cce@sle12: CCE-83055-4  
+ 
+ references:
+     stigid@ol7: OL07-00-020101
+     stigid@rhel7: RHEL-07-020101
++    stigid@sle12: SLES-12-030030
+     cis@rhel8: 3.3.1
+     cjis: 5.10.1
+     cui: 3.4.6
+diff --git a/linux_os/guide/system/permissions/files/dir_perms_world_writable_system_owned_group/rule.yml b/linux_os/guide/system/permissions/files/dir_perms_world_writable_system_owned_group/rule.yml
+index 1e3c60b7e3..8578172a99 100644
+--- a/linux_os/guide/system/permissions/files/dir_perms_world_writable_system_owned_group/rule.yml
++++ b/linux_os/guide/system/permissions/files/dir_perms_world_writable_system_owned_group/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Ensure All World-Writable Directories Are Group Owned by a System Account'
+ 
+@@ -22,14 +22,17 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-83923-3
++    cce@sle12: CCE-83104-0
+ 
+ references:
+     stigid@ol7: OL07-00-021030
+     disa: CCI-000366
+     nist: CM-6(a),AC-6(1)
++    nist@sle12: CM-6(b)
+     nist-csf: PR.AC-4,PR.DS-5
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-021030
++    stigid@sle12: SLES-12-010830
+     isa-62443-2013: 'SR 2.1,SR 5.2'
+     isa-62443-2009: 4.3.3.7.3
+     cobit5: APO01.06,DSS05.04,DSS05.07,DSS06.02
+@@ -41,5 +44,5 @@ ocil_clause: 'there is output'
+ ocil: |-
+     The following command will discover and print world-writable directories that
+     are not group owned by a system account, given the assumption that only system
+-    accounts have a gid lower than 500.  Run it once for each local partition <i>PART</i>:
+-    <pre>$ sudo find <i>PART</i> -xdev -type d -perm -0002 -gid +499 -print</pre>
++    accounts have a gid lower than {{{ auid }}}.  Run it once for each local partition <i>PART</i>:
++    <pre>$ sudo find <i>PART</i> -xdev -type d -perm -0002 -gid +{{{ auid - 1 }}} -print</pre>
+diff --git a/linux_os/guide/system/permissions/files/file_permissions_ungroupowned/rule.yml b/linux_os/guide/system/permissions/files/file_permissions_ungroupowned/rule.yml
+index 68fd6821b8..79594c701f 100644
+--- a/linux_os/guide/system/permissions/files/file_permissions_ungroupowned/rule.yml
++++ b/linux_os/guide/system/permissions/files/file_permissions_ungroupowned/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,wrlinux1019
+ 
+ title: 'Ensure All Files Are Owned by a Group'
+ 
+@@ -24,6 +24,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80135-7
+     cce@rhel8: CCE-83497-8
++    cce@sle12: CCE-83073-7
+ 
+ references:
+     stigid@ol7: OL07-00-020330
+@@ -40,6 +41,7 @@ references:
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.18.1.4,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.1,A.9.2.2,A.9.2.3,A.9.2.4,A.9.2.6,A.9.3.1,A.9.4.1,A.9.4.2,A.9.4.3,A.9.4.4,A.9.4.5
+     cis-csc: 1,11,12,13,14,15,16,18,3,5
+     cis@sle15: 6.1.12
++    stigid@sle12: SLES-12-010700
+ 
+ ocil_clause: 'there is output'
+ 
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid/rule.yml b/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid/rule.yml
+index dadd3fa3e9..3652cf9f2b 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid/rule.yml
++++ b/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,rhcos4
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,rhcos4,sle12
+ 
+ title: 'Add nosuid Option to /home'
+ 
+@@ -21,6 +21,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-81153-9
+     cce@rhel8: CCE-81050-7
++    cce@sle12: CCE-83100-8
+ 
+ references:
+     stigid@ol7: OL07-00-021000
+@@ -36,6 +37,7 @@ references:
+     cis-csc: 11,13,14,3,8,9
+     anssi: BP28(R12)
+     srg: SRG-OS-000368-GPOS-00154,SRG-OS-000480-GPOS-00227
++    stigid@sle12: SLES-12-010790
+ 
+ platform: machine
+ 
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions/rule.yml b/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions/rule.yml
+index e507bb4465..5f19864ded 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions/rule.yml
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,rhcos4,ubuntu1804
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,wrlinux1019,rhcos4,ubuntu1804
+ 
+ title: 'Add nosuid Option to Removable Media Partitions'
+ 
+@@ -23,6 +23,7 @@ identifiers:
+     cce@rhel7: CCE-80148-0
+     cce@rhel8: CCE-82744-4
+     cce@rhcos4: CCE-82745-1
++    cce@sle12: CCE-83101-6
+ 
+ references:
+     cis@rhel8: 1.1.19
+@@ -39,6 +40,7 @@ references:
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.11.2.6,A.11.2.9,A.12.1.2,A.12.5.1,A.12.6.2,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.14.2.2,A.14.2.3,A.14.2.4,A.6.1.2,A.6.2.1,A.6.2.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.1,A.8.2.2,A.8.2.3,A.8.3.1,A.8.3.3,A.9.1.1,A.9.1.2,A.9.2.1,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 11,12,13,14,15,16,18,3,5,8,9
+     cis@sle15: 1.1.21
++    stigid@sle12: SLES-12-010800
+ 
+ platform: machine
+ 
+diff --git a/linux_os/guide/system/permissions/permissions_local/group.yml b/linux_os/guide/system/permissions/permissions_local/group.yml
+new file mode 100644
+index 0000000000..6e13c74f51
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/group.yml
+@@ -0,0 +1,12 @@
++documentation_complete: true
++
++title: |-
++    Verify Permissions on Important Files and
++    Directories Are Configured in /etc/permissions.local
++
++description: |-
++    Permissions for many files on a system must be set
++    restrictively to ensure sensitive information is properly protected.
++    This section discusses the <tt>/etc/permissions.local</tt> file, where
++    expected permissions can be configured to be checked and fixed through
++    usage of the <tt>chkstat</tt> command.
+diff --git a/linux_os/guide/system/permissions/permissions_local/run_chkstat/rule.yml b/linux_os/guide/system/permissions/permissions_local/run_chkstat/rule.yml
+new file mode 100644
+index 0000000000..8c28313067
+--- /dev/null
++++ b/linux_os/guide/system/permissions/permissions_local/run_chkstat/rule.yml
+@@ -0,0 +1,50 @@
++documentation_complete: true
++
++prodtype: sle12
++
++title: 'OS commands and libraries must have the proper permissions to protect from unauthorized access'
++
++description: |-
++    Verify that the SUSE operating system prevents unauthorized users from
++    accessing system command and library files.
++
++    Check that all of the audit information files and folders have the correct
++    permissions with the following command:
++    <pre># sudo chkstat --warn --system</pre>
++
++    Set the correct permissions with the following command:
++
++    <pre># sudo chkstat --set --system</pre>
++
++rationale: |-
++    If the SUSE operating system were to allow any user to make changes to
++    software libraries, those changes might be implemented without undergoing
++    the appropriate testing and approvals that are part of a robust change
++    management process.
++
++    This requirement applies to SUSE operating systems with software libraries
++    that are accessible and configurable, as in the case of interpreted
++    languages. Software libraries also include privileged programs that execute
++    with escalated privileges. Only qualified and authorized individuals must
++    be allowed to obtain access to information system components to initiate
++    changes, including upgrades and modifications.
++
++severity: medium
++
++identifiers:
++    cce@sle12: CCE-83111-5
++
++references:
++    disa@sle12: CCI-001499
++    nist@sle12: CM-5(6)
++    srg@sle12: SRG-OS-000259-GPOS-00100
++    stigid@sle12: SLES-12-010880
++
++ocil: |-
++    Check that all of the audit information files and folders have the correct
++    permissions with the following command:
++    <pre># sudo chkstat --warn --system</pre>
++
++    If you get any warnings, set the correct permissions with the following command:
++
++    <pre># sudo chkstat --set --system</pre>
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/bash/shared.sh b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/bash/shared.sh
+index 9b2e235311..fbe9ddbb3e 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/bash/shared.sh
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/bash/shared.sh
+@@ -1,15 +1,24 @@
+-# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,Red Hat Virtualization 4,multi_platform_wrlinux,multi_platform_ol
++# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,Red Hat Virtualization 4,multi_platform_wrlinux,multi_platform_ol,multi_platform_sle
+ 
+ {{{ bash_package_install("aide") }}}
+ 
+ CRONTAB=/etc/crontab
+ CRONDIRS='/etc/cron.d /etc/cron.daily /etc/cron.weekly /etc/cron.monthly'
+ 
++# NOTE: on some platforms, /etc/crontab may not exist
++if [ -f /etc/crontab ]; then
++	CRONTAB_EXIST=/etc/crontab
++fi
++
+ if [ -f /var/spool/cron/root ]; then
+ 	VARSPOOL=/var/spool/cron/root
+ fi
+ 
+-if ! grep -qR '^.*\/usr\/sbin\/aide\s*\-\-check.*|.*\/bin\/mail\s*-s\s*".*"\s*root@.*$' $CRONTAB $VARSPOOL $CRONDIRS; then
++if ! grep -qR '^.*\/usr\/sbin\/aide\s*\-\-check.*|.*\/bin\/mail\s*-s\s*".*"\s*root@.*$' $CRONTAB_EXIST $VARSPOOL $CRONDIRS; then
++{{% if product == "sle12" %}}
++	echo '0 5 * * * root /usr/bin/aide  --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost' >> $CRONTAB
++{{% else %}}
+ 	echo '0 5 * * * root /usr/sbin/aide  --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost' >> $CRONTAB
++{{% endif %}}
+ fi
+ 
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/oval/shared.xml b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/oval/shared.xml
+index d6d9f2542e..7f557bd6a3 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/oval/shared.xml
+@@ -1,3 +1,9 @@
++{{% if product in ["sle12", "sle15"] %}} 
++{{% set aide_bin_path = "/usr/bin/aide" %}} 
++{{% else %}} 
++{{% set aide_bin_path = "/usr/sbin/aide" %}} 
++{{% endif %}} 
++
+ <def-group>
+   <definition class="compliance" id="aide_scan_notification" version="1">
+     {{{ oval_metadata("AIDE should notify appropriate personnel of the details
+@@ -17,7 +23,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object comment="notify personnel when aide completes" id="object_test_aide_scan_notification" version="1">
+     <ind:filepath>/etc/crontab</ind:filepath>
+-    <ind:pattern operation="pattern match">^.*/usr/sbin/aide[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
++    <ind:pattern operation="pattern match">^.*{{{ aide_bin_path }}}[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
+     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -26,7 +32,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object comment="notify personnel when aide completes" id="object_aide_var_cron_notification" version="1">
+     <ind:filepath>/var/spool/cron/root</ind:filepath>
+-    <ind:pattern operation="pattern match">^.*/usr/sbin/aide[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
++    <ind:pattern operation="pattern match">^.*{{{ aide_bin_path }}}[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
+     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -36,7 +42,7 @@
+   <ind:textfilecontent54_object comment="notify personnel when aide completes in cron.(d|daily|weekly|monthly)" id="object_aide_crontabs_notification" version="1">
+     <ind:path operation="pattern match">^/etc/cron.(d|daily|weekly|monthly)$</ind:path>
+     <ind:filename operation="pattern match">^.*$</ind:filename>
+-    <ind:pattern operation="pattern match">^.*/usr/sbin/aide[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
++    <ind:pattern operation="pattern match">^.*{{{ aide_bin_path }}}[\s]*\-\-check.*\|.*/bin/mail[\s]*-s[\s]*".*"[\s]*.+@.+$</ind:pattern>
+     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+   </ind:textfilecontent54_object>
+    
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/rule.yml b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/rule.yml
+index 3ed6a7bb37..cc696141f6 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/rule.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_scan_notification/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Configure Notification of Post-AIDE Scan Details'
+ 
+@@ -30,6 +30,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80374-2
+     cce@rhel8: CCE-82891-3
++    cce@sle12: CCE-83048-9
+ 
+ references:
+     stigid@ol7: OL07-00-020040
+@@ -44,6 +45,11 @@ references:
+     cobit5: BAI01.06,BAI06.01,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS03.05,DSS05.02,DSS05.05,DSS05.07
+     iso27001-2013: A.12.1.2,A.12.4.1,A.12.5.1,A.12.6.2,A.14.2.2,A.14.2.3,A.14.2.4,A.14.2.7,A.15.2.1
+     cis-csc: 1,11,12,13,15,16,2,3,5,7,8,9
++    disa@sle12: CCI-002702 
++    nist@sle12: SI-6d
++    stigid@sle12: SLES-12-010510
++    srg@sle12: SRG-OS-000447-GPOS-00201
++    disa@sle12:  CCI-002702 
+ 
+ ocil_clause: 'AIDE has not been configured or has not been configured to notify personnel of scan details'
+ 
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml b/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
+index 23e939bbec..abf13a274a 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
+@@ -14,7 +14,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27096-7
+     cce@rhel8: CCE-80844-4
+-    cce@sle12: CCE-83048-9
++    cce@sle12: CCE-83067-9
+ 
+ references:
+     cis@rhel8: 1.4.1
+diff --git a/shared/templates/audit_rules_dac_modification/ansible.template b/shared/templates/audit_rules_dac_modification/ansible.template
+index 49e4258cd2..70101ca777 100644
+--- a/shared/templates/audit_rules_dac_modification/ansible.template
++++ b/shared/templates/audit_rules_dac_modification/ansible.template
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = true
+ # strategy = restrict
+ # complexity = low
+diff --git a/shared/templates/audit_rules_login_events/ansible.template b/shared/templates/audit_rules_login_events/ansible.template
+index e36d4b3371..4b32771c3f 100644
+--- a/shared/templates/audit_rules_login_events/ansible.template
++++ b/shared/templates/audit_rules_login_events/ansible.template
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = true
+ # strategy = restrict
+ # complexity = low
+diff --git a/shared/templates/audit_rules_privileged_commands/ansible.template b/shared/templates/audit_rules_privileged_commands/ansible.template
+index a992b47960..1c5a8b6b2a 100644
+--- a/shared/templates/audit_rules_privileged_commands/ansible.template
++++ b/shared/templates/audit_rules_privileged_commands/ansible.template
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = false
+ # strategy = restrict
+ # complexity = low
+diff --git a/shared/templates/audit_rules_unsuccessful_file_modification/ansible.template b/shared/templates/audit_rules_unsuccessful_file_modification/ansible.template
+index 3737145add..8e8e003a5b 100644
+--- a/shared/templates/audit_rules_unsuccessful_file_modification/ansible.template
++++ b/shared/templates/audit_rules_unsuccessful_file_modification/ansible.template
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = true
+ # strategy = restrict
+ # complexity = low
+diff --git a/shared/templates/audit_rules_usergroup_modification/ansible.template b/shared/templates/audit_rules_usergroup_modification/ansible.template
+index 2fab63ae44..ea9738ecb2 100644
+--- a/shared/templates/audit_rules_usergroup_modification/ansible.template
++++ b/shared/templates/audit_rules_usergroup_modification/ansible.template
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = true
+ # strategy = restrict
+ # complexity = low
+diff --git a/sle12/profiles/stig.profile b/sle12/profiles/stig.profile
+index 15c4f70336..4c8b361226 100644
+--- a/sle12/profiles/stig.profile
++++ b/sle12/profiles/stig.profile
+@@ -7,7 +7,9 @@ description: |-
+     DISA STIG for SUSE Linux Enterprise 12 V1R2.
+ 
+ selections:
++    - sshd_approved_macs=stig
+     - var_accounts_fail_delay=4
++    - var_removable_partition=dev_cdrom
+     - account_disable_post_pw_expiration
+     - account_temp_expire_date
+     - accounts_have_homedir_login_defs
+@@ -19,6 +21,22 @@ selections:
+     - accounts_password_set_max_life_existing
+     - accounts_password_set_min_life_existing
+     - accounts_umask_etc_login_defs
++    - accounts_user_dot_no_world_writable_programs
++    - accounts_user_home_paths_only
++    - accounts_user_interactive_home_directory_defined
++    - accounts_user_interactive_home_directory_exists
++    - aide_scan_notification
++    - audit_rules_dac_modification_chmod
++    - audit_rules_login_events_lastlog
++    - audit_rules_login_events_tallylog
++    - audit_rules_privileged_commands_chage
++    - audit_rules_privileged_commands_unix_chkpwd
++    - audit_rules_unsuccessful_file_modification_creat
++    - audit_rules_unsuccessful_file_modification_ftruncate
++    - audit_rules_unsuccessful_file_modification_open_by_handle_at
++    - audit_rules_unsuccessful_file_modification_openat
++    - audit_rules_unsuccessful_file_modification_truncate
++    - audit_rules_usergroup_modification_gshadow
+     - auditd_audispd_encrypt_sent_records
+     - auditd_data_disk_full_action
+     - auditd_data_retention_action_mail_acct
+@@ -26,17 +44,27 @@ selections:
+     - banner_etc_issue
+     - banner_etc_motd
+     - dir_perms_world_writable_sticky_bits
++    - dir_perms_world_writable_system_owned_group
+     - disable_ctrlaltdel_reboot
+     - encrypt_partitions
+     - ensure_gpgcheck_globally_activated
++    - file_groupownership_home_directories
++    - file_permission_user_init_files
++    - file_permissions_home_directories
+     - file_permissions_sshd_private_key
+     - file_permissions_sshd_pub_key
++    - file_permissions_ungroupowned
+     - ftp_present_banner
+     - gnome_gdm_disable_automatic_login
+     - grub2_password
+     - grub2_uefi_password
+     - installed_OS_is_vendor_supported
++    - kernel_module_dccp_disabled
+     - kernel_module_usb-storage_disabled
++    - mount_option_home_nosuid
++    - mount_option_noexec_remote_filesystems
++    - mount_option_nosuid_remote_filesystems
++    - mount_option_nosuid_removable_partitions
+     - no_empty_passwords
+     - no_files_unowned_by_user
+     - no_host_based_files
+@@ -47,11 +75,14 @@ selections:
+     - package_audit_installed
+     - package_telnet-server_removed
+     - postfix_client_configure_mail_alias
++    - run_chkstat
+     - security_patches_up_to_date
+     - service_auditd_enabled
++    - service_kdump_disabled
+     - set_password_hashing_algorithm_logindefs
+     - sshd_disable_compression
+     - sshd_disable_empty_passwords
++    - sshd_disable_root_login
+     - sshd_disable_user_known_hosts
+     - sshd_do_not_permit_user_env
+     - sshd_enable_strictmodes
+@@ -61,10 +92,18 @@ selections:
+     - sshd_set_idle_timeout
+     - sshd_set_keepalive
+     - sshd_set_loglevel_verbose
++    - sshd_use_approved_macs
+     - sshd_use_priv_separation
+     - sudo_remove_no_authenticate
+     - sudo_remove_nopasswd
++    - sysctl_net_ipv4_conf_all_accept_redirects
+     - sysctl_net_ipv4_conf_all_accept_source_route
++    - sysctl_net_ipv4_conf_all_send_redirects
++    - sysctl_net_ipv4_conf_default_accept_redirects
+     - sysctl_net_ipv4_conf_default_accept_source_route
+     - sysctl_net_ipv4_conf_default_send_redirects
++    - sysctl_net_ipv4_icmp_echo_ignore_broadcasts
++    - sysctl_net_ipv4_ip_forward
+     - sysctl_net_ipv6_conf_all_accept_source_route
++    - sysctl_net_ipv6_conf_default_accept_source_route
++

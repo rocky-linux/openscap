@@ -1,0 +1,843 @@
+From c5f46d9166d0629740deb3cc5c45d3925345df09 Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Mon, 11 Jan 2021 12:55:43 -0800
+Subject: [PATCH] Enable checks and remediations for the following SLES-12
+ STIGs:
+
+ - SLES-12-010030 'banner_etc_issue'
+ - SLES-12-010120 'accounts_max_concurrent_login_sessions'
+ - SLES-12-010450 'encrypt_partitions'
+ - SLES-12-010460 'dir_perms_world_writable_sticky_bits'
+ - SLES-12-010500 'package_aide_installed'
+ - SLES-12-010550 'ensure_gpgcheck_globally_activated'
+ - SLES-12-010580 'kernel_module_usb-storage_disabled'
+ - SLES-12-010599 'package_MFEhiplsm_installed'
+ - SLES-12-010690 'no_files_unowned_by_user'
+ - SLES-12-030000 'package_telnet-server_removed'
+ - SLES-12-030010 'ftp_present_banner'
+ - SLES-12-030050 'sshd_enable_warning_banner'
+ - SLES-12-030110 'sshd_set_loglevel_verbose'
+ - SLES-12-030130 'sshd_print_last_log'
+ - SLES-12-030210 'file_permissions_sshd_pub_key'
+ - SLES-12-030220 'file_permissions_sshd_private_key'
+ - SLES-12-030230 'sshd_enable_strictmodes'
+ - SLES-12-030240 'sshd_use_priv_separation'
+ - SLES-12-030250 'sshd_disable_compression'
+ - SLES-12-030340 'auditd_audispd_encrypt_sent_records'
+ - SLES-12-030360 'sysctl_net_ipv4_conf_all_accept_source_route'
+ - SLES-12-030361 'sysctl_net_ipv6_conf_all_accept_source_route'
+ - SLES-12-030370 'sysctl_net_ipv4_conf_default_accept_source_route'
+ - SLES-12-030420 'sysctl_net_ipv4_conf_default_send_redirects'
+---
+ .../ftp_present_banner/rule.yml               |  1 +
+ .../package_telnet-server_removed/rule.yml    |  1 +
+ .../rule.yml                                  |  1 +
+ .../file_permissions_sshd_pub_key/rule.yml    |  1 +
+ .../ansible/shared.yml                        |  2 +-
+ .../sshd_disable_compression/rule.yml         |  1 +
+ .../sshd_enable_strictmodes/rule.yml          |  1 +
+ .../sshd_enable_warning_banner/rule.yml       |  1 +
+ .../ssh_server/sshd_print_last_log/rule.yml   |  1 +
+ .../sshd_set_loglevel_verbose/rule.yml        |  1 +
+ .../sshd_use_priv_separation/rule.yml         |  1 +
+ .../banner_etc_issue/ansible/shared.yml       |  2 +-
+ .../banner_etc_issue/rule.yml                 |  4 ++-
+ .../ansible/shared.yml                        |  2 +-
+ .../rule.yml                                  |  2 ++
+ .../ansible/shared.yml                        |  2 +-
+ .../rule.yml                                  |  4 ++-
+ .../rule.yml                                  |  4 ++-
+ .../rule.yml                                  |  4 ++-
+ .../rule.yml                                  |  4 ++-
+ .../rule.yml                                  |  4 ++-
+ .../bash/shared.sh                            |  2 +-
+ .../rule.yml                                  |  2 ++
+ .../files/no_files_unowned_by_user/rule.yml   |  4 ++-
+ .../rule.yml                                  |  4 ++-
+ .../encrypt_partitions/rule.yml               |  8 +++++-
+ .../package_MFEhiplsm_installed/rule.yml      |  2 ++
+ .../aide/package_aide_installed/rule.yml      |  3 +++
+ .../ansible/sle12.yml                         | 13 ++++++++++
+ .../rule.yml                                  |  8 +++++-
+ shared/applicability/general.yml              |  4 +++
+ .../oval/installed_env_has_zypper_package.xml | 25 +++++++++++++++++++
+ .../kernel_module_disabled/ansible.template   | 12 +++++++--
+ .../kernel_module_disabled/bash.template      |  9 ++++++-
+ .../kernel_module_disabled/oval.template      |  5 ++++
+ sle12/product.yml                             |  1 +
+ sle12/profiles/stig.profile                   | 25 +++++++++++++++++++
+ 37 files changed, 153 insertions(+), 18 deletions(-)
+ create mode 100644 linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/sle12.yml
+ create mode 100644 shared/checks/oval/installed_env_has_zypper_package.xml
+
+diff --git a/linux_os/guide/services/ftp/ftp_configure_vsftpd/ftp_present_banner/rule.yml b/linux_os/guide/services/ftp/ftp_configure_vsftpd/ftp_present_banner/rule.yml
+index 35ba09b0d0..3590a085b6 100644
+--- a/linux_os/guide/services/ftp/ftp_configure_vsftpd/ftp_present_banner/rule.yml
++++ b/linux_os/guide/services/ftp/ftp_configure_vsftpd/ftp_present_banner/rule.yml
+@@ -19,6 +19,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80248-8
++    cce@sle12: CCE-83059-6
+ 
+ references:
+     stigid@sle12: SLES-12-030010
+diff --git a/linux_os/guide/services/obsolete/telnet/package_telnet-server_removed/rule.yml b/linux_os/guide/services/obsolete/telnet/package_telnet-server_removed/rule.yml
+index 317eecdc3d..619b3f0b7d 100644
+--- a/linux_os/guide/services/obsolete/telnet/package_telnet-server_removed/rule.yml
++++ b/linux_os/guide/services/obsolete/telnet/package_telnet-server_removed/rule.yml
+@@ -27,6 +27,7 @@ severity: high
+ identifiers:
+     cce@rhel7: CCE-27165-0
+     cce@rhel8: CCE-82182-7
++    cce@sle12: CCE-83084-4
+ 
+ references:
+     stigid@ol7: OL07-00-021710
+diff --git a/linux_os/guide/services/ssh/file_permissions_sshd_private_key/rule.yml b/linux_os/guide/services/ssh/file_permissions_sshd_private_key/rule.yml
+index 2e52219ece..d460411667 100644
+--- a/linux_os/guide/services/ssh/file_permissions_sshd_private_key/rule.yml
++++ b/linux_os/guide/services/ssh/file_permissions_sshd_private_key/rule.yml
+@@ -18,6 +18,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27485-2
+     cce@rhel8: CCE-82424-3
++    cce@sle12: CCE-83058-8
+ 
+ references:
+     stigid@ol7: OL07-00-040420
+diff --git a/linux_os/guide/services/ssh/file_permissions_sshd_pub_key/rule.yml b/linux_os/guide/services/ssh/file_permissions_sshd_pub_key/rule.yml
+index e59ddc0770..b9e07d71af 100644
+--- a/linux_os/guide/services/ssh/file_permissions_sshd_pub_key/rule.yml
++++ b/linux_os/guide/services/ssh/file_permissions_sshd_pub_key/rule.yml
+@@ -13,6 +13,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27311-0
+     cce@rhel8: CCE-82428-4
++    cce@sle12: CCE-83057-0 
+ 
+ references:
+     stigid@ol7: OL07-00-040410
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/ansible/shared.yml b/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/ansible/shared.yml
+index e07e436d60..f8d422c6c4 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/ansible/shared.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle
+ # reboot = false
+ # strategy = restrict
+ # complexity = low
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/rule.yml
+index fe7e67c1c2..f8eec6a074 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_disable_compression/rule.yml
+@@ -21,6 +21,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80224-9
+     cce@rhel8: CCE-80895-6
++    cce@sle12: CCE-83062-0
+ 
+ references:
+     stigid@ol7: OL07-00-040470
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_enable_strictmodes/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_enable_strictmodes/rule.yml
+index 22b98c71a2..601f6a0ca2 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_enable_strictmodes/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_enable_strictmodes/rule.yml
+@@ -18,6 +18,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80222-3
+     cce@rhel8: CCE-80904-6
++    cce@sle12: CCE-83060-4  
+ 
+ references:
+     stigid@ol7: OL07-00-040450
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_enable_warning_banner/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_enable_warning_banner/rule.yml
+index 2199d61ca9..c93ef6340f 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_enable_warning_banner/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_enable_warning_banner/rule.yml
+@@ -20,6 +20,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27314-4
+     cce@rhel8: CCE-80905-3
++    cce@sle12: CCE-83066-1
+ 
+ references:
+     stigid@ol7: OL07-00-040170
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_print_last_log/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_print_last_log/rule.yml
+index a0b8ed38ae..0ce5da30b2 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_print_last_log/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_print_last_log/rule.yml
+@@ -17,6 +17,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80225-6
+     cce@rhel8: CCE-82281-7
++    cce@sle12: CCE-83083-6
+ 
+ references:
+     stigid@ol7: OL07-00-040360
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_set_loglevel_verbose/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_set_loglevel_verbose/rule.yml
+index 28ce48de8e..2180398855 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_set_loglevel_verbose/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_set_loglevel_verbose/rule.yml
+@@ -22,6 +22,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-82419-3
+     cce@rhel8: CCE-82420-1
++    cce@sle12: CCE-83077-8
+ 
+ references:
+     srg: SRG-OS-000032-GPOS-00013
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_priv_separation/rule.yml b/linux_os/guide/services/ssh/ssh_server/sshd_use_priv_separation/rule.yml
+index 14d1acfd22..d65ddb6cd1 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_priv_separation/rule.yml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_priv_separation/rule.yml
+@@ -18,6 +18,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80223-1
+     cce@rhel8: CCE-80908-7
++    cce@sle12: CCE-83061-2 
+ 
+ references:
+     stigid@ol7: OL07-00-040460
+diff --git a/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/ansible/shared.yml
+index f3a0c85ea5..ff6b6eab42 100644
+--- a/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_sle
+ # reboot = false
+ # strategy = unknown
+ # complexity = low
+diff --git a/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/rule.yml b/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/rule.yml
+index a86ede70f8..637d8ee528 100644
+--- a/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-banners/banner_etc_issue/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Modify the System Login Banner'
+ 
+@@ -52,6 +52,7 @@ identifiers:
+     cce@rhel7: CCE-27303-7
+     cce@rhel8: CCE-80763-6
+     cce@rhcos4: CCE-82555-4
++    cce@sle12: CCE-83054-7
+ 
+ references:
+     stigid@ol7: OL07-00-010050
+@@ -64,6 +65,7 @@ references:
+     srg: SRG-OS-000023-GPOS-00006,SRG-OS-000024-GPOS-00007
+     vmmsrg: SRG-OS-000023-VMM-000060,SRG-OS-000024-VMM-000070
+     stigid@rhel7: RHEL-07-010050
++    stigid@sle12: SLES-12-010030
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.2,SR 1.5,SR 1.7,SR 1.8,SR 1.9'
+     isa-62443-2009: 4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9
+     cobit5: DSS05.04,DSS05.10,DSS06.10
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/ansible/shared.yml
+index 9d50a9d20c..536ac29569 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ol,multi_platform_rhel
++# platform = Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ol,multi_platform_rhel,multi_platform_sle
+ # reboot = false
+ # strategy = restrict
+ # complexity = low
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
+index e598f4e8cb..32412aa482 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
+@@ -20,6 +20,7 @@ severity: low
+ identifiers:
+     cce@rhel7: CCE-82041-5
+     cce@rhel8: CCE-80955-8
++    cce@sle12: CCE-83065-3
+ 
+ references:
+     stigid@ol7: OL07-00-040000
+@@ -30,6 +31,7 @@ references:
+     srg: SRG-OS-000027-GPOS-00008
+     vmmsrg: SRG-OS-000027-VMM-000080
+     stigid@rhel7: RHEL-07-040000
++    stigid@sle12: SLES-12-010120
+     isa-62443-2013: 'SR 3.1,SR 3.8'
+     isa-62443-2009: 4.3.3.4
+     cobit5: DSS01.05,DSS05.02
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/ansible/shared.yml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/ansible/shared.yml
+index 23bcdf8641..007b23ba24 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = Oracle Linux 7,Red Hat Enterprise Linux 7,Red Hat Virtualization 4
++# platform = Oracle Linux 7,Red Hat Enterprise Linux 7,Red Hat Virtualization 4,multi_platform_sle
+ # reboot = false
+ # complexity = low
+ # disruption = low
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/rule.yml b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/rule.yml
+index 4c27eb11fd..1943a00fb2 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/rule.yml
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Encrypt Audit Records Sent With audispd Plugin'
+ 
+@@ -26,6 +26,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80540-8
+     cce@rhel8: CCE-80926-9
++    cce@sle12: CCE-83063-8 
+ 
+ references:
+     stigid@ol7: OL07-00-030310
+@@ -33,6 +34,7 @@ references:
+     nist: AU-9(3),CM-6(a)
+     srg: SRG-OS-000342-GPOS-00133,SRG-OS-000479-GPOS-00224
+     stigid@rhel7: RHEL-07-030310
++    stigid@sle12: SLES-12-030340 
+     ospp: FAU_GEN.1.1.c
+ 
+ ocil_clause: 'audispd is not encrypting audit records when sent over the network'
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_all_accept_source_route/rule.yml b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_all_accept_source_route/rule.yml
+index a3f78cb910..8767a5226f 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_all_accept_source_route/rule.yml
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/sysctl_net_ipv6_conf_all_accept_source_route/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019
++prodtype: rhcos4,ol7,ol8,rhel7,rhel8,rhv4,wrlinux1019,sle12
+ 
+ title: 'Disable Kernel Parameter for Accepting Source-Routed Packets on all IPv6 Interfaces'
+ 
+@@ -22,6 +22,7 @@ identifiers:
+     cce@rhel7: CCE-80179-5
+     cce@rhel8: CCE-81013-5
+     cce@rhcos4: CCE-82480-5
++    cce@sle12: CCE-83078-6 
+ 
+ references:
+     stigid@ol7: OL07-00-040830
+@@ -33,6 +34,7 @@ references:
+     nist-csf: DE.AE-1,ID.AM-3,PR.AC-5,PR.DS-5,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040830
++    stigid@sle12: SLES-12-030361  
+     isa-62443-2013: 'SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 7.1,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.4.3.3
+     cobit5: APO01.06,APO13.01,DSS01.05,DSS03.01,DSS05.02,DSS05.04,DSS05.07,DSS06.02
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route/rule.yml
+index 0cd3dbc143..7bc4e3b9b7 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable Kernel Parameter for Accepting Source-Routed Packets on all IPv4 Interfaces'
+ 
+@@ -22,6 +22,7 @@ identifiers:
+     cce@rhel7: CCE-27434-0
+     cce@rhel8: CCE-81011-9
+     cce@rhcos4: CCE-82478-9
++    cce@sle12: CCE-83064-6 
+ 
+ references:
+     stigid@ol7: OL07-00-040610
+@@ -33,6 +34,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040610
++    stigid@sle12: SLES-12-030360
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route/rule.yml
+index c48ec8de3d..f7ee2e9818 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable Kernel Parameter for Accepting Source-Routed Packets on IPv4 Interfaces by Default'
+ 
+@@ -22,6 +22,7 @@ identifiers:
+     cce@rhel7: CCE-80162-1
+     cce@rhel8: CCE-80920-2
+     cce@rhcos4: CCE-82479-7
++    cce@sle12: CCE-83079-4  
+ 
+ references:
+     stigid@ol7: OL07-00-040620
+@@ -34,6 +35,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040620
++    stigid@sle12: SLES-12-030370 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+index ddf6b07758..861c3485f3 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019,sle12
+ 
+ title: 'Disable Kernel Parameter for Sending ICMP Redirects on all IPv4 Interfaces by Default'
+ 
+@@ -19,6 +19,7 @@ identifiers:
+     cce@rhel7: CCE-80999-6
+     cce@rhel8: CCE-80921-0
+     cce@rhcos4: CCE-82485-4
++    cce@sle12: CCE-83086-9 
+ 
+ references:
+     stigid@ol7: OL07-00-040650
+@@ -31,6 +32,7 @@ references:
+     nist-csf: DE.AE-1,DE.CM-1,ID.AM-3,PR.AC-5,PR.DS-4,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: RHEL-07-040650
++    stigid@sle12: SLES-12-030420 
+     isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 3.1,SR 3.5,SR 3.8,SR 4.1,SR 4.3,SR 5.1,SR 5.2,SR 5.3,SR 6.2,SR 7.1,SR 7.2,SR 7.6'
+     isa-62443-2009: 4.2.3.4,4.3.3.4,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.4.3.3
+     cobit5: APO01.06,APO13.01,BAI04.04,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS01.05,DSS03.01,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.02,DSS06.06
+diff --git a/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/bash/shared.sh b/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/bash/shared.sh
+index 0a829df187..e49942d1cc 100644
+--- a/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/bash/shared.sh
++++ b/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/bash/shared.sh
+@@ -1,4 +1,4 @@
+-# platform = Red Hat Virtualization 4,multi_platform_rhel
++# platform = Red Hat Virtualization 4,multi_platform_rhel,multi_platform_sle
+ df --local -P | awk '{if (NR!=1) print $6}' \
+ | xargs -I '{}' find '{}' -xdev -type d \
+ \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null \
+diff --git a/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/rule.yml b/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/rule.yml
+index d04df8df86..5bb3cf3713 100644
+--- a/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/rule.yml
++++ b/linux_os/guide/system/permissions/files/dir_perms_world_writable_sticky_bits/rule.yml
+@@ -34,6 +34,7 @@ identifiers:
+     cce@rhel7: CCE-80130-8
+     cce@rhel8: CCE-80783-4
+     cce@rhcos4: CCE-82753-5
++    cce@sle12: CCE-83047-1
+ 
+ references:
+     cis@rhe8: 1.1.21
+@@ -46,6 +47,7 @@ references:
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 12,13,14,15,16,18,3,5
+     cis@sle15: 1.1.22
++    stigid@sle12: SLES-12-010460 
+ 
+ ocil_clause: 'any world-writable directories are missing the sticky bit'
+ 
+diff --git a/linux_os/guide/system/permissions/files/no_files_unowned_by_user/rule.yml b/linux_os/guide/system/permissions/files/no_files_unowned_by_user/rule.yml
+index e664cf9215..faab0b8822 100644
+--- a/linux_os/guide/system/permissions/files/no_files_unowned_by_user/rule.yml
++++ b/linux_os/guide/system/permissions/files/no_files_unowned_by_user/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,wrlinux1019
+ 
+ title: 'Ensure All Files Are Owned by a User'
+ 
+@@ -24,6 +24,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-80134-0
+     cce@rhel8: CCE-83499-4
++    cce@sle12: CCE-83072-9
+ 
+ references:
+     stigid@ol7: OL07-00-020320
+@@ -40,6 +41,7 @@ references:
+     iso27001-2013: A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.12.1.2,A.12.5.1,A.12.6.2,A.13.1.1,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.14.2.2,A.14.2.3,A.14.2.4,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.1,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5
+     cis-csc: 11,12,13,14,15,16,18,3,5,9
+     cis@sle15: 6.1.11
++    stigid@sle12: SLES-12-010690
+ 
+ ocil_clause: 'files exist that are not owned by a valid user'
+ 
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml b/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml
+index c78b570efb..24e77cc74e 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle15,wrlinux1019
++prodtype: fedora,rhcos4,ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,wrlinux1019
+ 
+ title: 'Disable Modprobe Loading of USB Storage Driver'
+ 
+@@ -22,6 +22,7 @@ identifiers:
+     cce@rhel7: CCE-27277-3
+     cce@rhel8: CCE-80835-2
+     cce@rhcos4: CCE-82719-6
++    cce@sle12: CCE-83069-5
+ 
+ references:
+     stigid@ol7: OL07-00-020100
+@@ -39,6 +40,7 @@ references:
+     cis-csc: 1,12,15,16,5
+     cis@rhel8: 1.1.23
+     cis@sle15: 1.1.3
++    stigid@sle12: SLES-12-010580
+ 
+ {{{ complete_ocil_entry_module_disable(module="usb-storage") }}}
+ 
+diff --git a/linux_os/guide/system/software/disk_partitioning/encrypt_partitions/rule.yml b/linux_os/guide/system/software/disk_partitioning/encrypt_partitions/rule.yml
+index 80d1856778..fe370a4323 100644
+--- a/linux_os/guide/system/software/disk_partitioning/encrypt_partitions/rule.yml
++++ b/linux_os/guide/system/software/disk_partitioning/encrypt_partitions/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: ol7,ol8,rhel7,rhel8,rhv4,rhcos4
++prodtype: ol7,ol8,rhel7,rhel8,rhv4,rhcos4,sle12
+ 
+ title: 'Encrypt Partitions'
+ 
+@@ -14,6 +14,7 @@ description: |-
+     option is selected the system will prompt for a passphrase to use in
+     decrypting the partition. The passphrase will subsequently need to be entered manually
+     every time the system boots.
++    {{% if product != "sle12" %}}
+     <br /><br />
+     For automated/unattended installations, it is possible to use Kickstart by adding
+     the <tt>--encrypted</tt> and <tt>--passphrase=</tt> options to the definition of each partition to be
+@@ -26,11 +27,14 @@ description: |-
+     <br /><br />
+     By default, the <tt>Anaconda</tt> installer uses <tt>aes-xts-plain64</tt> cipher
+     with a minimum <tt>512</tt> bit key size which should be compatible with FIPS enabled.
++    {{% endif %}}
+     <br /><br />
+     Detailed information on encrypting partitions using LUKS or LUKS ciphers can be found on
+     the {{{ full_name }}} Documentation web site:<br />
+     {{% if product in ["ol7", "ol8"] %}}
+         {{{ weblink(link="https://docs.oracle.com/cd/E52668_01/E54670/html/ol7-encrypt-sec.html") }}}.
++    {{% elif product == "sle12" %}}
++        {{{ weblink(link="https://www.suse.com/documentation/sled-12/book_security/data/sec_security_cryptofs_y2.html") }}}
+     {{% else %}}
+         {{{ weblink(link="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Encryption.html") }}}.
+     {{% endif %}}
+@@ -45,6 +49,7 @@ severity: high
+ identifiers:
+     cce@rhel7: CCE-27128-8
+     cce@rhel8: CCE-80789-1
++    cce@sle12: CCE-83046-3
+ 
+ references:
+     cui: 3.13.16
+@@ -58,6 +63,7 @@ references:
+     isa-62443-2013: 'SR 3.4,SR 4.1,SR 5.2'
+     cobit5: APO01.06,BAI02.01,BAI06.01,DSS04.07,DSS05.03,DSS05.04,DSS05.07,DSS06.02,DSS06.06
+     cis-csc: 13,14
++    stigid@sle12: SLES-12-010450
+ 
+ ocil_clause: 'partitions do not have a type of crypto_LUKS'
+ 
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_hbss_software/package_MFEhiplsm_installed/rule.yml b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_hbss_software/package_MFEhiplsm_installed/rule.yml
+index f96cfc925b..c0bf1ee908 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_hbss_software/package_MFEhiplsm_installed/rule.yml
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_hbss_software/package_MFEhiplsm_installed/rule.yml
+@@ -18,6 +18,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel7: CCE-80368-4
++    cce@sle12: CCE-83071-1
+ 
+ references:
+     disa: CCI-000366,CCI-001263
+@@ -31,6 +32,7 @@ references:
+     iso27001-2013: 'A.10.1.1,A.11.1.4,A.11.1.5,A.11.2.1,A.12.1.1,A.12.1.2,A.12.4.1,A.12.4.3,A.12.5.1,A.12.6.1,A.12.6.2,A.13.1.1,A.13.1.2,A.13.1.3,A.13.2.1,A.13.2.3,A.13.2.4,A.14.1.2,A.14.1.3,A.14.2.7,A.14.2.8,A.15.2.1,A.16.1.1,A.16.1.2,A.16.1.3,A.16.1.4,A.16.1.5,A.16.1.6,A.16.1.7,A.18.1.4,A.18.2.2,A.18.2.3,A.6.1.2,A.7.1.1,A.7.1.2,A.7.3.1,A.8.2.2,A.8.2.3,A.9.1.1,A.9.1.2,A.9.2.3,A.9.4.1,A.9.4.4,A.9.4.5,Clause 16.1.2,Clause 7.4'
+     cis-csc: 1,11,12,13,14,15,16,18,19,2,3,4,5,6,7,8,9
+     stigid@rhel7: RHEL-07-020019
++    stigid@sle12: SLES-12-010599 
+ 
+ ocil_clause: 'the HBSS HIPS module is not installed'
+ 
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml b/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
+index 699992b48c..23e939bbec 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/package_aide_installed/rule.yml
+@@ -14,6 +14,7 @@ severity: medium
+ identifiers:
+     cce@rhel7: CCE-27096-7
+     cce@rhel8: CCE-80844-4
++    cce@sle12: CCE-83048-9
+ 
+ references:
+     cis@rhel8: 1.4.1
+@@ -30,6 +31,8 @@ references:
+     srg: SRG-OS-000363-GPOS-00150
+     cis@sle15: 1.4.1
+     ism: 1034,1288,1341,1417
++    stigid@sle12: SLES-12-010500
++    disa@sle12: CCI-002699
+ 
+ ocil_clause: 'the package is not installed'
+ 
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/sle12.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/sle12.yml
+new file mode 100644
+index 0000000000..6fca48166a
+--- /dev/null
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/sle12.yml
+@@ -0,0 +1,13 @@
++# platform = multi_platform_sle
++# reboot = false
++# strategy = unknown
++# complexity = low
++# disruption = medium
++- name: Ensure GPG check is globally activated (zypper)
++  ini_file:
++    dest: /etc/zypp/zypp.conf
++    section: main
++    option: gpgcheck
++    value: 1
++    no_extra_spaces: yes
++    create: False
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
+index 24cef5499c..1f86aff1e9 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle15
++prodtype: fedora,ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15
+ 
+ title: 'Ensure gpgcheck Enabled In Main {{{ pkg_manager }}} Configuration'
+ 
+@@ -33,6 +33,7 @@ severity: high
+ identifiers:
+     cce@rhel7: CCE-26989-4
+     cce@rhel8: CCE-80790-9
++    cce@sle12: CCE-83068-7
+ 
+ references:
+     stigid@ol7: OL07-00-020050
+@@ -54,6 +55,7 @@ references:
+     iso27001-2013: A.11.2.4,A.12.1.2,A.12.2.1,A.12.5.1,A.12.6.2,A.14.1.2,A.14.1.3,A.14.2.2,A.14.2.3,A.14.2.4
+     cis-csc: 11,2,3,9
+     anssi: BP28(R15)
++    stigid@sle12: SLES-12-010550
+ 
+ ocil_clause: 'GPG checking is not enabled'
+ 
+@@ -66,4 +68,8 @@ ocil: |-
+     <tt>gpgcheck</tt> line or a setting of <tt>0</tt> indicates that it is
+     disabled.
+ 
++{{% if product == 'sle12' %}}
++platform: zypper
++{{% else %}}
+ platform: yum
++{{% endif %}}
+diff --git a/shared/applicability/general.yml b/shared/applicability/general.yml
+index a6581fd713..7382b7dd30 100644
+--- a/shared/applicability/general.yml
++++ b/shared/applicability/general.yml
+@@ -74,3 +74,7 @@ cpes:
+       title: "Package yum is installed"
+       check_id: installed_env_has_yum_package
+ 
++  - zypper:
++      name: "cpe:/a:zypper"
++      title: "Package zypper is installed"
++      check_id: installed_env_has_zypper_package
+diff --git a/shared/checks/oval/installed_env_has_zypper_package.xml b/shared/checks/oval/installed_env_has_zypper_package.xml
+new file mode 100644
+index 0000000000..cf14e6af3c
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_zypper_package.xml
+@@ -0,0 +1,25 @@
++<def-group>
++  <definition class="inventory"
++  id="installed_env_has_zypper_package" version="1">
++    <metadata>
++      <title>Package zypper is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_sle</platform>
++      </affected>
++      <description>Checks if package zypper is installed.</description>
++      <reference ref_id="cpe:/a:zypper" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package zypper is installed" test_ref="test_env_has_zypper_installed" />
++    </criteria>
++  </definition>
++
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_zypper_installed" version="1"
++  comment="system has package zypper installed">
++    <linux:object object_ref="obj_env_has_zypper_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_zypper_installed" version="1">
++    <linux:name>zypper</linux:name>
++  </linux:rpminfo_object>
++</def-group>
+diff --git a/shared/templates/kernel_module_disabled/ansible.template b/shared/templates/kernel_module_disabled/ansible.template
+index 47deee6e54..c4a83ad325 100644
+--- a/shared/templates/kernel_module_disabled/ansible.template
++++ b/shared/templates/kernel_module_disabled/ansible.template
+@@ -1,12 +1,20 @@
+-# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu
++# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu,multi_platform_sle
+ # reboot = true
+ # strategy = disable
+ # complexity = low
+ # disruption = medium
++{{% if product == "sle12" %}}
++- name: Ensure kernel module '{{{ KERNMODULE }}}' is disabled
++  lineinfile:
++    create: yes
++    dest: "/etc/modprobe.d/50-blacklist.conf"
++    regexp: '^blacklist {{{ KERNMODULE }}}$'
++    line: "blacklist {{{ KERNMODULE }}}"
++{{% else %}}
+ - name: Ensure kernel module '{{{ KERNMODULE }}}' is disabled
+   lineinfile:
+     create: yes
+     dest: "/etc/modprobe.d/{{{ KERNMODULE }}}.conf"
+     regexp: '{{{ KERNMODULE }}}'
+     line: "install {{{ KERNMODULE }}} /bin/true"
+-
++{{% endif %}}
+diff --git a/shared/templates/kernel_module_disabled/bash.template b/shared/templates/kernel_module_disabled/bash.template
+index 42c0830b5f..f70a9925cd 100644
+--- a/shared/templates/kernel_module_disabled/bash.template
++++ b/shared/templates/kernel_module_disabled/bash.template
+@@ -1,11 +1,18 @@
+-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu,multi_platform_sle
+ # reboot = true
+ # strategy = disable
+ # complexity = low
+ # disruption = medium
++{{% if product == "sle12" %}}
++if ! LC_ALL=C grep -q -m 1 "^blacklist {{{ KERNMODULE }}}$" /etc/modprobe.d/50-blacklist.conf ; then
++        echo -e "\n# Disable per security requirements" >> /etc/modprobe.d/50-blacklist.conf
++        echo "blacklist {{{ KERNMODULE }}}" >> /etc/modprobe.d/50-blacklist.conf
++fi
++{{% else %}}
+ if LC_ALL=C grep -q -m 1 "^install {{{ KERNMODULE }}}" /etc/modprobe.d/{{{ KERNMODULE }}}.conf ; then
+ 	sed -i 's/^install {{{ KERNMODULE }}}.*/install {{{ KERNMODULE }}} /bin/true/g' /etc/modprobe.d/{{{ KERNMODULE }}}.conf
+ else
+ 	echo -e "\n# Disable per security requirements" >> /etc/modprobe.d/{{{ KERNMODULE }}}.conf
+ 	echo "install {{{ KERNMODULE }}} /bin/true" >> /etc/modprobe.d/{{{ KERNMODULE }}}.conf
+ fi
++{{% endif %}}
+diff --git a/shared/templates/kernel_module_disabled/oval.template b/shared/templates/kernel_module_disabled/oval.template
+index e5a7aaa8b4..737ae3c796 100644
+--- a/shared/templates/kernel_module_disabled/oval.template
++++ b/shared/templates/kernel_module_disabled/oval.template
+@@ -54,9 +54,14 @@
+ 
+   <ind:textfilecontent54_object id="obj_kernmod_{{{ KERNMODULE }}}_disabled"
+   version="1" comment="kernel module {{{ KERNMODULE }}} disabled">
++    {{% if product == "sle12" %}}
++    <ind:filepath>/etc/modprobe.d/50-blacklist.conf</ind:filepath>
++    <ind:pattern operation="pattern match">^blacklist\s+{{{ KERNMODULE }}}$</ind:pattern>
++    {{% else %}}
+     <ind:path>/etc/modprobe.d</ind:path>
+     <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+     <ind:pattern operation="pattern match">^\s*install\s+{{{ KERNMODULE }}}\s+(/bin/false|/bin/true)$</ind:pattern>
++    {{% endif %}}
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+diff --git a/sle12/product.yml b/sle12/product.yml
+index e465a6d687..d83ad88c21 100644
+--- a/sle12/product.yml
++++ b/sle12/product.yml
+@@ -9,6 +9,7 @@ profiles_root: "./profiles"
+ init_system: "systemd"
+ 
+ pkg_manager: "zypper"
++pkg_manager_config_file: "/etc/zypp/zypp.conf"
+ oval_feed_url: "https://support.novell.com/security/oval/suse.linux.enterprise.12.xml"
+ 
+ cpes_root: "../shared/applicability"
+diff --git a/sle12/profiles/stig.profile b/sle12/profiles/stig.profile
+index 6cf3339569..15c4f70336 100644
+--- a/sle12/profiles/stig.profile
++++ b/sle12/profiles/stig.profile
+@@ -12,34 +12,59 @@ selections:
+     - account_temp_expire_date
+     - accounts_have_homedir_login_defs
+     - accounts_logon_fail_delay
++    - accounts_max_concurrent_login_sessions
+     - accounts_maximum_age_login_defs
++    - accounts_minimum_age_login_defs
+     - accounts_no_uid_except_zero
+     - accounts_password_set_max_life_existing
+     - accounts_password_set_min_life_existing
+     - accounts_umask_etc_login_defs
++    - auditd_audispd_encrypt_sent_records
+     - auditd_data_disk_full_action
+     - auditd_data_retention_action_mail_acct
+     - auditd_data_retention_space_left
++    - banner_etc_issue
+     - banner_etc_motd
++    - dir_perms_world_writable_sticky_bits
+     - disable_ctrlaltdel_reboot
++    - encrypt_partitions
++    - ensure_gpgcheck_globally_activated
++    - file_permissions_sshd_private_key
++    - file_permissions_sshd_pub_key
++    - ftp_present_banner
+     - gnome_gdm_disable_automatic_login
+     - grub2_password
+     - grub2_uefi_password
+     - installed_OS_is_vendor_supported
++    - kernel_module_usb-storage_disabled
+     - no_empty_passwords
++    - no_files_unowned_by_user
+     - no_host_based_files
+     - no_user_host_based_files
++    - package_MFEhiplsm_installed
++    - package_aide_installed
+     - package_audit-audispd-plugins_installed
+     - package_audit_installed
++    - package_telnet-server_removed
+     - postfix_client_configure_mail_alias
+     - security_patches_up_to_date
+     - service_auditd_enabled
+     - set_password_hashing_algorithm_logindefs
++    - sshd_disable_compression
+     - sshd_disable_empty_passwords
+     - sshd_disable_user_known_hosts
+     - sshd_do_not_permit_user_env
++    - sshd_enable_strictmodes
++    - sshd_enable_warning_banner
+     - sshd_enable_x11_forwarding
++    - sshd_print_last_log
+     - sshd_set_idle_timeout
+     - sshd_set_keepalive
++    - sshd_set_loglevel_verbose
++    - sshd_use_priv_separation
+     - sudo_remove_no_authenticate
+     - sudo_remove_nopasswd
++    - sysctl_net_ipv4_conf_all_accept_source_route
++    - sysctl_net_ipv4_conf_default_accept_source_route
++    - sysctl_net_ipv4_conf_default_send_redirects
++    - sysctl_net_ipv6_conf_all_accept_source_route
