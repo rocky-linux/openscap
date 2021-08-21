@@ -37,6 +37,7 @@ selections:
   - service_squid_disabled
 
   ### Software update
+#  - ensure_redhat_gpgkey_installed
   - ensure_gpgcheck_never_disabled
   - ensure_gpgcheck_local_packages
   - ensure_gpgcheck_globally_activated

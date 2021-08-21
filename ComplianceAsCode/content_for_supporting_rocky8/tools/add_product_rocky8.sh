@@ -2,7 +2,9 @@
 
 ### copy rocky8 directory under new directory
 cp -pr ./content_for_supporting_rocky8/files/rocky8 ./products/
+### copy several files
 cp -pr ./content_for_supporting_rocky8/files/installed_OS_is_rocky8.xml ./shared/checks/oval/
+cp -pr ./content_for_supporting_rocky8/files/disa-stig-rocky8-v1r3-xccdf-manual.xml ./shared/references/
 
 ### patch to several files for supporting rocky8
 patch -p1 < ./content_for_supporting_rocky8/files/diff_content_for_supporting_rocky8

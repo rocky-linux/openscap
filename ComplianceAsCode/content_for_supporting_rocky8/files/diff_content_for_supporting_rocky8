@@ -1,23 +1,23 @@
 diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
---- content.org/CMakeLists.txt	2021-05-03 07:27:49.961754374 +0900
-+++ content/CMakeLists.txt	2021-05-03 07:29:29.739430343 +0900
-@@ -92,6 +92,7 @@
+--- content.org/CMakeLists.txt  2021-08-21 18:13:55.050097584 +0900
++++ content/CMakeLists.txt      2021-08-21 18:21:16.258038611 +0900
+@@ -93,6 +93,7 @@
  option(SSG_PRODUCT_VSEL "If enabled, the McAfee VSEL SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
  option(SSG_PRODUCT_WRLINUX8 "If enabled, the WRLinux8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
  option(SSG_PRODUCT_WRLINUX1019 "If enabled, the WRLinux1019 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
 +option(SSG_PRODUCT_ROCKY8 "If enabled, the ROCKY8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
- 
+
  option(SSG_CENTOS_DERIVATIVES_ENABLED "If enabled, CentOS derivative content will be built from the RHEL content" TRUE)
  option(SSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED "If enabled, Scientific Linux derivative content will be built from the RHEL content" TRUE)
-@@ -285,6 +286,7 @@
+@@ -288,6 +289,7 @@
  message(STATUS "McAfee VSEL: ${SSG_PRODUCT_VSEL}")
  message(STATUS "WRLinux 8: ${SSG_PRODUCT_WRLINUX8}")
  message(STATUS "WRLinux 1019: ${SSG_PRODUCT_WRLINUX1019}")
 +message(STATUS "ROCKY 8: ${SSG_PRODUCT_ROCKY8}")
- 
- 
- 
-@@ -407,6 +409,10 @@
+
+
+
+@@ -410,6 +412,10 @@
  if (SSG_PRODUCT_WRLINUX1019)
      add_subdirectory("products/wrlinux1019" "wrlinux1019")
  endif()
@@ -25,17 +25,17 @@ diff -Nru content.org/CMakeLists.txt content/CMakeLists.txt
 +    add_subdirectory("products/rocky8" "rocky8")
 +endif()
 +
- 
+
  # ZIP only contains source datastreams and kickstarts, people who
  # want sources to build from should get the tarball instead.
 
 diff -Nru content.org/build_product content/build_product
---- content.org/build_product	2021-05-03 07:27:50.029755540 +0900
-+++ content/build_product	2021-05-03 07:29:29.739430343 +0900
-@@ -309,6 +309,7 @@
- 	VSEL
+--- content.org/build_product   2021-08-21 18:13:55.110097683 +0900
++++ content/build_product       2021-08-21 18:22:19.417937147 +0900
+@@ -310,6 +310,7 @@
  	WRLINUX8
  	WRLINUX1019
+ 	MACOS1015
 +	ROCKY8
  )
  
@@ -52,9 +52,15 @@ diff -Nru content.org/shared/checks/oval/install_mcafee_hbss.xml content/shared/
        <description>McAfee Host-Based Intrusion Detection Software (HBSS) software
        should be installed.</description>
 diff -Nru content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml content/shared/checks/oval/sysctl_kernel_ipv6_disable.xml
---- content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-05-03 07:27:50.325760613 +0900
-+++ content/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-05-03 07:30:19.808247714 +0900
-@@ -14,6 +14,7 @@
+--- content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml       2021-08-21 18:13:55.326098038 +0900
++++ content/shared/checks/oval/sysctl_kernel_ipv6_disable.xml   2021-08-21 18:21:37.030007098 +0900
+@@ -9,11 +9,12 @@
+ 	<platform>multi_platform_opensuse</platform>
+ 	<platform>multi_platform_ol</platform>
+ 	<platform>multi_platform_rhcos</platform>
+-	<platform>multi_platform_rhel</platform>
++	<platform>multi_platform_rhel,multi_platform_rocky</platform>
+ 	<platform>multi_platform_rhv</platform>
  	<platform>multi_platform_sle</platform>
  	<platform>multi_platform_ubuntu</platform>
  	<platform>multi_platform_wrlinux</platform>
@@ -63,8 +69,8 @@ diff -Nru content.org/shared/checks/oval/sysctl_kernel_ipv6_disable.xml content/
        <description>Disables IPv6 for all network interfaces.</description>
      </metadata>
 diff -Nru content.org/ssg/constants.py content/ssg/constants.py
---- content.org/ssg/constants.py	2021-05-03 07:27:50.369761368 +0900
-+++ content/ssg/constants.py	2021-05-03 07:29:29.739430343 +0900
+--- content.org/ssg/constants.py        2021-08-21 18:13:55.362098097 +0900
++++ content/ssg/constants.py    2021-08-21 18:21:16.258038611 +0900
 @@ -24,7 +24,8 @@
      'sle12', 'sle15',
      'ubuntu1604', 'ubuntu1804', 'ubuntu2004',
@@ -73,38 +79,36 @@ diff -Nru content.org/ssg/constants.py content/ssg/constants.py
 +    'wrlinux8', 'wrlinux1019',
 +    'rocky8'
  ]
- 
+
  JINJA_MACROS_BASE_DEFINITIONS = os.path.join(os.path.dirname(os.path.dirname(
-@@ -181,6 +182,7 @@
+@@ -182,6 +183,7 @@
      "Ubuntu 20.04": "ubuntu2004",
      "WRLinux 8": "wrlinux8",
      "WRLinux 1019": "wrlinux1019",
 +    "Rocky Linux 8": "rocky8",
  }
- 
- 
-@@ -195,7 +197,7 @@
+
+
+@@ -196,7 +198,7 @@
  }
- 
+
  MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhosp", "rhv", "debian", "ubuntu",
 -                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "example"]
 +                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "rocky", "example"]
- 
+
  MULTI_PLATFORM_MAPPING = {
      "multi_platform_debian": ["debian9", "debian10"],
-@@ -211,6 +213,7 @@
+@@ -212,6 +214,7 @@
      "multi_platform_sle": ["sle12", "sle15"],
      "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
      "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
-+    "multi_platform_wrlinux": ["rocky8"],
++    "multi_platform_rocky": ["rocky8"],
  }
- 
+
  RHEL_CENTOS_CPE_MAPPING = {
-@@ -376,6 +379,7 @@
+@@ -377,6 +380,7 @@
      'ol': 'Oracle Linux',
      'ocp': 'Red Hat OpenShift Container Platform',
      'rhcos': 'Red Hat Enterprise Linux CoreOS',
 +    'rocky': 'Rocky Linux',
  }
- 
- 
