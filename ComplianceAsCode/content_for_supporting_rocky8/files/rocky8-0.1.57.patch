@@ -1,0 +1,115 @@
+diff -ruN scap-security-guide-0.1.57/build_product b/build_product
+--- scap-security-guide-0.1.57/build_product	2021-07-27 10:51:15.000000000 -0400
++++ b/build_product	2021-10-16 14:14:27.167238394 -0400
+@@ -297,6 +297,7 @@
+ 	OPENSUSE
+ 	RHEL7
+ 	RHEL8
++	ROCKY8
+ 	RHEL9
+ 	RHOSP10
+ 	RHOSP13
+diff -ruN scap-security-guide-0.1.57/CMakeLists.txt b/CMakeLists.txt
+--- scap-security-guide-0.1.57/CMakeLists.txt	2021-10-16 13:57:11.850990039 -0400
++++ b/CMakeLists.txt	2021-10-16 14:14:00.232789690 -0400
+@@ -92,6 +92,7 @@
+ option(SSG_PRODUCT_VSEL "If enabled, the McAfee VSEL SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
+ option(SSG_PRODUCT_WRLINUX8 "If enabled, the WRLinux8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
+ option(SSG_PRODUCT_WRLINUX1019 "If enabled, the WRLinux1019 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
++option(SSG_PRODUCT_ROCKY8 "If enabled, the ROCKY8 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
+ 
+ option(SSG_CENTOS_DERIVATIVES_ENABLED "If enabled, CentOS derivative content will be built from the RHEL content" TRUE)
+ option(SSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED "If enabled, Scientific Linux derivative content will be built from the RHEL content" TRUE)
+@@ -287,6 +288,7 @@
+ message(STATUS "McAfee VSEL: ${SSG_PRODUCT_VSEL}")
+ message(STATUS "WRLinux 8: ${SSG_PRODUCT_WRLINUX8}")
+ message(STATUS "WRLinux 1019: ${SSG_PRODUCT_WRLINUX1019}")
++message(STATUS "ROCKY 8: ${SSG_PRODUCT_ROCKY8}")
+ 
+ 
+ 
+@@ -409,6 +411,10 @@
+ if (SSG_PRODUCT_WRLINUX1019)
+     add_subdirectory("products/wrlinux1019" "wrlinux1019")
+ endif()
++if (SSG_PRODUCT_ROCKY8)
++    add_subdirectory("products/rl8" "rl8")
++endif()
++
+ 
+ # ZIP only contains source datastreams and kickstarts, people who
+ # want sources to build from should get the tarball instead.
+diff -ruN scap-security-guide-0.1.57/shared/checks/oval/install_mcafee_hbss.xml b/shared/checks/oval/install_mcafee_hbss.xml
+--- scap-security-guide-0.1.57/shared/checks/oval/install_mcafee_hbss.xml	2021-07-27 10:51:15.000000000 -0400
++++ b/shared/checks/oval/install_mcafee_hbss.xml	2021-10-16 14:14:00.232789690 -0400
+@@ -14,6 +14,7 @@
+ 	<platform>multi_platform_sle</platform>
+ 	<platform>multi_platform_ubuntu</platform>
+ 	<platform>multi_platform_wrlinux</platform>
++	<platform>multi_platform_rl</platform>
+       </affected>
+       <description>McAfee Host-Based Intrusion Detection Software (HBSS) software
+       should be installed.</description>
+diff -ruN scap-security-guide-0.1.57/shared/checks/oval/sysctl_kernel_ipv6_disable.xml b/shared/checks/oval/sysctl_kernel_ipv6_disable.xml
+--- scap-security-guide-0.1.57/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-07-27 10:51:15.000000000 -0400
++++ b/shared/checks/oval/sysctl_kernel_ipv6_disable.xml	2021-10-16 14:14:00.233789707 -0400
+@@ -9,11 +9,12 @@
+ 	<platform>multi_platform_opensuse</platform>
+ 	<platform>multi_platform_ol</platform>
+ 	<platform>multi_platform_rhcos</platform>
+-	<platform>multi_platform_rhel</platform>
++	<platform>multi_platform_rhel,multi_platform_rl</platform>
+ 	<platform>multi_platform_rhv</platform>
+ 	<platform>multi_platform_sle</platform>
+ 	<platform>multi_platform_ubuntu</platform>
+ 	<platform>multi_platform_wrlinux</platform>
++	<platform>multi_platform_rl</platform>
+       </affected>
+       <description>Disables IPv6 for all network interfaces.</description>
+     </metadata>
+diff -ruN scap-security-guide-0.1.57/ssg/constants.py b/ssg/constants.py
+--- scap-security-guide-0.1.57/ssg/constants.py	2021-07-27 10:51:15.000000000 -0400
++++ b/ssg/constants.py	2021-10-16 14:14:00.233789707 -0400
+@@ -24,7 +24,8 @@
+     'sle12', 'sle15',
+     'ubuntu1604', 'ubuntu1804', 'ubuntu2004',
+     'vsel',
+-    'wrlinux8', 'wrlinux1019'
++    'wrlinux8', 'wrlinux1019',
++    'rl8'
+ ]
+ 
+ JINJA_MACROS_BASE_DEFINITIONS = os.path.join(os.path.dirname(os.path.dirname(
+@@ -181,6 +182,7 @@
+     "Ubuntu 20.04": "ubuntu2004",
+     "WRLinux 8": "wrlinux8",
+     "WRLinux 1019": "wrlinux1019",
++    "Rocky Linux 8": "rl8",
+ }
+ 
+ 
+@@ -195,7 +197,7 @@
+ }
+ 
+ MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhosp", "rhv", "debian", "ubuntu",
+-                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "example"]
++                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos", "rl", "example"]
+ 
+ MULTI_PLATFORM_MAPPING = {
+     "multi_platform_debian": ["debian9", "debian10"],
+@@ -211,6 +213,7 @@
+     "multi_platform_sle": ["sle12", "sle15"],
+     "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
+     "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
++    "multi_platform_rl": ["rl8"],
+ }
+ 
+ RHEL_CENTOS_CPE_MAPPING = {
+@@ -376,6 +379,7 @@
+     'ol': 'Oracle Linux',
+     'ocp': 'Red Hat OpenShift Container Platform',
+     'rhcos': 'Red Hat Enterprise Linux CoreOS',
++    'rl': 'Rocky Linux',
+ }
+ 
+ 
